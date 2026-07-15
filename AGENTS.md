@@ -85,4 +85,9 @@ GeoGuess-style geography game. Players identify locations through progressive qu
 
 ## This Session (2026-07-15)
 - Created GitHub repo: `https://github.com/RusticAngel/Whereabouts.git`
-- Pending: git init + push, then user deploys in Vercel dashboard
+- git init, committed all files (108 files, 14,547 insertions)
+- Pushed to GitHub (master branch)
+- Deployed to Vercel at `https://whereabouts-navy.vercel.app`
+- Rebuilt APK pointing to live Vercel URL
+- Removed `cleartext`/`allowMixedContent` from capacitor config (HTTPS now)
+- Pending: Convert APK to AAB for Play Store (optional)

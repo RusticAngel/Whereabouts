@@ -11,7 +11,7 @@ export default async function Home() {
     <main className="flex flex-col min-h-dvh items-center justify-center p-6 bg-black text-white">
       <div className="max-w-md w-full text-center space-y-8">
         <div className="space-y-2">
-          <h1 className="text-5xl font-bold tracking-tight">Whereabouts</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Whereabouts</h1>
           <p className="text-gray-400 text-lg">Test your geography knowledge</p>
         </div>
 

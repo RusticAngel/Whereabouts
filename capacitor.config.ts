@@ -5,11 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Whereabouts',
   webDir: '.next',
   server: {
-    url: 'http://192.168.1.20:3000',
-    cleartext: true,
-  },
-  android: {
-    allowMixedContent: true,
+    url: 'https://whereabouts-navy.vercel.app',
   },
 };
 
