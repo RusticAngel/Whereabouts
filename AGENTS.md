@@ -91,3 +91,26 @@ GeoGuess-style geography game. Players identify locations through progressive qu
 - Rebuilt APK pointing to live Vercel URL
 - Removed `cleartext`/`allowMixedContent` from capacitor config (HTTPS now)
 - Pending: Convert APK to AAB for Play Store (optional)
+
+## Next Session (2026-07-16) — Mapillary Integration
+
+### Prep (user does)
+- [ ] Sign up at mapillary.com → generate free access token
+
+### Schema & Data
+- [ ] Add `provider` ('unsplash'|'mapillary') and `mapillary_id` columns to images table
+- [ ] Create seed data with 10-20 urban locations using Mapillary image IDs
+
+### Component
+- [ ] Install `mapillary-js` npm package
+- [ ] Build `StreetView` component wrapping MapillaryJS Viewer (locked position, 360° pan, no movement)
+- [ ] Handle fullscreen / container sizing for Capacitor WebView
+
+### Game Flow
+- [ ] Update game screens to render `StreetView` when provider is 'mapillary', fall back to `<img>` for 'unsplash'
+- [ ] Test in Capacitor WebView / on-device
+
+### Admin Tool (optional)
+- [ ] Build hidden `/admin/images` route gated by user ID
+- [ ] Form to paste image URL (or Mapillary ID), define question chain + clues
+- [ ] Inserts directly into Neon DB
