@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { EvidenceItem } from '@/types';
 import { revealEvidence, getRevealedEvidence, MAX_EVIDENCE, EVIDENCE_COSTS } from '@/lib/game/evidence';
 import { Button } from '@/components/ui/Button';
@@ -12,15 +12,27 @@ interface EvidencePanelProps {
 
 export function EvidencePanel({ evidence, onReveal }: EvidencePanelProps) {
   const [revealedCount, setRevealedCount] = useState(0);
+  const [confirming, setConfirming] = useState(false);
+  const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const canReveal = revealedCount < evidence.length && revealedCount < MAX_EVIDENCE;
   const revealed = getRevealedEvidence(evidence, revealedCount);
 
   const handleReveal = () => {
-    const next = revealEvidence(evidence, revealedCount);
-    if (next) {
-      const newCount = revealedCount + 1;
-      setRevealedCount(newCount);
-      onReveal(newCount);
+    if (confirming) {
+      if (confirmTimerRef.current) clearTimeout(confirmTimerRef.current);
+      confirmTimerRef.current = null;
+      setConfirming(false);
+      const next = revealEvidence(evidence, revealedCount);
+      if (next) {
+        const newCount = revealedCount + 1;
+        setRevealedCount(newCount);
+        onReveal(newCount);
+      }
+    } else {
+      setConfirming(true);
+      confirmTimerRef.current = setTimeout(() => {
+        setConfirming(false);
+      }, 3000);
     }
   };
 
@@ -38,8 +50,14 @@ export function EvidencePanel({ evidence, onReveal }: EvidencePanelProps) {
         </div>
       ))}
       {canReveal && (
-        <Button variant="outline" size="sm" onClick={handleReveal}>
-          Reveal Evidence ({revealedCount + 1}/{Math.min(evidence.length, MAX_EVIDENCE)}) &mdash; costs {nextCost} pts
+        <Button
+          variant={confirming ? 'primary' : 'outline'}
+          size="sm"
+          onClick={handleReveal}
+        >
+          {confirming
+            ? `Tap again to confirm — -${nextCost} pts`
+            : `Reveal Evidence (${revealedCount + 1}/${Math.min(evidence.length, MAX_EVIDENCE)}) — costs ${nextCost} pts`}
         </Button>
       )}
     </div>
