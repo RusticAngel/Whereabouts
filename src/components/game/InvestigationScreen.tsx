@@ -44,6 +44,8 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
   const [evidenceRevealed, setEvidenceRevealed] = useState(0);
   const [confidence, setConfidence] = useState<Confidence>('low');
   const [saveFailed, setSaveFailed] = useState(false);
+  const [timeUp, setTimeUp] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(300);
   const savingRef = useRef(false);
   const pinTrackedRef = useRef(false);
   const startedRef = useRef(false);
@@ -63,6 +65,24 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
       trackEvent('pin_placed', { level });
     }
   }, [pinLat, pinLng, level]);
+
+  useEffect(() => {
+    if (phase !== 'investigating') return;
+    if (timeLeft <= 0) {
+      setTimeUp(true);
+      return;
+    }
+    const id = setInterval(() => {
+      setTimeLeft((t) => {
+        if (t <= 1) {
+          setTimeUp(true);
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [phase, timeLeft]);
 
   const handleReveal = useCallback((count: number) => {
     setEvidenceRevealed(count);
@@ -157,12 +177,22 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
       </div>
 
       <div className="flex-1 flex flex-col p-4 max-w-lg mx-auto w-full gap-4">
-        <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
-          Case #{level} — Locate Cipher
-          {isReplay && <span className="ml-2 text-gray-500">(Replay)</span>}
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
+            Case #{level} — Locate Cipher
+            {isReplay && <span className="ml-2 text-gray-500">(Replay)</span>}
+          </div>
+          <div className={`text-xs font-mono tabular-nums ${timeUp ? 'text-red-400' : timeLeft <= 60 ? 'text-yellow-400' : 'text-gray-500'}`}>
+            {timeUp ? 'EXPIRED' : `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}
+          </div>
         </div>
 
-        <EvidencePanel evidence={location.evidence} onReveal={handleReveal} />
+        {!timeUp && <EvidencePanel evidence={location.evidence} onReveal={handleReveal} />}
+        {timeUp && evidenceRevealed > 0 && (
+          <div className="text-xs text-gray-500 text-center py-2">
+            Investigation time expired — evidence is sealed.
+          </div>
+        )}
 
         <div className="h-[300px] shrink-0 rounded-lg overflow-hidden border border-gray-700">
           <PinMap
