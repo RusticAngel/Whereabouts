@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { LocationData, Confidence } from '@/types';
 import { calculateDistance } from '@/lib/game/pin';
@@ -34,6 +35,7 @@ interface DailyGameProps {
 }
 
 export function DailyGame({ location, userId, date, existingScore }: DailyGameProps) {
+  const router = useRouter();
   const [phase, setPhase] = useState<'investigating' | 'results'>('investigating');
   const [pinLat, setPinLat] = useState<number | null>(null);
   const [pinLng, setPinLng] = useState<number | null>(null);
@@ -159,6 +161,12 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
           <Button fullWidth variant="primary" onClick={() => window.location.reload()}>
             Play Again
           </Button>
+          <Button fullWidth variant="secondary" onClick={() => router.push('/game')}>
+            Continue Investigation
+          </Button>
+          <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
+            Leaderboard
+          </Button>
         </div>
       </div>
     );
@@ -169,6 +177,14 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
       <div className="flex flex-col min-h-dvh bg-black text-white items-center justify-center p-4">
         <p className="text-gray-400 text-center">You already filed a report for today&apos;s sighting.</p>
         <p className="text-yellow-400 font-mono text-lg mt-2">Score: {existingScore.toLocaleString()}</p>
+        <div className="flex flex-col gap-3 mt-6 w-full max-w-xs">
+          <Button fullWidth variant="primary" onClick={() => router.push('/game')}>
+            Continue Investigation
+          </Button>
+          <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
+            Leaderboard
+          </Button>
+        </div>
       </div>
     );
   }
