@@ -10,48 +10,28 @@ interface StreetViewProps {
 }
 
 export default function StreetView({ imageId, className = '' }: StreetViewProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const viewerRef = useRef<Viewer | null>(null);
+  const initializedRef = useRef(false);
+  const retryRef = useRef(false);
   const [failed, setFailed] = useState(false);
-  const [retrying, setRetrying] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    let disposed = false;
 
     const accessToken = process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN;
     if (!accessToken) {
       setFailed(true);
+      setLoading(false);
       return;
     }
 
-    if (container.clientWidth === 0 || container.clientHeight === 0) {
-      requestAnimationFrame(() => {
-        if (containerRef.current && !disposed) {
-          initViewer(containerRef.current, accessToken);
-        }
-      });
-      return;
-    }
+    if (initializedRef.current) return;
 
-    initViewer(container, accessToken);
-
-    return () => {
-      disposed = true;
-      const viewer = viewerRef.current;
-      viewerRef.current = null;
-      if (viewer) {
-        Promise.resolve(viewer.remove()).catch(() => {});
-      }
-    };
-  }, [imageId]);
-
-  function initViewer(container: HTMLDivElement, accessToken: string, attempt = 1) {
     try {
-      setRetrying(false);
-      setFailed(false);
-      viewerRef.current = new Viewer({
+      const viewer = new Viewer({
         accessToken,
         container,
         imageId,
@@ -67,30 +47,75 @@ export default function StreetView({ imageId, className = '' }: StreetViewProps)
           pointer: true,
         },
       });
-    } catch (e) {
-      console.error('[StreetView] init error:', e);
-      if (attempt < 2) {
-        setRetrying(true);
+
+      viewerRef.current = viewer;
+      initializedRef.current = true;
+      setLoading(false);
+    } catch {
+      if (!retryRef.current) {
+        retryRef.current = true;
         setTimeout(() => {
-          if (containerRef.current) {
-            initViewer(containerRef.current, accessToken, attempt + 1);
+          if (containerRef.current && !initializedRef.current) {
+            try {
+              const viewer = new Viewer({
+                accessToken,
+                container: containerRef.current,
+                imageId,
+                component: {
+                  cover: false,
+                  sequence: true,
+                  direction: true,
+                  keyboard: true,
+                  cache: false,
+                  bearing: false,
+                  attribution: false,
+                  zoom: true,
+                  pointer: true,
+                },
+              });
+              viewerRef.current = viewer;
+              initializedRef.current = true;
+              setLoading(false);
+              return;
+            } catch {}
           }
+          setFailed(true);
+          setLoading(false);
         }, 5000);
       } else {
         setFailed(true);
-        setRetrying(false);
+        setLoading(false);
       }
     }
-  }
+
+    return () => {
+      if (viewerRef.current) {
+        viewerRef.current.remove().catch(() => {});
+        viewerRef.current = null;
+        initializedRef.current = false;
+        retryRef.current = false;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!viewerRef.current || !imageId) return;
+    setLoading(true);
+    viewerRef.current.moveTo(imageId).then(() => {
+      setLoading(false);
+    }).catch(() => {
+      setLoading(false);
+    });
+  }, [imageId]);
 
   return (
     <div className={`relative w-full h-full ${className}`}>
       <div
         ref={containerRef}
-        className={`w-full h-full ${failed || retrying ? 'hidden' : ''}`}
+        className={`w-full h-full transition-opacity duration-300 ${loading ? 'opacity-0' : 'opacity-100'} ${failed ? 'hidden' : ''}`}
       />
-      {retrying && (
-        <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+      {loading && !failed && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
           <div className="flex flex-col items-center gap-3">
             <div className="animate-spin w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full" />
             <p className="text-gray-400 text-sm">Loading Street View…</p>
@@ -98,7 +123,7 @@ export default function StreetView({ imageId, className = '' }: StreetViewProps)
         </div>
       )}
       {failed && (
-        <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
           <p className="text-gray-400 text-sm">Street View unavailable</p>
         </div>
       )}
