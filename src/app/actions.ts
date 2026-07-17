@@ -11,7 +11,7 @@ export async function getLocationForLevel(level: number): Promise<LocationData |
   const [image] = await db
     .select()
     .from(images)
-    .where(and(eq(images.provider, 'mapillary'), eq(images.levelOrder, level)))
+    .where(and(eq(images.provider, 'mapillary'), eq(images.isPano, true), eq(images.levelOrder, level)))
     .limit(1);
 
   if (!image) return null;

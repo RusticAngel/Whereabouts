@@ -12,6 +12,7 @@ export const images = pgTable('images', {
   levelOrder: integer('level_order').default(1),
   provider: text('provider').notNull().default('unsplash'),
   mapillaryId: text('mapillary_id'),
+  isPano: boolean('is_pano').notNull().default(false),
   createdAt: timestamp('created_at').defaultNow(),
 });
 

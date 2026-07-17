@@ -5,10 +5,11 @@ const sql = neon(process.env.DATABASE_URL!);
 const seedData = [
   // ── Arc 1: The Disappearance (Levels 1–4) ──
   {
-    mapillary_id: '287153994441642',
-    lat: '40.7580',
-    lng: '-73.9855',
+    mapillary_id: '1060833364525771',
+    lat: '40.758724811031',
+    lng: '-73.985468706767',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 1,
     briefing: 'Day 1: Cipher was last seen in a district where daylight barely reaches the street — the glow of towering screens outshines the sun. Witnesses report they held a folded newspaper, glanced up at cascading digital billboards, and vanished into a crowd that never thins.',
     evidence: [
@@ -18,10 +19,11 @@ const seedData = [
     ],
   },
   {
-    mapillary_id: '283854833998321',
-    lat: '51.5033',
-    lng: '-0.1195',
+    mapillary_id: '1059286335336578',
+    lat: '51.503756647023',
+    lng: '-0.11876275963309',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 2,
     briefing: 'Day 3: A ticket stub was found in Cipher\'s last known location — a riverside promenade dominated by a massive slow-turning structure of glass and steel. The trail crosses grey-green waters to a city of layered history and ancient street lines.',
     evidence: [
@@ -31,10 +33,11 @@ const seedData = [
     ],
   },
   {
-    mapillary_id: '1713009616372277',
-    lat: '48.8584',
-    lng: '2.2945',
+    mapillary_id: '3889604161259055',
+    lat: '48.859111845585',
+    lng: '2.2937318513486',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 3,
     briefing: 'Day 5: A discarded coffee cup with a cryptic note leads to a city of wide boulevards and uniform cream-coloured buildings. Cipher was seen walking south along the river, past green bookstalls and beneath the shade of linden trees.',
     evidence: [
@@ -45,9 +48,10 @@ const seedData = [
   },
   {
     mapillary_id: '764108845108405',
-    lat: '35.6595',
-    lng: '139.7004',
+    lat: '35.659445488659',
+    lng: '139.70072348321',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 4,
     briefing: 'Day 7: Interpol intercepted a message from Cipher\'s burner phone — a single photo taken from above a sprawling intersection where pedestrians flood the crossing from every direction at once. The density is staggering.',
     evidence: [
@@ -60,9 +64,10 @@ const seedData = [
   // ── Arc 2: The False Trail (Levels 5–8) ──
   {
     mapillary_id: '1291770495674361',
-    lat: '45.4340',
-    lng: '12.3388',
+    lat: '45.434203546748',
+    lng: '12.339246958254',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 5,
     briefing: 'Day 9: A false lead. Cipher\'s signature was forged on a postcard depicting a grand square with a towering bell tower. The architecture is unmistakable — but here, water has replaced asphalt, and boats are the only transport.',
     evidence: [
@@ -73,9 +78,10 @@ const seedData = [
   },
   {
     mapillary_id: '691124137135235',
-    lat: '52.5163',
-    lng: '13.3777',
+    lat: '52.516403875383',
+    lng: '13.377415340724',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 6,
     briefing: 'Day 11: A witness spotted Cipher near a monumental stone gateway in a city that once stood divided. The structure has seen war, reunification, and now serves as the backdrop for their next move. The streets here tell a story of fracture and rebirth.',
     evidence: [
@@ -86,9 +92,10 @@ const seedData = [
   },
   {
     mapillary_id: '170936311581040',
-    lat: '41.8902',
-    lng: '12.4922',
+    lat: '41.890438888889',
+    lng: '12.492942777778',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 7,
     briefing: 'Day 13: Cipher was photographed before a massive ancient amphitheatre, its arched facade lit golden in the evening sun. The city has stood for nearly three millennia — every street here is layered with centuries. Someone fitting the description bought a train ticket north.',
     evidence: [
@@ -99,9 +106,10 @@ const seedData = [
   },
   {
     mapillary_id: '676783557714753',
-    lat: '52.3731',
-    lng: '4.8923',
+    lat: '52.370066509815',
+    lng: '4.8947893854366',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 8,
     briefing: 'Day 15: The trail takes an unexpected turn. Cipher was seen cycling through a city of narrow gabled houses rising from concentric waterways. Bicycles outnumber people here, and the buildings lean forward at angles that defy modern engineering.',
     evidence: [
@@ -114,9 +122,10 @@ const seedData = [
   // ── Arc 3: The Network (Levels 9–12) ──
   {
     mapillary_id: '1064045931510215',
-    lat: '50.0909',
-    lng: '14.4013',
+    lat: '50.09131329464',
+    lng: '14.40312816507',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 9,
     briefing: 'Day 17: Cipher\'s network is active. A source reported seeing them near a hilltop castle complex that watches over a city of countless spires. The river below curls through the old town in a sweeping arc. Cipher is making contact.',
     evidence: [
@@ -127,9 +136,10 @@ const seedData = [
   },
   {
     mapillary_id: '2198133100699671',
-    lat: '1.2835',
-    lng: '103.8587',
+    lat: '1.2817608427242',
+    lng: '103.85693561353',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 10,
     briefing: 'Day 19: A money trail leads east. Cipher was spotted near a spectacular hotel that resembles a ship balanced on three towers, overlooking a bay of cargo vessels and gleaming skyscrapers. The humidity is intense — this city breathes the future.',
     evidence: [
@@ -140,9 +150,10 @@ const seedData = [
   },
   {
     mapillary_id: '2033649574156006',
-    lat: '37.8080',
-    lng: '-122.4177',
+    lat: '37.807898535116',
+    lng: '-122.41807522548',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 11,
     briefing: 'Day 21: A break in the case. Cipher\'s encrypted messages reveal they\'re heading to a coastal city with a celebrated suspension bridge painted in striking vermilion. The waterfront smells of salt and seafood. The hills here are legendary.',
     evidence: [
@@ -152,10 +163,11 @@ const seedData = [
     ],
   },
   {
-    mapillary_id: '1120640203960574',
-    lat: '53.3455',
-    lng: '-6.2628',
+    mapillary_id: '1421655535210037',
+    lat: '53.342169163137',
+    lng: '-6.2670085665432',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 12,
     briefing: 'Day 23: Cipher\'s trail crosses the Atlantic again. A pub owner in a historic cultural quarter remembers serving someone fitting the description. This city is known for its literary soul — music spills from every door, and a river splits it in two.',
     evidence: [
@@ -167,10 +179,11 @@ const seedData = [
 
   // ── Arc 4: The Hideout (Levels 13–14) ──
   {
-    mapillary_id: '799670289187352',
-    lat: '40.4169',
-    lng: '-3.7038',
+    mapillary_id: '2946638345612696',
+    lat: '40.416960519364',
+    lng: '-3.7037490174974',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 13,
     briefing: 'Day 25: It\'s all been leading here. Cipher\'s final known location before disappearing entirely is a grand central square in a sun-drenched capital where life happens outdoors. The sound of strummed guitars drifts from a terrace nearby.',
     evidence: [
@@ -180,10 +193,11 @@ const seedData = [
     ],
   },
   {
-    mapillary_id: '100237832970644',
-    lat: '25.1972',
-    lng: '55.2744',
+    mapillary_id: '1119466215218870',
+    lat: '25.198184108224',
+    lng: '55.27289976169',
     provider: 'mapillary',
+    is_pano: true,
     level_order: 14,
     briefing: 'Day 30: The final signal. Cipher was seen near the tallest structure ever built by human hands — a needle of glass and steel that pierces the desert sky. Beyond the gleaming towers, the heat shimmers over endless sand. This is where the trail ends.',
     evidence: [
@@ -195,21 +209,6 @@ const seedData = [
 ];
 
 async function main() {
-  // ── Placeholder levels (15-28) for future content ──
-  //
-  // const placeholderData = [
-  //   // Arc 5: Ghost Trail (Levels 15-18)
-  //   {
-  //     mapillary_id: 'TODO_MAPILLARY_ID_15',
-  //     lat: null, lng: null,
-  //     provider: 'mapillary',
-  //     level_order: 15,
-  //     briefing: '[PLACEHOLDER] Arc 5 — Ghost Trail begins here.',
-  //     evidence: [],
-  //   },
-  //   ... 13 more entries
-  // ];
-
   console.log('Clearing existing data...');
   await sql`DELETE FROM rounds`;
   await sql`DELETE FROM daily_scores`;
@@ -217,8 +216,8 @@ async function main() {
   console.log('Seeding locations...');
   for (const item of seedData) {
     await sql`
-      INSERT INTO images (image_url, lat, lng, steps, clues, briefing, evidence, level_order, provider, mapillary_id)
-      VALUES (NULL, ${item.lat}, ${item.lng}, NULL, NULL, ${item.briefing}, ${JSON.stringify(item.evidence)}::jsonb, ${item.level_order}, ${item.provider}, ${item.mapillary_id})
+      INSERT INTO images (image_url, lat, lng, steps, clues, briefing, evidence, level_order, provider, mapillary_id, is_pano)
+      VALUES (NULL, ${item.lat}, ${item.lng}, NULL, NULL, ${item.briefing}, ${JSON.stringify(item.evidence)}::jsonb, ${item.level_order}, ${item.provider}, ${item.mapillary_id}, ${item.is_pano})
     `;
     console.log(`  Inserted level ${item.level_order}: ${item.briefing.slice(0, 60)}...`);
   }
