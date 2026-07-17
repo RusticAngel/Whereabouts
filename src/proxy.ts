@@ -32,7 +32,7 @@ export default async function middleware(request: NextRequest) {
       if (request.method !== 'GET' && request.method !== 'HEAD') {
         init.body = request.body;
       }
-      const modifiedRequest = new NextRequest(request.url, init);
+      const modifiedRequest = new NextRequest(request.url, init as any);
       const authResult = await authMiddleware(modifiedRequest);
       if (authResult) return authResult;
     }
