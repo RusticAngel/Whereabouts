@@ -1,37 +1,48 @@
-export interface Step {
-  type: 'country' | 'region' | 'city' | 'area';
-  question: string;
-  answer: string;
-  options: string[];
+export type EvidenceType =
+  | 'continent'
+  | 'driving_side'
+  | 'language'
+  | 'road_line_color'
+  | 'climate'
+  | 'area_type'
+  | 'license_plate_style'
+  | 'architecture'
+  | 'terrain'
+  | 'signage_style';
+
+export interface EvidenceItem {
+  type: EvidenceType;
+  value: string;
+  label: string;
 }
 
-export interface Clue {
-  text: string;
-  applies_to: string;
-}
+export type Confidence = 'low' | 'medium' | 'high';
 
-export interface ImageData {
+export interface LocationData {
   id: string;
-  image_url: string;
-  steps: Step[];
-  clues: Clue[];
+  image_url: string | null;
+  lat?: string | null;
+  lng?: string | null;
+  briefing: string;
+  evidence: EvidenceItem[];
+  level_order: number;
+  provider: string;
+  mapillary_id?: string | null;
+  isPlaceholder?: boolean;
 }
 
-export interface RoundResult {
-  id: string;
-  image_id: string;
-  step_reached: number;
-  total_score: number;
+export interface CaseFileEntry {
+  level: number;
+  bestScore: number;
   completed: boolean;
-  created_at: string;
 }
 
-export type GamePhase = 'playing' | 'correct' | 'incorrect' | 'results';
-
-export interface GameState {
-  phase: GamePhase;
-  currentStep: number;
-  score: number;
-  answers: (string | null)[];
-  showHint: boolean;
+export interface RoundSaveData {
+  pinGuessLat: string;
+  pinGuessLng: string;
+  distanceKm: number;
+  pinScore: number;
+  evidenceRevealed: number;
+  confidence: string;
+  totalScore: number;
 }

@@ -1,9 +1,3 @@
-export {
-  scoreForStep,
-  totalScoreForSteps,
-  evaluateAnswer,
-  getStepLabel,
-  getApplicableClues,
-} from './engine';
-
-export { calculatePercentile } from './percentiles';
+export * from './evidence';
+export * from './scoring';
+export * from './narrative';

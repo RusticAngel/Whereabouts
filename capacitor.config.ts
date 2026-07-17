@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.whereabouts.app',
-  appName: 'Whereabouts',
+  appId: 'com.trace.app',
+  appName: 'Trace',
   webDir: '.next',
   server: {
     url: 'https://whereabouts-navy.vercel.app',

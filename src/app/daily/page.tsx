@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { images, dailyScores } from '@/db/schema';
 import { eq, sql, and } from 'drizzle-orm';
 import { DailyGame } from './DailyGame';
+import { LocationData, EvidenceItem } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,11 +29,15 @@ export default async function DailyPage() {
 
   const today = getTodayDate();
 
-  const allImages = await db.select().from(images);
+  const allImages = await db
+    .select()
+    .from(images)
+    .where(eq(images.provider, 'mapillary'));
+
   if (allImages.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-dvh bg-black text-white">
-        <p className="text-gray-400">No images available.</p>
+        <p className="text-gray-400">No sightings available.</p>
       </div>
     );
   }
@@ -46,16 +51,21 @@ export default async function DailyPage() {
     .where(and(eq(dailyScores.userId, session.user.id), eq(dailyScores.date, today)))
     .limit(1);
 
-  const imageData = {
+  const locationData: LocationData = {
     id: dailyImage.id,
     image_url: dailyImage.imageUrl,
-    steps: dailyImage.steps as unknown as any[],
-    clues: dailyImage.clues as unknown as any[],
+    lat: dailyImage.lat ?? null,
+    lng: dailyImage.lng ?? null,
+    briefing: dailyImage.briefing ?? '',
+    evidence: (dailyImage.evidence ?? []) as EvidenceItem[],
+    level_order: 0,
+    provider: dailyImage.provider ?? 'mapillary',
+    mapillary_id: dailyImage.mapillaryId ?? null,
   };
 
   return (
     <DailyGame
-      image={imageData}
+      location={locationData}
       userId={session.user.id}
       date={today}
       existingScore={existing?.totalScore ?? null}
