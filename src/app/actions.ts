@@ -127,21 +127,18 @@ export async function getCampaignScores(userId: string): Promise<CaseFileEntry[]
 }
 
 export async function advanceLevel(userId: string): Promise<number> {
-  const [profile] = await db
-    .select({ currentLevel: profiles.currentLevel })
-    .from(profiles)
-    .where(eq(profiles.id, userId))
-    .limit(1);
+  const maxLevel = await getMaxLevel();
 
-  const current = profile?.currentLevel ?? 1;
-  const next = Math.min(current + 1, await getMaxLevel());
+  const [result] = await db
+    .insert(profiles)
+    .values({ id: userId, currentLevel: 2 })
+    .onConflictDoUpdate({
+      target: profiles.id,
+      set: { currentLevel: sql`LEAST(${profiles.currentLevel} + 1, ${maxLevel})` },
+    })
+    .returning({ currentLevel: profiles.currentLevel });
 
-  await db
-    .update(profiles)
-    .set({ currentLevel: next })
-    .where(eq(profiles.id, userId));
-
-  return next;
+  return result?.currentLevel ?? 2;
 }
 
 export async function getLeaderboardCampaign() {

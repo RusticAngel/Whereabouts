@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "src/app/api/keepalive/route.ts": {
+      "memory": 512,
+      "maxDuration": 30
+    }
+  }
+}
