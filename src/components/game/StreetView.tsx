@@ -90,7 +90,7 @@ export default function StreetView({ imageId, className = '' }: StreetViewProps)
 
     return () => {
       if (viewerRef.current) {
-        viewerRef.current.remove().catch(() => {});
+        Promise.resolve(viewerRef.current.remove()).catch(() => {});
         viewerRef.current = null;
         initializedRef.current = false;
         retryRef.current = false;
