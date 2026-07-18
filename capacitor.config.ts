@@ -3,7 +3,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.findme.app',
   appName: 'FindMe',
-  webDir: '.next',
+  webDir: 'native',
   server: {
     url: 'https://whereabouts-navy.vercel.app',
   },

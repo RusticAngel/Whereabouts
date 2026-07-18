@@ -11,6 +11,7 @@ import { trackEvent } from '@/lib/game/analytics';
 import { BriefingPanel } from './BriefingPanel';
 import { EvidencePanel } from './EvidencePanel';
 import { ConfidenceSelector } from './ConfidenceSelector';
+import { HintPanel } from './HintPanel';
 import { OnboardingModal } from './OnboardingModal';
 import { Button } from '@/components/ui/Button';
 
@@ -43,6 +44,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
   const [pinLng, setPinLng] = useState<number | null>(null);
   const [evidenceRevealed, setEvidenceRevealed] = useState(0);
   const [confidence, setConfidence] = useState<Confidence>('low');
+  const [hintsCount, setHintsCount] = useState(0);
   const [saveFailed, setSaveFailed] = useState(false);
   const [timeUp, setTimeUp] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300);
@@ -88,6 +90,12 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
     setEvidenceRevealed(count);
     trackEvent('evidence_revealed', { level, evidenceUsed: count });
   }, [level]);
+
+  const handleHint = useCallback(() => {
+    const next = hintsCount + 1;
+    setHintsCount(next);
+    trackEvent('hint_used', { level, hintsUsed: next });
+  }, [hintsCount, level]);
 
   const handleSubmit = useCallback(async () => {
     if (savingRef.current || pinLat === null || pinLng === null || !hasCoords) return;
@@ -200,6 +208,18 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
             zoom={3}
           />
         </div>
+
+        {canSubmit && (
+          <HintPanel
+            pinLat={pinLat}
+            pinLng={pinLng}
+            targetLat={parseFloat(location.lat!)}
+            targetLng={parseFloat(location.lng!)}
+            hintsUsed={hintsCount}
+            confidence={confidence}
+            onHint={handleHint}
+          />
+        )}
 
         {canSubmit && (
           <ConfidenceSelector value={confidence} onChange={setConfidence} />
