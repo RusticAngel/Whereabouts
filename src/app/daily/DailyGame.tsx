@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { LocationData, Confidence } from '@/types';
 import { calculateDistance } from '@/lib/game/pin';
 import { calculateFinalScore, getNarrativeFeedback } from '@/lib/game';
+import { evidenceCost } from '@/lib/game/evidence';
 import { EvidencePanel } from '@/components/game/EvidencePanel';
 import { ConfidenceSelector } from '@/components/game/ConfidenceSelector';
 import { Button } from '@/components/ui/Button';
@@ -88,7 +89,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
   }, [pinLat, pinLng, evidenceRevealed, confidence, location.lat, location.lng, location.id, userId, date, hasCoords, existingScore]);
 
   if (phase === 'results' && result) {
-    const evidenceDeduction = evidenceRevealed * 500;
+    const evidenceDeduction = evidenceCost(evidenceRevealed);
     const baseScore = result.pinScore + evidenceDeduction;
     const isHighCorrect = confidence === 'high' && result.distanceKm < 100;
     const isHighWrong = confidence === 'high' && result.distanceKm >= 100;
@@ -132,7 +133,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
               <div className="flex justify-between text-sm">
                 <span>Distance</span>
                 <span className="text-white font-mono">
-                  {result.distanceKm >= 1000 ? `${(result.distanceKm / 1000).toFixed(1)}k` : result.distanceKm} km
+                  {result.distanceKm.toLocaleString()} km
                 </span>
               </div>
               <div className="flex justify-between text-sm">
