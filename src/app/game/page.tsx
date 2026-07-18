@@ -9,7 +9,7 @@ import { InvestigationScreen } from '@/components/game/InvestigationScreen';
 export const dynamic = 'force-dynamic';
 
 const TOTAL_LEVELS = 28;
-const REAL_LEVELS = 14;
+const REAL_LEVELS = 28;
 
 export default async function NewGamePage() {
   const { data: session } = await auth.getSession();
