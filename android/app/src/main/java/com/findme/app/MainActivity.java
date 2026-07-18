@@ -1,4 +1,4 @@
-package com.whereabouts.app;
+package com.findme.app;
 
 import com.getcapacitor.BridgeActivity;
 
