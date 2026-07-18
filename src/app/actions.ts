@@ -166,7 +166,7 @@ export async function getLeaderboardCampaign() {
     }
   }
 
-  const campaignTotals: { username: string; totalScore: number }[] = [];
+  const campaignTotals: { userId: string; username: string; totalScore: number }[] = [];
 
   for (const [userId, levels] of bestPerUserLevel) {
     let total = 0;
@@ -174,7 +174,7 @@ export async function getLeaderboardCampaign() {
       total += score;
     }
     const username = results.find((r) => r.userId === userId)?.username ?? 'Unknown';
-    campaignTotals.push({ username, totalScore: total });
+    campaignTotals.push({ userId, username, totalScore: total });
   }
 
   return campaignTotals.sort((a, b) => b.totalScore - a.totalScore);
@@ -184,6 +184,7 @@ export async function getLeaderboardLevel(level: number) {
   const results = await db
     .select({
       username: profiles.username,
+      userId: rounds.userId,
       totalScore: rounds.totalScore,
     })
     .from(rounds)
@@ -191,13 +192,13 @@ export async function getLeaderboardLevel(level: number) {
     .where(eq(rounds.level, level))
     .orderBy(sql`${rounds.totalScore} DESC`);
 
-  const bestPerUser = new Map<string, { username: string; totalScore: number }>();
+  const bestPerUser = new Map<string, { userId: string; username: string; totalScore: number }>();
 
   for (const row of results) {
     if (!row.username) continue;
     const existing = bestPerUser.get(row.username);
     if (!existing || row.totalScore > existing.totalScore) {
-      bestPerUser.set(row.username, { username: row.username, totalScore: row.totalScore });
+      bestPerUser.set(row.username, { userId: row.userId, username: row.username, totalScore: row.totalScore });
     }
   }
 
@@ -208,6 +209,7 @@ export async function getDailyLeaderboard(date: string) {
   const results = await db
     .select({
       username: profiles.username,
+      userId: dailyScores.userId,
       score: dailyScores.totalScore,
     })
     .from(dailyScores)
@@ -215,7 +217,7 @@ export async function getDailyLeaderboard(date: string) {
     .where(eq(dailyScores.date, date))
     .orderBy(sql`${dailyScores.totalScore} DESC`);
 
-  return results as { username: string; score: number }[];
+  return results as unknown as { username: string; score: number; userId: string }[];
 }
 
 export async function getTodayDailyScore(userId: string, date: string): Promise<number | null> {

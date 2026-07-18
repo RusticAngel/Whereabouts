@@ -26,27 +26,30 @@ export function LeaderboardClient({ userId }: { userId: string }) {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      let data: { username: string; score: number; userId?: string }[] = [];
+      let data: { username: string; score: number; userId: string }[] = [];
 
       if (tab === 'daily') {
         const today = new Date().toISOString().split('T')[0];
         const dailyData = await getDailyLeaderboard(today);
-        data = dailyData.map((d: { username: string; score: number }) => ({
+        data = dailyData.map((d) => ({
           username: d.username,
           score: d.score,
+          userId: d.userId,
         }));
       } else if (tab === 'campaign') {
         const campaignData = await getLeaderboardCampaign();
-        data = campaignData.map((d: { username: string; totalScore: number }) => ({
+        data = campaignData.map((d) => ({
           username: d.username,
           score: d.totalScore,
+          userId: d.userId,
         }));
       } else {
         const level = parseInt(levelInput) || 1;
         const levelData = await getLeaderboardLevel(level);
-        data = levelData.map((d: { username: string; totalScore: number }) => ({
+        data = levelData.map((d) => ({
           username: d.username,
           score: d.totalScore,
+          userId: d.userId,
         }));
       }
 
@@ -55,7 +58,7 @@ export function LeaderboardClient({ userId }: { userId: string }) {
           rank: i + 1,
           username: d.username ?? 'Anonymous',
           score: d.score,
-          isCurrentUser: false,
+          isCurrentUser: d.userId === userId,
         }))
       );
       setLoading(false);
@@ -97,7 +100,7 @@ export function LeaderboardClient({ userId }: { userId: string }) {
             <input
               type="number"
               min={1}
-              max={14}
+              max={28}
               value={levelInput}
               onChange={(e) => setLevelInput(e.target.value)}
               className="w-20 px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm text-center"

@@ -1,7 +1,7 @@
 # Trace — Session Memory
 
 ## Project
-Detective-style location deduction game. Players track a missing character (Cipher) across 28 global locations (14 real + 14 placeholder/locked) using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
+Detective-style location deduction game. Players track a missing character (Cipher) across 28 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
 
 ## Stack
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind v4)
@@ -255,11 +255,16 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Level-progression fix**: advanceLevel now uses INSERT ON CONFLICT (upsert) to auto-create profiles
 - **Keep-alive endpoint**: /api/keepalive for Vercel cold-start mitigation
 
+## 2026-07-18 (CaseFile 28 Levels + Demo + Landing Page Nav + DailyGame Fixes + Leaderboard)
+- **CaseFile arcs**: Added arcs 5-7 (Ghost Trail 15-18, Deep Cover 19-22, Final Trace 23-28) — ARCS constant updated
+- **CaseFile navigation**: Fixed from `/game/${level}` (UUID route crash) → `/game?level=N&replay=1`
+- **Game page searchParams**: `/game/page.tsx` now accepts `?level=N&replay=1` — loads specific level for replay without advancing player
+- **Auth-free demo**: New `/demo` route with `DemoGame` component — full game loop (Street View → Pin Map → Results) without signup. "Play Demo" button on landing page. Results show "Sign Up to Save Your Score" CTA.
+- **Landing page nav**: Added Case File and Leaderboard buttons (auth-gated) to hero and CTA sections
+- **DailyGame fixes**: Switched from flat `evidenceRevealed * 500` to scaled `evidenceCost()` matching campaign (200/400/600). Distance display uses `toLocaleString()` instead of `.toFixed(1)k`.
+- **Leaderboard fixes**: Level input max 14→28. All 3 leaderboard queries now return `userId` so client can mark current user rows with `isCurrentUser: true`.
+
 ## Next Moves
-- [ ] Source 14 new Mapillary image IDs and uncomment placeholder entries in seed.ts
-- [ ] Rename Vercel project from "whereabouts-navy" to "trace"
-- [ ] Update production capacitor.config.ts URL and rebuild APK for production
-- [ ] Debug Mapillary 503 → still-image issue (show "Mapillary unavailable" text)
+- [ ] Record video demo for judges (30-60 sec screen recording)
+- [ ] Replace static OnboardingModal with visual step-through walkthrough
 - [ ] Debug 2 console errors on first load
-- [ ] Add `applicationId` to android/build.gradle and run `npx cap sync` to finalize rename
-- [ ] Build admin tool for adding new locations
