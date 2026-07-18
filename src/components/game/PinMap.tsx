@@ -42,10 +42,12 @@ export default function PinMap({ onPinPlaced, disabled, initialLat, initialLng, 
       center: [20, 0],
       zoom,
       zoomControl: true,
-      attributionControl: false,
+      attributionControl: true,
     });
 
-    const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    const tileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom',
+    }).addTo(map);
 
     let tileLoaded = false;
     let tileTimeout: ReturnType<typeof setTimeout> | null = null;

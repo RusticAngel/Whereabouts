@@ -37,7 +37,7 @@ export default function StreetView({ imageId, className = '' }: StreetViewProps)
         imageId,
         component: {
           cover: false,
-          sequence: true,
+          sequence: false,
           direction: true,
           keyboard: true,
           cache: false,
@@ -61,17 +61,17 @@ export default function StreetView({ imageId, className = '' }: StreetViewProps)
                 accessToken,
                 container: containerRef.current,
                 imageId,
-                component: {
-                  cover: false,
-                  sequence: true,
-                  direction: true,
-                  keyboard: true,
-                  cache: false,
-                  bearing: false,
-                  attribution: false,
-                  zoom: true,
-                  pointer: true,
-                },
+              component: {
+                cover: false,
+                sequence: false,
+                direction: true,
+                keyboard: true,
+                cache: false,
+                bearing: false,
+                attribution: false,
+                zoom: true,
+                pointer: true,
+              },
               });
               viewerRef.current = viewer;
               initializedRef.current = true;
