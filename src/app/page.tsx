@@ -20,7 +20,7 @@ export default async function Home() {
             A shadow operative known only as <span className="text-white font-medium">Cipher</span> is on the move.
             Track them across the globe using Street View 360&deg; panoramas, sensory clues, and your own instincts.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 pt-4">
             <Link
               href="/demo"
               className="w-full sm:w-auto px-8 py-3 rounded-lg border border-yellow-400/50 text-yellow-400 font-semibold hover:bg-yellow-400/10 transition-colors"
@@ -28,26 +28,48 @@ export default async function Home() {
               Play Demo
             </Link>
             {user ? (
-              <Link
-                href="/game"
-                className="w-full sm:w-auto px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
-              >
-                Continue Investigation
-              </Link>
+              <>
+                <Link
+                  href="/game"
+                  className="w-full sm:w-auto px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
+                >
+                  Continue Investigation
+                </Link>
+                <Link
+                  href="/daily"
+                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
+                >
+                  Daily Challenge
+                </Link>
+                <Link
+                  href="/case-file"
+                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
+                >
+                  Case File
+                </Link>
+                <Link
+                  href="/leaderboard"
+                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
+                >
+                  Leaderboard
+                </Link>
+              </>
             ) : (
-              <Link
-                href="/auth"
-                className="w-full sm:w-auto px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
-              >
-                Start Tracking
-              </Link>
+              <>
+                <Link
+                  href="/auth"
+                  className="w-full sm:w-auto px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
+                >
+                  Start Tracking
+                </Link>
+                <Link
+                  href="/daily"
+                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
+                >
+                  Daily Challenge
+                </Link>
+              </>
             )}
-            <Link
-              href="/daily"
-              className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
-            >
-              Daily Challenge
-            </Link>
           </div>
         </div>
       </section>
@@ -139,24 +161,38 @@ export default async function Home() {
           <p className="text-gray-400">
             The trail goes cold with every passing day. Start your investigation now.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3">
             <Link
               href="/demo"
-              className="inline-block px-8 py-3 rounded-lg border border-yellow-400/50 text-yellow-400 font-semibold hover:bg-yellow-400/10 transition-colors"
+              className="w-full sm:w-auto px-8 py-3 rounded-lg border border-yellow-400/50 text-yellow-400 font-semibold hover:bg-yellow-400/10 transition-colors"
             >
               Play Demo
             </Link>
             {user ? (
-              <Link
-                href="/game"
-                className="inline-block px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
-              >
-                Continue Investigation
-              </Link>
+              <>
+                <Link
+                  href="/game"
+                  className="w-full sm:w-auto px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
+                >
+                  Continue Investigation
+                </Link>
+                <Link
+                  href="/case-file"
+                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
+                >
+                  Case File
+                </Link>
+                <Link
+                  href="/leaderboard"
+                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
+                >
+                  Leaderboard
+                </Link>
+              </>
             ) : (
               <Link
                 href="/auth"
-                className="inline-block px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
+                className="w-full sm:w-auto px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
               >
                 Start Tracking
               </Link>
