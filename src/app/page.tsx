@@ -11,7 +11,7 @@ export default async function Home() {
     <main className="flex flex-col min-h-dvh items-center justify-center p-4 sm:p-6 bg-black text-white">
       <div className="max-w-md w-full text-center space-y-8">
         <div className="space-y-2">
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight">Trace</h1>
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight">FindMe</h1>
           <p className="text-gray-400 text-lg">Track Cipher across the globe</p>
         </div>
 

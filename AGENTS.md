@@ -237,10 +237,14 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **AGENTS.md**: Updated Known Issues + session history
 
 ## Name Ideas (Pending)
-- **Trace Me** — leading candidate for future multiplayer rename (builds on existing "Trace" brand, signals Hide & Seek "find me")
-- Track Me, Where Am I, Tracked — also considered
+- **Find Me** — current chosen name (README created with this name)
+- Trace Me, Track Me, Where Am I, Tracked — previously considered
 
-## 2026-07-17 (Anti-Cheat + 360°-Only + Evidence Confirmation + Daily Nav + Prod Deploy Fix)
+## 2026-07-17 (FindMe Rename)
+- **Renamed project**: "Trace" → "FindMe" across 7 files (capacitor.config.ts, package.json, layout.tsx, page.tsx, strings.xml, build.gradle, AGENTS.md)
+- build.gradle applicationId and namespace updated from `com.whereabouts.app` to `com.findme.app`
+
+## 2026-07-18 (Anti-Cheat + 360°-Only + Evidence Confirmation + Daily Nav + Prod Deploy Fix + FindMe Rename)
 - **Anti-google redesign**: Rewrote all 14 briefings (no landmark names/proper nouns) and all 42 evidence items (sensory/atmospheric clues instead of google-able facts)
 - **5-min investigation timer**: Evidence collapses when expired, making googling impractical
 - **360° only**: Checked all 14 Mapillary images via API — replaced 6 flat images with 360° panoramas (NYC, London, Paris, Dublin, Madrid, Dubai)

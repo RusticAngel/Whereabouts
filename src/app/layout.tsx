@@ -19,7 +19,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Trace — Location Detective Game",
+  title: "FindMe — Location Detective Game",
   description: "Track Cipher across the globe in a narrative-driven location deduction game",
 };
 

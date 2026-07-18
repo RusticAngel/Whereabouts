@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Trace</string>
-    <string name="title_activity_main">Trace</string>
-    <string name="package_name">com.trace.app</string>
-    <string name="custom_url_scheme">com.trace.app</string>
+    <string name="app_name">FindMe</string>
+    <string name="title_activity_main">FindMe</string>
+    <string name="package_name">com.findme.app</string>
+    <string name="custom_url_scheme">com.findme.app</string>
 </resources>
