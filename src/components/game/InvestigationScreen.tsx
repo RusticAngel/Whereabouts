@@ -34,7 +34,7 @@ interface InvestigationScreenProps {
 
 export function InvestigationScreen({ location, userId, level, isReplay = false }: InvestigationScreenProps) {
   const router = useRouter();
-  const [phase, setPhase] = useState<'briefing' | 'onboarding' | 'investigating' | 'saving'>(() => {
+  const [phase, setPhase] = useState<'briefing' | 'onboarding' | 'exploring' | 'pinning' | 'saving'>(() => {
     if (level === 1 && typeof window !== 'undefined' && !localStorage.getItem('trace_onboarding_seen')) {
       return 'onboarding';
     }
@@ -55,7 +55,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
   const hasCoords = location.lat && location.lng;
 
   useEffect(() => {
-    if (phase === 'investigating' && !startedRef.current) {
+    if (phase === 'exploring' && !startedRef.current) {
       startedRef.current = true;
       trackEvent('game_started', { level });
     }
@@ -69,7 +69,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
   }, [pinLat, pinLng, level]);
 
   useEffect(() => {
-    if (phase !== 'investigating') return;
+    if (phase !== 'exploring') return;
     if (timeLeft <= 0) {
       setTimeUp(true);
       return;
@@ -147,7 +147,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
       <BriefingPanel
         briefing={location.briefing}
         level={level}
-        onBegin={() => setPhase('investigating')}
+        onBegin={() => setPhase('exploring')}
       />
     );
   }
@@ -173,19 +173,19 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
 
   const canSubmit = pinLat !== null && pinLng !== null;
 
-  return (
-    <div className="flex flex-col min-h-dvh bg-black text-white">
-      <div className="relative w-full aspect-[4/3] sm:aspect-video bg-gray-900 overflow-hidden">
+  if (phase === 'exploring') {
+    return (
+      <div className="relative h-dvh bg-black text-white overflow-hidden">
         {location.provider === 'mapillary' && location.mapillary_id ? (
-          <StreetView imageId={location.mapillary_id} />
+          <div className="absolute inset-0">
+            <StreetView imageId={location.mapillary_id} />
+          </div>
         ) : (
-          <div className="w-full h-full bg-gray-900" />
+          <div className="absolute inset-0 bg-gray-900" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-      </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
 
-      <div className="flex-1 flex flex-col p-4 max-w-lg mx-auto w-full gap-4">
-        <div className="flex items-center justify-between">
+        <div className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between">
           <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
             Case #{level} — Locate Cipher
             {isReplay && <span className="ml-2 text-gray-500">(Replay)</span>}
@@ -195,45 +195,69 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
           </div>
         </div>
 
-        {!timeUp && <EvidencePanel evidence={location.evidence} onReveal={handleReveal} />}
-        {timeUp && evidenceRevealed > 0 && (
-          <div className="text-xs text-gray-500 text-center py-2">
-            Investigation time expired — evidence is sealed.
-          </div>
-        )}
+        <div className="absolute bottom-0 left-0 right-0 p-4 pb-8 space-y-3">
+          {!timeUp && <EvidencePanel evidence={location.evidence} onReveal={handleReveal} />}
+          {timeUp && evidenceRevealed > 0 && (
+            <div className="text-xs text-gray-500 text-center py-2">
+              Investigation time expired — evidence is sealed.
+            </div>
+          )}
 
-        <div className="h-[300px] shrink-0 rounded-lg overflow-hidden border border-gray-700">
-          <PinMap
-            onPinPlaced={(lat, lng) => { setPinLat(lat); setPinLng(lng); }}
-            zoom={3}
-          />
+          <button
+            onClick={() => setPhase('pinning')}
+            className="w-full py-3 px-6 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors active:scale-[0.98]"
+          >
+            Ready to Pin
+          </button>
         </div>
-
-        {canSubmit && (
-          <HintPanel
-            pinLat={pinLat}
-            pinLng={pinLng}
-            targetLat={parseFloat(location.lat!)}
-            targetLng={parseFloat(location.lng!)}
-            hintsUsed={hintsCount}
-            confidence={confidence}
-            onHint={handleHint}
-          />
-        )}
-
-        {canSubmit && (
-          <ConfidenceSelector value={confidence} onChange={setConfidence} />
-        )}
-
-        <Button
-          onClick={handleSubmit}
-          disabled={!canSubmit}
-          fullWidth
-          variant="primary"
-        >
-          Submit Report
-        </Button>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (phase === 'pinning') {
+    return (
+      <div className="flex flex-col min-h-dvh bg-black text-white">
+        <div className="flex-1 flex flex-col p-4 max-w-lg mx-auto w-full gap-4">
+          <button
+            onClick={() => setPhase('exploring')}
+            className="self-start text-sm text-gray-400 hover:text-white transition-colors"
+          >
+            &larr; Back to Street View
+          </button>
+
+          <div className="flex-1 min-h-[300px] rounded-lg overflow-hidden border border-gray-700">
+            <PinMap
+              onPinPlaced={(lat, lng) => { setPinLat(lat); setPinLng(lng); }}
+              zoom={3}
+            />
+          </div>
+
+          {canSubmit && (
+            <HintPanel
+              pinLat={pinLat}
+              pinLng={pinLng}
+              targetLat={parseFloat(location.lat!)}
+              targetLng={parseFloat(location.lng!)}
+              hintsUsed={hintsCount}
+              confidence={confidence}
+              onHint={handleHint}
+            />
+          )}
+
+          {canSubmit && (
+            <ConfidenceSelector value={confidence} onChange={setConfidence} />
+          )}
+
+          <Button
+            onClick={handleSubmit}
+            disabled={!canSubmit}
+            fullWidth
+            variant="primary"
+          >
+            Submit Report
+          </Button>
+        </div>
+      </div>
+    );
+  }
 }
