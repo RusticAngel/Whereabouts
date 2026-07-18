@@ -47,8 +47,8 @@ export default function AuthPage() {
         }
         router.push('/');
       }
-    } catch {
-      setError('Something went wrong');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Something went wrong');
       setLoading(false);
     }
   };
@@ -95,6 +95,9 @@ export default function AuthPage() {
               required
               minLength={6}
             />
+            {mode === 'sign-up' && (
+              <p className="text-xs text-gray-500 mt-1">Use at least 8 characters with a mix of letters and numbers</p>
+            )}
           </div>
 
           {error && (
