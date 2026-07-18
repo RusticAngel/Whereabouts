@@ -15,6 +15,9 @@ const ARCS = [
   { label: 'The False Trail', levels: '5–8', start: 5, end: 8 },
   { label: 'The Network', levels: '9–12', start: 9, end: 12 },
   { label: 'The Hideout', levels: '13–14', start: 13, end: 14 },
+  { label: 'Ghost Trail', levels: '15–18', start: 15, end: 18 },
+  { label: 'Deep Cover', levels: '19–22', start: 19, end: 22 },
+  { label: 'Final Trace', levels: '23–28', start: 23, end: 28 },
 ];
 
 export function CaseFile({ entries, currentLevel }: CaseFileProps) {
@@ -53,7 +56,7 @@ export function CaseFile({ entries, currentLevel }: CaseFileProps) {
                 return (
                   <button
                     key={level}
-                    onClick={() => router.push(`/game/${level}`)}
+                    onClick={() => router.push(`/game?level=${level}&replay=1`)}
                     disabled={!unlocked}
                     className={`rounded-lg p-3 text-center transition-all ${
                       !unlocked

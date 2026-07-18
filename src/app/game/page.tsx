@@ -11,7 +11,9 @@ export const dynamic = 'force-dynamic';
 const TOTAL_LEVELS = 28;
 const REAL_LEVELS = 28;
 
-export default async function NewGamePage() {
+export default async function NewGamePage({ searchParams }: { searchParams: Promise<{ level?: string; replay?: string }> }) {
+  const { level: levelParam, replay } = await searchParams;
+
   const { data: session } = await auth.getSession();
   if (!session?.user) redirect('/auth');
 
@@ -21,7 +23,7 @@ export default async function NewGamePage() {
     .where(eq(profiles.id, session.user.id))
     .limit(1);
 
-  const level = profile?.currentLevel ?? 1;
+  const level = levelParam ? parseInt(levelParam, 10) : (profile?.currentLevel ?? 1);
 
   if (level > TOTAL_LEVELS) {
     return (
@@ -96,6 +98,7 @@ export default async function NewGamePage() {
       location={locationData}
       userId={session.user.id}
       level={level}
+      isReplay={replay === '1'}
     />
   );
 }
