@@ -64,7 +64,7 @@ export default function ResultsMap({ guessLat, guessLng, actualLat, actualLng, d
       const midLng = (points[0][1] + points[1][1]) / 2;
       const label = L.divIcon({
         className: 'distance-label map-distance-label',
-        html: `<div class="map-distance-label" style="background:#1f2937;color:#facc15;padding:2px 8px;border-radius:8px;font-size:12px;font-family:monospace;white-space:nowrap;border:1px solid #374151">${distanceKm >= 1000 ? `${(distanceKm / 1000).toFixed(1)}k` : distanceKm} km</div>`,
+        html: `<div class="map-distance-label" style="background:#1f2937;color:#facc15;padding:2px 8px;border-radius:8px;font-size:12px;font-family:monospace;white-space:nowrap;border:1px solid #374151">${distanceKm.toLocaleString()} km</div>`,
         iconSize: [0, 0],
         iconAnchor: [0, 0],
       });

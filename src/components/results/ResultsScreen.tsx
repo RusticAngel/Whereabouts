@@ -147,7 +147,7 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
         {data.distanceKm !== null && (
           <div className="text-center mb-6">
             <p className="text-3xl sm:text-4xl font-bold text-white">
-              You were <span className="text-yellow-400">{data.distanceKm >= 1000 ? `${(data.distanceKm / 1000).toFixed(1)}k` : data.distanceKm} km</span> away
+              You were <span className="text-yellow-400">{data.distanceKm.toLocaleString()} km</span> away
             </p>
           </div>
         )}
@@ -167,7 +167,7 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
                 <div className="flex justify-between text-sm">
                   <span>Distance</span>
                   <span className="text-white font-mono">
-                    {data.distanceKm >= 1000 ? `${(data.distanceKm / 1000).toFixed(1)}k` : data.distanceKm} km
+                    {data.distanceKm.toLocaleString()} km
                   </span>
                 </div>
               )}
