@@ -16,12 +16,9 @@ const CONFIDENCE_PENALTY: Record<Confidence, number> = {
 const HIGH_CONFIDENCE_THRESHOLD_KM = 100;
 
 export function calculatePinScore(distanceKm: number): number {
-  if (distanceKm < 1) return 5000;
-  if (distanceKm < 10) return 4000;
-  if (distanceKm < 50) return 3000;
-  if (distanceKm < 200) return 2000;
-  if (distanceKm < 1000) return 1000;
-  return 0;
+  if (distanceKm <= 10) return 5000;
+  if (distanceKm > 10010) return 0;
+  return Math.round(5000 - (distanceKm - 10) * 0.5);
 }
 
 export function calculateFinalScore(
