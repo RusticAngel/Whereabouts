@@ -216,22 +216,26 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
 
   if (phase === 'pinning') {
     return (
-      <div className="flex flex-col min-h-dvh bg-black text-white">
-        <div className="flex-1 flex flex-col p-4 max-w-lg mx-auto w-full gap-4">
+      <div className="h-dvh bg-black text-white flex flex-col">
+        <div className="shrink-0 px-4 pt-4 max-w-lg mx-auto w-full">
           <button
             onClick={() => setPhase('exploring')}
-            className="self-start text-sm text-gray-400 hover:text-white transition-colors"
+            className="text-sm text-gray-400 hover:text-white transition-colors"
           >
             &larr; Back to Street View
           </button>
+        </div>
 
-          <div className="flex-1 min-h-[300px] rounded-lg overflow-hidden border border-gray-700">
+        <div className="flex-1 min-h-0 px-4 max-w-lg mx-auto w-full">
+          <div className="h-full rounded-lg overflow-hidden border border-gray-700">
             <PinMap
               onPinPlaced={(lat, lng) => { setPinLat(lat); setPinLng(lng); }}
               zoom={3}
             />
           </div>
+        </div>
 
+        <div className="shrink-0 px-4 pb-4 max-w-lg mx-auto w-full space-y-3">
           {canSubmit && (
             <HintPanel
               pinLat={pinLat}

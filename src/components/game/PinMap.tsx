@@ -88,11 +88,14 @@ export default function PinMap({ onPinPlaced, disabled, initialLat, initialLng, 
     mapRef.current = map;
     setInitializing(false);
 
-    const doInvalidate = () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!disposed) map.invalidateSize();
+      });
+    });
+    const ro = new ResizeObserver(() => {
       if (!disposed) map.invalidateSize();
-    };
-    requestAnimationFrame(doInvalidate);
-    const ro = new ResizeObserver(() => doInvalidate);
+    });
     ro.observe(container);
 
     return () => {
