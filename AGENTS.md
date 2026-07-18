@@ -236,6 +236,21 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **StreetView**: Retry interval 2s → 5s; replaced silent `bg-gray-900` with visible "Street View unavailable" text + loading spinner during retry
 - **AGENTS.md**: Updated Known Issues + session history
 
+## Name Ideas (Pending)
+- **Trace Me** — leading candidate for future multiplayer rename (builds on existing "Trace" brand, signals Hide & Seek "find me")
+- Track Me, Where Am I, Tracked — also considered
+
+## 2026-07-17 (Anti-Cheat + 360°-Only + Evidence Confirmation + Daily Nav + Prod Deploy Fix)
+- **Anti-google redesign**: Rewrote all 14 briefings (no landmark names/proper nouns) and all 42 evidence items (sensory/atmospheric clues instead of google-able facts)
+- **5-min investigation timer**: Evidence collapses when expired, making googling impractical
+- **360° only**: Checked all 14 Mapillary images via API — replaced 6 flat images with 360° panoramas (NYC, London, Paris, Dublin, Madrid, Dubai)
+- **is_pano schema**: Added column + migration + query filter — never serve non-360 images
+- **Evidence confirmation**: Two-tap pattern ("Tap again to confirm — -{N} pts"), auto-resets after 3s
+- **DailyGame navigation**: Added "Continue Investigation" and "Leaderboard" buttons to results + already-played screen
+- **Production fixes**: proxy.ts RequestInit TS error, android/ tsconfig exclusion, 4 env vars set in Vercel dashboard
+- **Level-progression fix**: advanceLevel now uses INSERT ON CONFLICT (upsert) to auto-create profiles
+- **Keep-alive endpoint**: /api/keepalive for Vercel cold-start mitigation
+
 ## Next Moves
 - [ ] Source 14 new Mapillary image IDs and uncomment placeholder entries in seed.ts
 - [ ] Rename Vercel project from "whereabouts-navy" to "trace"

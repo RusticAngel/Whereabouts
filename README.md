@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Find Me
 
-## Getting Started
+Find Me is a location-based exploration game where an AI (Cipher) hides somewhere in the real world, and players must track it down using clues and intuition.
 
-First, run the development server:
+## How it works
+- Players are shown a location
+- They explore and make guesses
+- The system evaluates distance and accuracy
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## AI Usage
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+AI was used in the design and development of this project, including:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Generating gameplay logic and structure
+- Creating dynamic hint systems
+- Designing Cipher as an interactive guide
+- Producing pre-generated hints and feedback
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Due to resource constraints, real-time API calls are limited, but the system is built to support live AI interactions in future updates.
 
-## Learn More
+## Tech Stack
+- TypeScript
+- React Native
+- Mapillary
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Future Plans
+- Real-time AI-generated hints
+- Multiplayer mode (players hide, others search)
+- Expanded locations and difficulty scaling
