@@ -107,7 +107,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
     const actualLat = parseFloat(location.lat!);
     const actualLng = parseFloat(location.lng!);
     const distanceKm = Math.round(calculateDistance(pinLat, pinLng, actualLat, actualLng));
-    const pinScore = calculateFinalScore(distanceKm, evidenceRevealed, confidence);
+    const pinScore = Math.round(calculateFinalScore(distanceKm, evidenceRevealed, confidence) * (isReplay ? 0.5 : 1));
 
     trackEvent('report_submitted', { level, distance: distanceKm, score: pinScore, confidence, evidenceUsed: evidenceRevealed, evidenceCount: evidenceRevealed });
 
@@ -187,14 +187,21 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
 
-        <div className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between">
-          <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
-            Case #{level} — Locate Cipher
-            {isReplay && <span className="ml-2 text-gray-500">(Replay)</span>}
+        <div className="absolute top-0 left-0 right-0 p-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
+              Case #{level} — Locate Cipher
+              {isReplay && <span className="ml-2 text-gray-500">(Replay)</span>}
+            </div>
+            <div className={`text-xs font-mono tabular-nums ${timeUp ? 'text-red-400' : timeLeft <= 60 ? 'text-yellow-400' : 'text-gray-500'}`}>
+              {timeUp ? 'EXPIRED' : `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}
+            </div>
           </div>
-          <div className={`text-xs font-mono tabular-nums ${timeUp ? 'text-red-400' : timeLeft <= 60 ? 'text-yellow-400' : 'text-gray-500'}`}>
-            {timeUp ? 'EXPIRED' : `${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}
-          </div>
+          {isReplay && (
+            <div className="text-xs text-yellow-400/80 text-center py-1.5 px-3 bg-yellow-400/10 rounded-lg border border-yellow-400/20">
+              Replay mode — score halved (50% penalty). Best score for this level will be replaced.
+            </div>
+          )}
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 pb-8 space-y-3">
