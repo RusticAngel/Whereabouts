@@ -12,12 +12,12 @@ export default async function Home() {
       {/* ── Hero ── */}
       <section className="flex flex-col min-h-dvh items-center justify-center p-6 sm:p-8 bg-black text-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(ellipse_at_center,_white_0%,_transparent_70%)]" />
-        <div className="max-w-2xl mx-auto space-y-6 relative z-10">
+        <div className="max-w-2xl mx-auto space-y-6 relative z-10 animate-fade-in">
           <h1 className="text-5xl sm:text-7xl font-bold tracking-tight">
             Find<span className="text-yellow-400">Me</span>
           </h1>
           <p className="text-gray-400 text-lg sm:text-xl max-w-md mx-auto leading-relaxed">
-            A shadow operative known only as <span className="text-white font-medium">Cipher</span> is on the move.
+            A shadow operative known only as <span className="text-white font-medium animate-glow-pulse">Cipher</span> is on the move.
             Track them across the globe using Street View 360&deg; panoramas, sensory clues, and your own instincts.
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 pt-4">
