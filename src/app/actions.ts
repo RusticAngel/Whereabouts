@@ -129,12 +129,18 @@ export async function getCampaignScores(userId: string): Promise<CaseFileEntry[]
 export async function advanceLevel(userId: string): Promise<number> {
   const maxLevel = await getMaxLevel();
 
+  const { data: session } = await auth.getSession();
+  const userName = session?.user?.name ?? null;
+
   const [result] = await db
     .insert(profiles)
-    .values({ id: userId, currentLevel: 2 })
+    .values({ id: userId, currentLevel: 2, username: userName })
     .onConflictDoUpdate({
       target: profiles.id,
-      set: { currentLevel: sql`LEAST(${profiles.currentLevel} + 1, ${maxLevel})` },
+      set: {
+        currentLevel: sql`LEAST(${profiles.currentLevel} + 1, ${maxLevel})`,
+        ...(userName ? { username: userName } : {}),
+      },
     })
     .returning({ currentLevel: profiles.currentLevel });
 

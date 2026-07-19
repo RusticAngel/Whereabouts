@@ -63,7 +63,8 @@ export default function AuthPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'sign-up' && (
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Name</label>
+              <label className="block text-sm text-gray-400 mb-1">Nickname</label>
+              <p className="text-xs text-gray-500 mb-2">This is how you'll appear on the leaderboard</p>
               <input
                 type="text"
                 value={name}
