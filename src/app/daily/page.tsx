@@ -32,7 +32,7 @@ export default async function DailyPage() {
   const allImages = await db
     .select()
     .from(images)
-    .where(eq(images.provider, 'mapillary'));
+    .where(and(eq(images.provider, 'mapillary'), eq(images.isPano, true)));
 
   if (allImages.length === 0) {
     return (
