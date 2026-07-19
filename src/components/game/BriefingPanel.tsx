@@ -10,7 +10,7 @@ interface BriefingPanelProps {
 
 export function BriefingPanel({ briefing, level, onBegin }: BriefingPanelProps) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-dvh bg-black text-white p-6">
+    <div className="flex flex-col items-center justify-center min-h-dvh bg-black text-white p-6 animate-fade-in">
       <div className="max-w-md mx-auto text-center space-y-6">
         <div className="text-sm text-yellow-400 font-mono uppercase tracking-widest">
           Case File #{level}

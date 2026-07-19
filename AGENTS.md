@@ -255,6 +255,13 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Level-progression fix**: advanceLevel now uses INSERT ON CONFLICT (upsert) to auto-create profiles
 - **Keep-alive endpoint**: /api/keepalive for Vercel cold-start mitigation
 
+## 2026-07-18 (Polishing — Transitions + Skeleton + Timer + Quick-Start + Leaderboard Username Fix)
+- **Phase transitions**: Added `animate-fade-in` (existing globals.css keyframe) to BriefingPanel, Explore phase, Pin phase, ResultsScreen, DemoGame, and DailyGame for smooth fade-in between game stages
+- **Map loading skeleton**: Replaced bare "Loading map…" text with `animate-pulse` div + spinner skeleton in PinMap + dynamic import fallback
+- **Timer expiry clarity**: Timeout message now always visible (not gated on `evidenceRevealed > 0`), styled with yellow border/background for prominence
+- **Quick-start returning players**: Players who have seen onboarding (`trace_onboarding_seen` in localStorage) now skip briefing and land directly in Explore phase
+- **Leaderboard null username fix**: Removed `if (!row.username) continue;` from campaign + level queries so players without a username (profile created by advanceLevel) appear as "Anonymous" instead of being silently excluded
+
 ## 2026-07-18 (CaseFile 28 Levels + Demo + Landing Page Nav + DailyGame Fixes + Leaderboard)
 - **CaseFile arcs**: Added arcs 5-7 (Ghost Trail 15-18, Deep Cover 19-22, Final Trace 23-28) — ARCS constant updated
 - **CaseFile navigation**: Fixed from `/game/${level}` (UUID route crash) → `/game?level=N&replay=1`

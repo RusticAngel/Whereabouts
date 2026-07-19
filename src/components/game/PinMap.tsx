@@ -144,8 +144,9 @@ export default function PinMap({ onPinPlaced, disabled, initialLat, initialLng, 
       <div ref={containerRef} className="w-full h-full rounded-lg overflow-hidden" />
 
       {initializing && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg z-10">
-          <p className="text-gray-400 text-sm">Loading map…</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-800 rounded-lg z-10 gap-3 animate-pulse">
+          <div className="w-12 h-12 rounded-full border-2 border-gray-600 border-t-gray-400 animate-spin" />
+          <div className="h-3 w-24 rounded bg-gray-700" />
         </div>
       )}
 

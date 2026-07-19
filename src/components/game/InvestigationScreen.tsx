@@ -22,7 +22,7 @@ const StreetView = dynamic(() => import('./StreetView'), {
 
 const PinMap = dynamic(() => import('./PinMap'), {
   ssr: false,
-  loading: () => <div className="w-full h-full bg-gray-800 flex items-center justify-center"><p className="text-gray-500">Loading map…</p></div>,
+  loading: () => <div className="w-full h-full bg-gray-800 flex items-center justify-center animate-pulse"><div className="w-10 h-10 rounded-full border-2 border-gray-600 border-t-gray-400 animate-spin" /></div>,
 });
 
 interface InvestigationScreenProps {
@@ -35,8 +35,10 @@ interface InvestigationScreenProps {
 export function InvestigationScreen({ location, userId, level, isReplay = false }: InvestigationScreenProps) {
   const router = useRouter();
   const [phase, setPhase] = useState<'briefing' | 'onboarding' | 'exploring' | 'pinning' | 'saving'>(() => {
-    if (level === 1 && typeof window !== 'undefined' && !localStorage.getItem('trace_onboarding_seen')) {
-      return 'onboarding';
+    if (typeof window !== 'undefined') {
+      const onboardingSeen = localStorage.getItem('trace_onboarding_seen');
+      if (!onboardingSeen && level === 1) return 'onboarding';
+      if (onboardingSeen) return 'exploring';
     }
     return 'briefing';
   });
@@ -175,7 +177,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
 
   if (phase === 'exploring') {
     return (
-      <div className="relative h-dvh bg-black text-white overflow-hidden">
+      <div className="relative h-dvh bg-black text-white overflow-hidden animate-fade-in">
         {location.provider === 'mapillary' && location.mapillary_id ? (
           <div className="absolute inset-0">
             <StreetView imageId={location.mapillary_id} />
@@ -197,8 +199,8 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
 
         <div className="absolute bottom-0 left-0 right-0 p-4 pb-8 space-y-3">
           {!timeUp && <EvidencePanel evidence={location.evidence} onReveal={handleReveal} />}
-          {timeUp && evidenceRevealed > 0 && (
-            <div className="text-xs text-gray-500 text-center py-2">
+          {timeUp && (
+            <div className="text-xs text-yellow-400 text-center py-2 px-3 bg-yellow-400/10 rounded-lg border border-yellow-400/20 font-medium">
               Investigation time expired — evidence is sealed.
             </div>
           )}
@@ -216,7 +218,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
 
   if (phase === 'pinning') {
     return (
-      <div className="h-dvh bg-black text-white flex flex-col">
+      <div className="h-dvh bg-black text-white flex flex-col animate-fade-in">
         <div className="shrink-0 px-4 pt-4 max-w-lg mx-auto w-full">
           <button
             onClick={() => setPhase('exploring')}

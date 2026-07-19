@@ -96,7 +96,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
     const confidenceLabel = confidence.charAt(0).toUpperCase() + confidence.slice(1);
 
     return (
-      <div className="flex flex-col min-h-dvh bg-black text-white p-4">
+      <div className="flex flex-col min-h-dvh bg-black text-white p-4 animate-fade-in">
         <div className="max-w-lg mx-auto w-full space-y-6">
           <div className="text-center">
             <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest mb-1">
@@ -202,7 +202,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
   const canSubmit = pinLat !== null && pinLng !== null;
 
   return (
-    <div className="flex flex-col min-h-dvh bg-black text-white">
+    <div className="flex flex-col min-h-dvh bg-black text-white animate-fade-in">
       <div className="relative w-full aspect-[4/3] sm:aspect-video bg-gray-900 overflow-hidden">
         {location.provider === 'mapillary' && location.mapillary_id ? (
           <StreetView imageId={location.mapillary_id} />

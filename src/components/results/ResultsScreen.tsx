@@ -120,7 +120,7 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
   const isHighWrong = data.confidence === 'high' && (data.distanceKm ?? 9999) >= 100;
 
   return (
-    <div className="flex flex-col min-h-dvh bg-black text-white">
+    <div className="flex flex-col min-h-dvh bg-black text-white animate-fade-in">
       <div className="relative w-full aspect-[4/3] sm:aspect-video bg-gray-900 overflow-hidden">
         {data.provider === 'mapillary' && data.mapillaryId ? (
           <StreetView imageId={data.mapillaryId} />
