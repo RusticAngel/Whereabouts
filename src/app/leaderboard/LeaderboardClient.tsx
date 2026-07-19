@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { getDailyLeaderboard, getLeaderboardCampaign, getLeaderboardLevel } from '@/app/actions';
+import { getDailyLeaderboard, getLeaderboardCampaign, getLeaderboardLevel, updateNickname } from '@/app/actions';
 import { Button } from '@/components/ui/Button';
 
 type Tab = 'daily' | 'campaign' | 'level';
@@ -14,12 +14,23 @@ interface Entry {
   isCurrentUser: boolean;
 }
 
-export function LeaderboardClient({ userId }: { userId: string }) {
+export function LeaderboardClient({ userId, currentNickname }: { userId: string; currentNickname: string }) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('daily');
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
   const [levelInput, setLevelInput] = useState('1');
+  const [editing, setEditing] = useState(false);
+  const [nickname, setNickname] = useState(currentNickname);
+  const [saving, setSaving] = useState(false);
+
+  const handleSaveNickname = useCallback(async () => {
+    setSaving(true);
+    await updateNickname(userId, nickname);
+    setEditing(false);
+    setSaving(false);
+    setTab((t) => t); // trigger re-render
+  }, [userId, nickname]);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -130,9 +141,39 @@ export function LeaderboardClient({ userId }: { userId: string }) {
                     }`}>
                       {entry.rank}
                     </span>
-                    <span className="text-white">{entry.username}</span>
-                    {entry.isCurrentUser && (
-                      <span className="text-xs text-gray-500">(you)</span>
+                    {entry.isCurrentUser && editing ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          value={nickname}
+                          onChange={(e) => setNickname(e.target.value)}
+                          maxLength={30}
+                          className="w-28 px-2 py-1 text-sm bg-gray-800 border border-gray-600 rounded text-white placeholder-gray-500"
+                          autoFocus
+                        />
+                        <button
+                          onClick={handleSaveNickname}
+                          disabled={saving || !nickname.trim()}
+                          className="text-xs px-2 py-1 rounded bg-yellow-400 text-black font-medium hover:bg-yellow-300 disabled:opacity-50"
+                        >
+                          {saving ? '...' : 'Save'}
+                        </button>
+                        <button
+                          onClick={() => { setEditing(false); setNickname(currentNickname); }}
+                          className="text-xs text-gray-500 hover:text-white"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-white">{entry.username}</span>
+                    )}
+                    {entry.isCurrentUser && !editing && (
+                      <>
+                        <span className="text-xs text-gray-500">(you)</span>
+                        <button onClick={() => { setNickname(currentNickname); setEditing(true); }} className="text-xs text-gray-500 hover:text-white ml-1">
+                          Edit
+                        </button>
+                      </>
                     )}
                   </div>
                   <span className="text-white font-mono">{entry.score.toLocaleString()}</span>

@@ -139,7 +139,7 @@ export async function advanceLevel(userId: string): Promise<number> {
       target: profiles.id,
       set: {
         currentLevel: sql`LEAST(${profiles.currentLevel} + 1, ${maxLevel})`,
-        ...(userName ? { username: userName } : {}),
+        username: sql`COALESCE(${profiles.username}, ${userName})`,
       },
     })
     .returning({ currentLevel: profiles.currentLevel });
@@ -178,7 +178,7 @@ export async function getLeaderboardCampaign() {
     for (const score of levels.values()) {
       total += score;
     }
-    const username = results.find((r) => r.userId === userId)?.username ?? 'Unknown';
+    const username = results.find((r) => r.userId === userId)?.username ?? 'Anonymous';
     campaignTotals.push({ userId, username, totalScore: total });
   }
 
@@ -244,21 +244,12 @@ export async function upsertDailyScore(userId: string, date: string, totalScore:
     });
 }
 
-export async function syncProfileUsername(userId: string) {
-  const { data: session } = await auth.getSession();
-  const userName = session?.user?.name;
-  if (!userName) return;
+export async function updateNickname(userId: string, nickname: string) {
+  const trimmed = nickname.trim();
+  if (!trimmed || trimmed.length > 30) return;
 
-  const [profile] = await db
-    .select({ username: profiles.username })
-    .from(profiles)
-    .where(eq(profiles.id, userId))
-    .limit(1);
-
-  if (profile && !profile.username) {
-    await db
-      .update(profiles)
-      .set({ username: userName })
-      .where(eq(profiles.id, userId));
-  }
+  await db
+    .update(profiles)
+    .set({ username: trimmed })
+    .where(eq(profiles.id, userId));
 }
