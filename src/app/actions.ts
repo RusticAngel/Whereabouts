@@ -243,3 +243,22 @@ export async function upsertDailyScore(userId: string, date: string, totalScore:
       set: { totalScore: sql`GREATEST(${dailyScores.totalScore}, ${totalScore})` },
     });
 }
+
+export async function syncProfileUsername(userId: string) {
+  const { data: session } = await auth.getSession();
+  const userName = session?.user?.name;
+  if (!userName) return;
+
+  const [profile] = await db
+    .select({ username: profiles.username })
+    .from(profiles)
+    .where(eq(profiles.id, userId))
+    .limit(1);
+
+  if (profile && !profile.username) {
+    await db
+      .update(profiles)
+      .set({ username: userName })
+      .where(eq(profiles.id, userId));
+  }
+}
