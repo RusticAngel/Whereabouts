@@ -16,7 +16,7 @@ export default async function DemoPage() {
   if (!image) {
     return (
       <div className="min-h-dvh bg-black text-white flex flex-col items-center justify-center p-6 gap-4">
-        <p className="text-gray-400">Demo unavailable.</p>
+        <p className="text-gray-400">Tutorial unavailable.</p>
         <a href="/" className="text-sm text-gray-500 hover:text-white transition-colors">Back to Home</a>
       </div>
     );

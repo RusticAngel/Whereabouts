@@ -52,3 +52,6 @@ next-env.d.ts
 
 # Secrets
 Neon.txt
+
+# opencode plans (not committed)
+.opencode/plans/*.md

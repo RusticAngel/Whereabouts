@@ -82,7 +82,7 @@ export function DemoGame({ location }: DemoGameProps) {
         <div className="max-w-lg mx-auto w-full space-y-6">
           <div className="text-center">
             <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest mb-1">
-              Demo Investigation
+              Tutorial Report
             </div>
             <h1 className="text-2xl font-bold">Report Filed</h1>
             <p className="text-sm text-gray-500 mt-1">Score not saved — create an account to track your progress</p>
@@ -212,7 +212,7 @@ export function DemoGame({ location }: DemoGameProps) {
               &larr; Back to Street View
             </button>
             <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
-              Demo
+              Tutorial
             </div>
           </div>
         </div>
@@ -305,7 +305,7 @@ export function DemoGame({ location }: DemoGameProps) {
             &larr; Home
           </button>
           <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
-            Demo
+            Tutorial
           </div>
         </div>
       </div>

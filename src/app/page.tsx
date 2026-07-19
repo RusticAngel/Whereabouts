@@ -25,7 +25,7 @@ export default async function Home() {
               href="/demo"
               className="w-full sm:w-auto px-8 py-3 rounded-lg border border-yellow-400/50 text-yellow-400 font-semibold hover:bg-yellow-400/10 transition-colors"
             >
-              Play Demo
+              Play Tutorial
             </Link>
             {user ? (
               <>
@@ -166,7 +166,7 @@ export default async function Home() {
               href="/demo"
               className="w-full sm:w-auto px-8 py-3 rounded-lg border border-yellow-400/50 text-yellow-400 font-semibold hover:bg-yellow-400/10 transition-colors"
             >
-              Play Demo
+              Play Tutorial
             </Link>
             {user ? (
               <>

@@ -279,7 +279,15 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Home navigation audit**: Added `Back to Home` / `← Home` buttons to all pages and phases — auth page, BriefingPanel, InvestigationScreen (explore/pin/save-failed), ResultsScreen, CaseFile, game/page.tsx (Case Closed + New Intel), daily/demo error states, all pin phases.
 - **Vercel env var**: Confirmed DATABASE_URL is already updated (all changes working live). Removed stale note.
 
+## 2026-07-19 (Demo Tutorial + Privacy Page + Play Tutorial Rename + Error Fixes)
+- **Demo tutorial**: Created `CoachMark.tsx` overlay component with 6 guided steps (3 explore, 3 pin), gated by sessionStorage. Added `HintPanel` to DemoGame pin phase (was missing). Added collapsible "How Scoring Works" card to results.
+- **Privacy page**: Created `/privacy` route with privacy policy covering data collection, storage, third parties, retention, and contact. Linked from landing page footer.
+- **"Play Demo" → "Play Tutorial"**: Renamed buttons, badges, and results title across landing page and DemoGame component. Route stays `/demo`.
+- **Leaflet icon 404 fix**: Added `L.Icon.Default.mergeOptions` with CDN URLs to PinMap.tsx and ResultsMap.tsx (default marker icons triggered 404s in Next.js even though divIcons were used).
+- **Daily isPano filter**: Fixed `daily/page.tsx` query to filter by `isPano: true` (was returning all Mapillary images regardless of panorama status).
+- **Pro/referral system designed**: Free tier (3-5 plays/day), Pro at $1.99/mo (unlimited), referral rewards (5+3 days), 3-day free trial. See `.opencode/plans/pro-referral.md` for full spec. Not yet implemented.
+
 ## Next Moves
 - [ ] Record video demo for judges (30-60 sec screen recording)
 - [ ] Replace non-360 Mapillary images for levels 17-19, 22, 25-27
-- [ ] Debug 2 console errors on first load
+- [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md`)
