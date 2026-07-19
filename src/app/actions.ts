@@ -155,7 +155,6 @@ export async function getLeaderboardCampaign() {
   const bestPerUserLevel = new Map<string, Map<number, number>>();
 
   for (const row of results) {
-    if (!row.username) continue;
     if (!bestPerUserLevel.has(row.userId)) {
       bestPerUserLevel.set(row.userId, new Map());
     }
@@ -195,10 +194,9 @@ export async function getLeaderboardLevel(level: number) {
   const bestPerUser = new Map<string, { userId: string; username: string; totalScore: number }>();
 
   for (const row of results) {
-    if (!row.username) continue;
-    const existing = bestPerUser.get(row.username);
+    const existing = bestPerUser.get(row.userId);
     if (!existing || row.totalScore > existing.totalScore) {
-      bestPerUser.set(row.username, { userId: row.userId, username: row.username, totalScore: row.totalScore });
+      bestPerUser.set(row.userId, { userId: row.userId, username: row.username ?? 'Anonymous', totalScore: row.totalScore });
     }
   }
 
