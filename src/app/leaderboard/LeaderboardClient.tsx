@@ -75,7 +75,9 @@ export function LeaderboardClient({ userId }: { userId: string }) {
     <div className="flex flex-col min-h-dvh bg-black text-white">
       <div className="p-4 max-w-lg mx-auto w-full flex-1 space-y-4">
         <div className="flex items-center justify-between">
+          <button onClick={() => router.push('/')} className="text-sm text-gray-400 hover:text-white transition-colors">&larr; Home</button>
           <h1 className="text-2xl font-bold">Leaderboard</h1>
+          <div className="w-12" />
         </div>
 
         <div className="flex gap-2">
@@ -148,6 +150,9 @@ export function LeaderboardClient({ userId }: { userId: string }) {
             Case File
           </Button>
         </div>
+        <button onClick={() => router.push('/')} className="w-full py-2.5 rounded-lg border border-gray-700 text-gray-400 font-medium text-sm hover:text-white hover:border-gray-500 transition-colors">
+          Back to Home
+        </button>
       </div>
     </div>
   );
