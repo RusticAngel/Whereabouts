@@ -20,7 +20,7 @@ const StreetView = dynamic(() => import('@/components/game/StreetView'), {
 
 const PinMap = dynamic(() => import('@/components/game/PinMap'), {
   ssr: false,
-  loading: () => <div className="w-full h-full bg-gray-800 flex items-center justify-center"><p className="text-gray-500">Loading map…</p></div>,
+  loading: () => <div className="w-full h-full bg-gray-800 flex items-center justify-center animate-pulse"><div className="w-10 h-10 rounded-full border-2 border-gray-600 border-t-gray-400 animate-spin" /></div>,
 });
 
 const ResultsMap = dynamic(() => import('@/components/results/ResultsMap'), {
@@ -37,7 +37,7 @@ interface DailyGameProps {
 
 export function DailyGame({ location, userId, date, existingScore }: DailyGameProps) {
   const router = useRouter();
-  const [phase, setPhase] = useState<'investigating' | 'results'>('investigating');
+  const [phase, setPhase] = useState<'exploring' | 'pinning' | 'results'>('exploring');
   const [pinLat, setPinLat] = useState<number | null>(null);
   const [pinLng, setPinLng] = useState<number | null>(null);
   const [evidenceRevealed, setEvidenceRevealed] = useState(0);
@@ -87,6 +87,15 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
     setSaving(false);
     savingRef.current = false;
   }, [pinLat, pinLng, evidenceRevealed, confidence, location.lat, location.lng, location.id, userId, date, hasCoords, existingScore]);
+
+  if (saving) {
+    return (
+      <div className="flex flex-col min-h-dvh bg-black text-white items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-yellow-400 border-t-transparent rounded-full mb-4" />
+        <p className="text-gray-400 text-sm">Filing report…</p>
+      </div>
+    );
+  }
 
   if (phase === 'results' && result) {
     const evidenceDeduction = evidenceCost(evidenceRevealed);
@@ -168,6 +177,9 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
           <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
             Leaderboard
           </Button>
+          <Button fullWidth variant="ghost" onClick={() => router.push('/')}>
+            Back to Home
+          </Button>
         </div>
       </div>
     );
@@ -175,7 +187,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
 
   if (existingScore !== null) {
     return (
-      <div className="flex flex-col min-h-dvh bg-black text-white items-center justify-center p-4">
+      <div className="flex flex-col min-h-dvh bg-black text-white items-center justify-center p-4 animate-fade-in">
         <p className="text-gray-400 text-center">You already filed a report for today&apos;s sighting.</p>
         <p className="text-yellow-400 font-mono text-lg mt-2">Score: {existingScore.toLocaleString()}</p>
         <div className="flex flex-col gap-3 mt-6 w-full max-w-xs">
@@ -185,59 +197,101 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
           <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
             Leaderboard
           </Button>
+          <Button fullWidth variant="ghost" onClick={() => router.push('/')}>
+            Back to Home
+          </Button>
         </div>
-      </div>
-    );
-  }
-
-  if (saving) {
-    return (
-      <div className="flex flex-col min-h-dvh bg-black text-white items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-yellow-400 border-t-transparent rounded-full mb-4" />
-        <p className="text-gray-400 text-sm">Filing report…</p>
       </div>
     );
   }
 
   const canSubmit = pinLat !== null && pinLng !== null;
 
+  if (phase === 'pinning') {
+    return (
+      <div className="h-dvh bg-black text-white flex flex-col animate-fade-in">
+        <div className="shrink-0 px-4 pt-4 max-w-lg mx-auto w-full">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setPhase('exploring')}
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              &larr; Back to Street View
+            </button>
+            <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
+              Daily — {date}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 min-h-0 px-4 max-w-lg mx-auto w-full mt-2">
+          <div className="h-full rounded-lg overflow-hidden border border-gray-700">
+            <PinMap
+              onPinPlaced={(lat, lng) => { setPinLat(lat); setPinLng(lng); }}
+              zoom={3}
+            />
+          </div>
+        </div>
+
+        <div className="shrink-0 px-4 pb-8 max-w-lg mx-auto w-full space-y-3 mt-3">
+          {canSubmit && (
+            <ConfidenceSelector value={confidence} onChange={setConfidence} />
+          )}
+
+          <Button
+            onClick={handleSubmit}
+            disabled={!canSubmit}
+            fullWidth
+            variant="primary"
+          >
+            Submit Report
+          </Button>
+
+          <button
+            onClick={() => router.push('/')}
+            className="w-full text-sm text-gray-500 hover:text-white transition-colors text-center"
+          >
+            Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col min-h-dvh bg-black text-white animate-fade-in">
-      <div className="relative w-full aspect-[4/3] sm:aspect-video bg-gray-900 overflow-hidden">
-        {location.provider === 'mapillary' && location.mapillary_id ? (
+    <div className="relative h-dvh bg-black text-white overflow-hidden animate-fade-in">
+      {location.provider === 'mapillary' && location.mapillary_id ? (
+        <div className="absolute inset-0">
           <StreetView imageId={location.mapillary_id} />
-        ) : (
-          <div className="w-full h-full bg-gray-900" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+        </div>
+      ) : (
+        <div className="absolute inset-0 bg-gray-900" />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
+
+      <div className="absolute top-0 left-0 right-0 p-4">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.push('/')}
+            className="text-xs text-gray-400 hover:text-white transition-colors"
+          >
+            &larr; Home
+          </button>
+          <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
+            Daily Cipher Sighting — {date}
+          </div>
+        </div>
       </div>
 
-      <div className="flex-1 flex flex-col p-4 max-w-lg mx-auto w-full gap-4">
-        <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
-          Daily Cipher Sighting — {date}
-        </div>
-
+      <div className="absolute bottom-0 left-0 right-0 p-4 pb-8 space-y-3">
         <EvidencePanel evidence={location.evidence} onReveal={setEvidenceRevealed} />
 
-        <div className="h-[300px] shrink-0 rounded-lg overflow-hidden border border-gray-700">
-          <PinMap
-            onPinPlaced={(lat, lng) => { setPinLat(lat); setPinLng(lng); }}
-            zoom={3}
-          />
-        </div>
-
-        {canSubmit && (
-          <ConfidenceSelector value={confidence} onChange={setConfidence} />
-        )}
-
-        <Button
-          onClick={handleSubmit}
-          disabled={!canSubmit}
-          fullWidth
-          variant="primary"
+        <button
+          onClick={() => setPhase('pinning')}
+          className="w-full py-3 px-6 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors active:scale-[0.98]"
         >
-          Submit Report
-        </Button>
+          Ready to Pin
+        </button>
       </div>
     </div>
   );

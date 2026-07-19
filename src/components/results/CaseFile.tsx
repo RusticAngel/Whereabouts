@@ -81,12 +81,15 @@ export function CaseFile({ entries, currentLevel }: CaseFileProps) {
         );
       })}
 
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-3">
         <Button fullWidth variant="primary" onClick={() => router.push('/game')}>
           Continue Investigation
         </Button>
         <Button fullWidth variant="secondary" onClick={() => router.push('/leaderboard')}>
           Leaderboard
+        </Button>
+        <Button fullWidth variant="ghost" onClick={() => router.push('/')}>
+          Back to Home
         </Button>
       </div>
     </div>

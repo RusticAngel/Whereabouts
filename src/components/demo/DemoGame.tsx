@@ -3,9 +3,11 @@
 import { useState, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { LocationData, Confidence } from '@/types';
 import { calculateDistance } from '@/lib/game/pin';
 import { calculateFinalScore, getNarrativeFeedback } from '@/lib/game';
+import { evidenceCost } from '@/lib/game/evidence';
 import { EvidencePanel } from '@/components/game/EvidencePanel';
 import { ConfidenceSelector } from '@/components/game/ConfidenceSelector';
 import { Button } from '@/components/ui/Button';
@@ -18,7 +20,7 @@ const StreetView = dynamic(() => import('@/components/game/StreetView'), {
 
 const PinMap = dynamic(() => import('@/components/game/PinMap'), {
   ssr: false,
-  loading: () => <div className="w-full h-full bg-gray-800 flex items-center justify-center"><p className="text-gray-500">Loading map…</p></div>,
+  loading: () => <div className="w-full h-full bg-gray-800 flex items-center justify-center animate-pulse"><div className="w-10 h-10 rounded-full border-2 border-gray-600 border-t-gray-400 animate-spin" /></div>,
 });
 
 const ResultsMap = dynamic(() => import('@/components/results/ResultsMap'), {
@@ -31,7 +33,8 @@ interface DemoGameProps {
 }
 
 export function DemoGame({ location }: DemoGameProps) {
-  const [phase, setPhase] = useState<'investigating' | 'results'>('investigating');
+  const router = useRouter();
+  const [phase, setPhase] = useState<'exploring' | 'pinning' | 'results'>('exploring');
   const [pinLat, setPinLat] = useState<number | null>(null);
   const [pinLng, setPinLng] = useState<number | null>(null);
   const [evidenceRevealed, setEvidenceRevealed] = useState(0);
@@ -58,6 +61,8 @@ export function DemoGame({ location }: DemoGameProps) {
 
   if (phase === 'results') {
     const result = resultRef.current!;
+    const evidenceDeduction = evidenceCost(evidenceRevealed);
+    const baseScore = result.pinScore + evidenceDeduction;
 
     return (
       <div className="flex flex-col min-h-dvh bg-black text-white p-4 animate-fade-in">
@@ -100,12 +105,12 @@ export function DemoGame({ location }: DemoGameProps) {
               </div>
               <div className="flex justify-between text-sm">
                 <span>Base Pin Score</span>
-                <span className="text-white font-mono">{result.pinScore.toLocaleString()}</span>
+                <span className="text-white font-mono">{baseScore}</span>
               </div>
               {evidenceRevealed > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-red-400">Evidence Used ({evidenceRevealed})</span>
-                  <span className="text-red-400 font-mono">-{evidenceRevealed * 500}</span>
+                  <span className="text-red-400 font-mono">-{evidenceDeduction}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
@@ -140,9 +145,9 @@ export function DemoGame({ location }: DemoGameProps) {
             <Button fullWidth variant="secondary" onClick={() => window.location.reload()}>
               Play Again
             </Button>
-            <Link href="/" className="w-full block px-4 py-3 rounded-lg bg-gray-800 text-gray-300 font-medium text-center hover:bg-gray-700 transition-colors">
+            <Button fullWidth variant="ghost" onClick={() => router.push('/')}>
               Back to Home
-            </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -151,44 +156,91 @@ export function DemoGame({ location }: DemoGameProps) {
 
   const canSubmit = pinLat !== null && pinLng !== null;
 
+  if (phase === 'pinning') {
+    return (
+      <div className="h-dvh bg-black text-white flex flex-col animate-fade-in">
+        <div className="shrink-0 px-4 pt-4 max-w-lg mx-auto w-full">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setPhase('exploring')}
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              &larr; Back to Street View
+            </button>
+            <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
+              Demo
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 min-h-0 px-4 max-w-lg mx-auto w-full mt-2">
+          <div className="h-full rounded-lg overflow-hidden border border-gray-700">
+            <PinMap
+              onPinPlaced={(lat, lng) => { setPinLat(lat); setPinLng(lng); }}
+              zoom={3}
+            />
+          </div>
+        </div>
+
+        <div className="shrink-0 px-4 pb-8 max-w-lg mx-auto w-full space-y-3 mt-3">
+          {canSubmit && (
+            <ConfidenceSelector value={confidence} onChange={setConfidence} />
+          )}
+
+          <Button
+            onClick={handleSubmit}
+            disabled={!canSubmit}
+            fullWidth
+            variant="primary"
+          >
+            Submit Report
+          </Button>
+
+          <button
+            onClick={() => router.push('/')}
+            className="w-full text-sm text-gray-500 hover:text-white transition-colors text-center"
+          >
+            Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col min-h-dvh bg-black text-white animate-fade-in">
-      <div className="relative w-full aspect-[4/3] sm:aspect-video bg-gray-900 overflow-hidden">
-        {location.provider === 'mapillary' && location.mapillary_id ? (
+    <div className="relative h-dvh bg-black text-white overflow-hidden animate-fade-in">
+      {location.provider === 'mapillary' && location.mapillary_id ? (
+        <div className="absolute inset-0">
           <StreetView imageId={location.mapillary_id} />
-        ) : (
-          <div className="w-full h-full bg-gray-900" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-        <div className="absolute top-4 left-4 px-2 py-1 rounded bg-black/60 text-xs text-yellow-400 font-mono uppercase tracking-widest">
-          Demo
+        </div>
+      ) : (
+        <div className="absolute inset-0 bg-gray-900" />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none" />
+
+      <div className="absolute top-0 left-0 right-0 p-4">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.push('/')}
+            className="text-xs text-gray-400 hover:text-white transition-colors"
+          >
+            &larr; Home
+          </button>
+          <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
+            Demo
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col p-4 max-w-lg mx-auto w-full gap-4">
-        <p className="text-xs text-gray-500">Explore the 360° view, then place your pin below.</p>
-
+      <div className="absolute bottom-0 left-0 right-0 p-4 pb-8 space-y-3">
         <EvidencePanel evidence={location.evidence} onReveal={setEvidenceRevealed} />
 
-        <div className="h-[300px] shrink-0 rounded-lg overflow-hidden border border-gray-700">
-          <PinMap
-            onPinPlaced={(lat, lng) => { setPinLat(lat); setPinLng(lng); }}
-            zoom={3}
-          />
-        </div>
-
-        {canSubmit && (
-          <ConfidenceSelector value={confidence} onChange={setConfidence} />
-        )}
-
-        <Button
-          onClick={handleSubmit}
-          disabled={!canSubmit}
-          fullWidth
-          variant="primary"
+        <button
+          onClick={() => setPhase('pinning')}
+          className="w-full py-3 px-6 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors active:scale-[0.98]"
         >
-          Submit Report
-        </Button>
+          Ready to Pin
+        </button>
       </div>
     </div>
   );

@@ -211,6 +211,9 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
           <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
             Leaderboard
           </Button>
+          <Button fullWidth variant="ghost" onClick={() => router.push('/')}>
+            Back to Home
+          </Button>
         </div>
       </div>
     </div>

@@ -162,6 +162,12 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
           <Button variant="primary" onClick={() => router.push('/game')}>
             Try Again
           </Button>
+          <button
+            onClick={() => router.push('/')}
+            className="text-sm text-gray-500 hover:text-white transition-colors"
+          >
+            Back to Home
+          </button>
         </div>
       );
     }
@@ -189,6 +195,12 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
 
         <div className="absolute top-0 left-0 right-0 p-4 space-y-2">
           <div className="flex items-center justify-between">
+            <button
+              onClick={() => router.push('/')}
+              className="text-xs text-gray-500 hover:text-white transition-colors"
+            >
+              &larr; Home
+            </button>
             <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
               Case #{level} — Locate Cipher
               {isReplay && <span className="ml-2 text-gray-500">(Replay)</span>}
@@ -227,12 +239,20 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
     return (
       <div className="h-dvh bg-black text-white flex flex-col animate-fade-in">
         <div className="shrink-0 px-4 pt-4 max-w-lg mx-auto w-full">
-          <button
-            onClick={() => setPhase('exploring')}
-            className="text-sm text-gray-400 hover:text-white transition-colors"
-          >
-            &larr; Back to Street View
-          </button>
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setPhase('exploring')}
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              &larr; Back to Street View
+            </button>
+            <button
+              onClick={() => router.push('/')}
+              className="text-xs text-gray-500 hover:text-white transition-colors"
+            >
+              Home
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 min-h-0 px-4 max-w-lg mx-auto w-full">

@@ -55,6 +55,12 @@ export default function AuthPage() {
 
   return (
     <div className="flex flex-col min-h-dvh items-center justify-center p-6 bg-black text-white">
+      <button
+        onClick={() => router.push('/')}
+        className="self-start text-sm text-gray-500 hover:text-white transition-colors mb-4"
+      >
+        &larr; Back to Home
+      </button>
       <Card className="w-full max-w-sm">
         <h1 className="text-2xl font-bold text-center mb-6">
           {mode === 'sign-in' ? 'Sign In' : 'Create Account'}

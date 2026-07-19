@@ -38,6 +38,9 @@ export default async function NewGamePage({ searchParams }: { searchParams: Prom
             <a href="/leaderboard" className="w-full block px-4 py-2.5 bg-gray-800 text-white rounded-lg font-medium text-center hover:bg-gray-700 transition-colors">
               Leaderboard
             </a>
+            <a href="/" className="w-full block px-4 py-2.5 bg-gray-800 text-gray-400 rounded-lg font-medium text-center hover:bg-gray-700 transition-colors">
+              Back to Home
+            </a>
           </div>
         </div>
       </div>
@@ -61,6 +64,12 @@ export default async function NewGamePage({ searchParams }: { searchParams: Prom
             className="inline-block px-6 py-2.5 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition-colors"
           >
             Return to Case File
+          </a>
+          <a
+            href="/"
+            className="inline-block px-6 py-2.5 bg-gray-800 text-gray-400 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+          >
+            Back to Home
           </a>
         </div>
       </div>

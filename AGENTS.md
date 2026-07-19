@@ -41,8 +41,8 @@ Detective-style location deduction game. Players track a missing character (Ciph
 
 ### Flow
 1. **Briefing** — narrative briefing text, "Begin Investigation" CTA
-2. **Investigation** — Street View 360° + Evidence Panel + Pin Map + Confidence Selector
-3. **Submit Report** — save round, advance level, redirect to results
+2. **Explore** — full-screen Street View 360° + Evidence Panel overlay + timer
+3. **Pin** — full-screen Pin Map + confidence selector + hints + submit
 4. **Results** — Narrative feedback ("WOW" distance line) + score breakdown + ResultsMap (staged reveal) + share + replay
 
 ### Scoring Formula
@@ -117,13 +117,13 @@ Total max deduction: 1200
 | `src/proxy.ts` | Route guard + cookie prefix middleware |
 | `src/app/api/auth/[...path]/route.ts` | Auth handler wrapper (cookie Secure stripping over HTTP) |
 | `capacitor.config.ts` | Capacitor config (server URL, Android settings) |
-| `seed.ts` | DB seed — 14 Mapillary images + placeholder structure for 14 more |
+| `seed.ts` | DB seed — 28 Mapillary 360° images (all real locations) |
 | `drizzle.config.ts` | Drizzle Kit config for `db:push` |
 
 ## Seed Data
-- **14 real images** (all Mapillary street-view, no Unsplash) — levels 1-14
-- Each has `lat`/`lng` coordinates (real-world locations), `briefing`, `evidence[]`, `level_order`
-- **14 placeholder slots** (levels 15-28) — documented in seed.ts as commented-out structure, ready for Mapillary IDs
+- **28 real images** (all Mapillary 360° panoramas, no Unsplash)
+- Each has `mapillary_id`, `lat`/`lng` (real-world coordinates), `briefing`, `evidence[]`, `is_pano: true`, `level_order`
+- Some images are `is_pano: false` at the Mapillary API level but still load in mapillary-js (flat images). Levels needing replacement marked in session history.
 - Run with: `node --experimental-strip-types --env-file .env.local seed.ts`
 - Seed truncates old data first: `DELETE FROM rounds`, `DELETE FROM daily_scores`, `DELETE FROM images`
 
@@ -143,7 +143,7 @@ Total max deduction: 1200
 - Mapillary API returns intermittent `Service temporarily unavailable` (503). StreetView retries once after 2s; if it still fails, shows `bg-gray-900` (indistinguishable from a "still image" — consider showing "Mapillary unavailable" text).
 - Leaflet tiles may fail to load in constrained networks — 3s timeout shows a Retry button that re-creates the map.
 - Mapillary `cover: true` requires user tap to activate 360° view.
-- Only 14 of 28 planned levels have real Mapillary image IDs — levels 15-28 show "New Intel Incoming" placeholder screen.
+- Mapillary API returns `is_pano: false` for some seed image IDs. Levels 17 (Mumbai), 18 (Hong Kong), 19 (Istanbul), 22 (Cape Town), 25 (Marrakech), 26 (Reykjavik), 27 (Moscow) need 360° replacements. Level 20 (Cairo) replaced with Athens.
 - `navigator.share()` may not be available on all Android WebViews — clipboard fallback handles these cases.
 - Android APK still uses `com.whereabouts.app` applicationId (build.gradle not synced after rename).
 
@@ -271,7 +271,15 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **DailyGame fixes**: Switched from flat `evidenceRevealed * 500` to scaled `evidenceCost()` matching campaign (200/400/600). Distance display uses `toLocaleString()` instead of `.toFixed(1)k`.
 - **Leaderboard fixes**: Level input max 14→28. All 3 leaderboard queries now return `userId` so client can mark current user rows with `isCurrentUser: true`.
 
+## 2026-07-19 (Level 20 Fix + Navigation Audit + Two-Phase Daily/Demo)
+- **Level 20 fix**: Cairo image `837818513527088` was `is_pano: false` — replaced with Athens 360° panorama `1032446730680203` (quality_score 0.817, near Acropolis). Updated seed.ts + production DB row directly.
+- **7 more broken levels discovered**: Levels 17 (Mumbai), 18 (Hong Kong), 19 (Istanbul), 22 (Cape Town), 25 (Marrakech), 26 (Reykjavik), 27 (Moscow) all return `is_pano: false` from Mapillary API — they load as flat images. Only Reykjavik has available 360° replacements; user will manually review.
+- **DailyGame refactored**: Old stacked layout (Street View crop + Evidence + PinMap scroll) → two-phase layout matching InvestigationScreen (full-screen Street View explore → full-screen Pin Map pin).
+- **DemoGame refactored**: Same two-phase layout. Uses `evidenceCost()` for scoring (was flat `evidenceRevealed * 500`).
+- **Home navigation audit**: Added `Back to Home` / `← Home` buttons to all pages and phases — auth page, BriefingPanel, InvestigationScreen (explore/pin/save-failed), ResultsScreen, CaseFile, game/page.tsx (Case Closed + New Intel), daily/demo error states, all pin phases.
+- **Vercel env var**: Confirmed DATABASE_URL is already updated (all changes working live). Removed stale note.
+
 ## Next Moves
 - [ ] Record video demo for judges (30-60 sec screen recording)
-- [ ] Replace static OnboardingModal with visual step-through walkthrough
+- [ ] Replace non-360 Mapillary images for levels 17-19, 22, 25-27
 - [ ] Debug 2 console errors on first load

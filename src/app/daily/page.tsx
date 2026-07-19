@@ -36,8 +36,9 @@ export default async function DailyPage() {
 
   if (allImages.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-dvh bg-black text-white">
+      <div className="flex flex-col items-center justify-center min-h-dvh bg-black text-white gap-4">
         <p className="text-gray-400">No sightings available.</p>
+        <a href="/" className="text-sm text-gray-500 hover:text-white transition-colors">Back to Home</a>
       </div>
     );
   }
