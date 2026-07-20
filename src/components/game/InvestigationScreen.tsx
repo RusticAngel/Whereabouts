@@ -216,7 +216,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
           )}
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 pb-8 space-y-3">
+        <div className="absolute bottom-0 left-0 right-0 p-4 pb-24 space-y-3">
           {!timeUp && <EvidencePanel evidence={location.evidence} onReveal={handleReveal} />}
           {timeUp && (
             <div className="text-xs text-yellow-400 text-center py-2 px-3 bg-yellow-400/10 rounded-lg border border-yellow-400/20 font-medium">

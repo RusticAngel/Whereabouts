@@ -283,7 +283,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 pb-8 space-y-3">
+      <div className="absolute bottom-0 left-0 right-0 p-4 pb-24 space-y-3">
         <EvidencePanel evidence={location.evidence} onReveal={setEvidenceRevealed} />
 
         <button
