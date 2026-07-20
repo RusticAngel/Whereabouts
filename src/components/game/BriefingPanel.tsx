@@ -30,7 +30,7 @@ export function BriefingPanel({ briefing, level, onBegin }: BriefingPanelProps) 
           {briefing}
         </p>
         <Button variant="primary" size="lg" onClick={onBegin}>
-          Begin Investigation
+          Begin the hunt
         </Button>
       </div>
     </div>

@@ -58,8 +58,8 @@ export function CoachMark({ steps, storageKey, onComplete }: CoachMarkProps) {
 
   return (
     <>
-      <div className="absolute inset-0 z-40 bg-black/40 pointer-events-none" />
-      <div className={`absolute z-50 max-w-xs w-full ${positionClasses[current.position]}`}>
+      <div className="fixed inset-0 z-50 bg-black/40 pointer-events-none" />
+      <div className={`fixed z-[60] max-w-xs w-full ${positionClasses[current.position]}`}>
         <div className="bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-2xl pointer-events-auto">
           <div className="flex items-start justify-between mb-2">
             <span className="text-xs font-mono text-yellow-400 uppercase tracking-wider">
@@ -78,7 +78,7 @@ export function CoachMark({ steps, storageKey, onComplete }: CoachMarkProps) {
             onClick={handleNext}
             className="mt-3 w-full py-2 rounded-lg bg-yellow-400 text-black text-sm font-semibold hover:bg-yellow-300 transition-colors active:scale-[0.98]"
           >
-            {step < total - 1 ? 'Got it' : 'Start investigating'}
+            {step < total - 1 ? 'Start searching' : 'Begin the hunt'}
           </button>
         </div>
       </div>

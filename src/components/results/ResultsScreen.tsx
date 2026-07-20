@@ -105,7 +105,7 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-dvh bg-black text-white">
-        <p className="text-gray-400">Loading results...</p>
+        <p className="text-gray-400">Compiling report…</p>
       </div>
     );
   }
@@ -135,7 +135,7 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
           <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest mb-1">
             Case #{data.level}
           </div>
-          <h1 className="text-2xl font-bold text-white">Report Filed</h1>
+          <h1 className="text-2xl font-bold text-white">Mission Complete</h1>
         </div>
 
         {data.distanceKm !== null && (
@@ -154,7 +154,7 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
 
         {(data.pinScore !== null || data.distanceKm !== null) && data.imageLat && data.imageLng && (
           <Card>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Investigation Breakdown</h3>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Mission Report</h3>
             <ResultsMap
                 guessLat={data.pinGuessLat ? parseFloat(data.pinGuessLat) : null}
                 guessLng={data.pinGuessLng ? parseFloat(data.pinGuessLng) : null}
@@ -172,12 +172,12 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
                 </div>
               )}
               <div className="flex justify-between text-sm">
-                <span>Base Pin Score</span>
+                <span>Accuracy Score</span>
                 <span className="text-white font-mono">{baseScore}</span>
               </div>
               {data.evidenceRevealed > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-red-400">Evidence Used ({data.evidenceRevealed})</span>
+                  <span className="text-red-400">Intel Cost ({data.evidenceRevealed})</span>
                   <span className="text-red-400 font-mono">-{evidenceDeduction}</span>
                 </div>
               )}
@@ -188,7 +188,7 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
                 </span>
               </div>
               <div className="border-t border-gray-700 pt-2 flex justify-between text-sm font-semibold">
-                <span>Total Score</span>
+                <span>Final Score</span>
                 <span className="text-yellow-400 font-mono">{data.score.toLocaleString()}</span>
               </div>
             </div>
@@ -197,16 +197,16 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
 
         <div className="flex flex-col gap-3">
           <Button fullWidth variant="primary" onClick={() => router.push('/game')}>
-            Continue Trail
+            Next case
           </Button>
           <Button fullWidth variant="secondary" onClick={() => router.push(`/game/${data.imageId}?replay=1`)}>
-            Replay Location
+            Review the scene
           </Button>
           <Button fullWidth variant="secondary" onClick={() => router.push('/case-file')}>
-            View Case File
+            Review case history
           </Button>
           <Button fullWidth variant="outline" onClick={handleShare}>
-            {copied ? 'Copied to clipboard!' : 'Share Case Result'}
+            {copied ? 'Copied!' : 'Share your score'}
           </Button>
           <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
             Leaderboard

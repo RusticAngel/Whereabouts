@@ -30,10 +30,10 @@ export default async function NewGamePage({ searchParams }: { searchParams: Prom
       <div className="flex flex-col items-center justify-center min-h-dvh bg-black text-white p-6">
         <div className="max-w-md mx-auto text-center space-y-6">
           <h1 className="text-2xl font-bold text-yellow-400">Case Closed</h1>
-          <p className="text-gray-400">You&apos;ve completed all known sightings of Cipher. The trail ends here — for now.</p>
+          <p className="text-gray-400">All 28 leads have been investigated. Cipher has vanished — for now.</p>
           <div className="flex flex-col gap-3">
             <a href="/case-file" className="w-full block px-4 py-2.5 bg-white text-black rounded-lg font-medium text-center hover:bg-gray-200 transition-colors">
-              View Case File
+              Review case history
             </a>
             <a href="/leaderboard" className="w-full block px-4 py-2.5 bg-gray-800 text-white rounded-lg font-medium text-center hover:bg-gray-700 transition-colors">
               Leaderboard
@@ -56,14 +56,14 @@ export default async function NewGamePage({ searchParams }: { searchParams: Prom
           </div>
           <h1 className="text-2xl font-bold text-yellow-400">New Intel Incoming</h1>
           <p className="text-gray-400 leading-relaxed">
-            Cipher&apos;s trail continues…<br />
-            We&apos;re still gathering intel for this location.
+            Cipher is still out there.<br />
+            Our field agents are working on new leads. Check back soon.
           </p>
           <a
             href="/case-file"
             className="inline-block px-6 py-2.5 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition-colors"
           >
-            Return to Case File
+            Back to case file
           </a>
           <a
             href="/"

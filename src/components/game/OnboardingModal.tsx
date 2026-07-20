@@ -36,14 +36,14 @@ export function OnboardingModal({ onDismiss }: OnboardingModalProps) {
             <span className="text-3xl">&#128373;</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-white">
-            Cipher Needs Your Help
+            Cipher has gone underground
           </h1>
           <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
-            Cipher has gone missing. We&apos;ve detected traces across the world.
+            We&apos;ve lost Cipher&apos;s trail. Your mission: track them across 28 global locations.
             <br /><br />
-            Analyze each location carefully and place your pin on the map where you think Cipher was last seen.
+            Search every 360&deg; scene for clues. Place your pin where you think they&apos;re hiding.
             <br /><br />
-            Use evidence if you need it&mdash;but it will cost you.
+            Intel is available &mdash; but every piece costs points. Use strategy, not brute force.
           </p>
           <Button
             variant="primary"
@@ -51,7 +51,7 @@ export function OnboardingModal({ onDismiss }: OnboardingModalProps) {
             fullWidth
             onClick={handleDismiss}
           >
-            Start Investigation
+            Accept the mission
           </Button>
         </div>
       </div>

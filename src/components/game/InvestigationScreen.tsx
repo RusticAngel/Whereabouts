@@ -158,7 +158,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
     if (saveFailed) {
       return (
         <div className="flex flex-col min-h-dvh bg-black text-white items-center justify-center gap-4 p-4">
-          <p className="text-gray-400 text-sm">Something went wrong saving your report.</p>
+          <p className="text-gray-400 text-sm">Failed to transmit. Try again.</p>
           <Button variant="primary" onClick={() => router.push('/game')}>
             Try Again
           </Button>
@@ -174,7 +174,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
     return (
       <div className="flex flex-col min-h-dvh bg-black text-white items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-yellow-400 border-t-transparent rounded-full mb-4" />
-        <p className="text-gray-400 text-sm">Filing report…</p>
+        <p className="text-gray-400 text-sm">Transmitting intel…</p>
       </div>
     );
   }
@@ -202,7 +202,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
               &larr; Home
             </button>
             <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
-              Case #{level} — Locate Cipher
+              Case #{level} — Cipher is near
               {isReplay && <span className="ml-2 text-gray-500">(Replay)</span>}
             </div>
             <div className={`text-xs font-mono tabular-nums ${timeUp ? 'text-red-400' : timeLeft <= 60 ? 'text-yellow-400' : 'text-gray-500'}`}>
@@ -211,7 +211,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
           </div>
           {isReplay && (
             <div className="text-xs text-yellow-400/80 text-center py-1.5 px-3 bg-yellow-400/10 rounded-lg border border-yellow-400/20">
-              Replay mode — score halved (50% penalty). Best score for this level will be replaced.
+              Replay — scores reduced by 50%
             </div>
           )}
         </div>
@@ -220,7 +220,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
           {!timeUp && <EvidencePanel evidence={location.evidence} onReveal={handleReveal} />}
           {timeUp && (
             <div className="text-xs text-yellow-400 text-center py-2 px-3 bg-yellow-400/10 rounded-lg border border-yellow-400/20 font-medium">
-              Investigation time expired — evidence is sealed.
+              Time's up. Evidence is sealed.
             </div>
           )}
 
@@ -228,7 +228,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
             onClick={() => setPhase('pinning')}
             className="w-full py-3 px-6 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors active:scale-[0.98]"
           >
-            Ready to Pin
+            Place your guess
           </button>
         </div>
       </div>
@@ -244,7 +244,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
               onClick={() => setPhase('exploring')}
               className="text-sm text-gray-400 hover:text-white transition-colors"
             >
-              &larr; Back to Street View
+              &larr; Reopen the scene
             </button>
             <button
               onClick={() => router.push('/')}
@@ -287,7 +287,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
             fullWidth
             variant="primary"
           >
-            Submit Report
+            Lock in your findings
           </Button>
         </div>
       </div>

@@ -30,7 +30,7 @@ export function CaseFile({ entries, currentLevel }: CaseFileProps) {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-white">Case File</h1>
         <div className="text-right">
-          <p className="text-sm text-gray-400">Campaign Total</p>
+          <p className="text-sm text-gray-400">Total score</p>
           <p className="text-lg font-bold text-yellow-400">{campaignTotal.toLocaleString()}</p>
         </div>
       </div>
@@ -83,7 +83,7 @@ export function CaseFile({ entries, currentLevel }: CaseFileProps) {
 
       <div className="flex flex-col gap-3">
         <Button fullWidth variant="primary" onClick={() => router.push('/game')}>
-          Continue Investigation
+          Next case
         </Button>
         <Button fullWidth variant="secondary" onClick={() => router.push('/leaderboard')}>
           Leaderboard

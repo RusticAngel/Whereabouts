@@ -92,7 +92,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
     return (
       <div className="flex flex-col min-h-dvh bg-black text-white items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-yellow-400 border-t-transparent rounded-full mb-4" />
-        <p className="text-gray-400 text-sm">Filing report…</p>
+        <p className="text-gray-400 text-sm">Transmitting intel…</p>
       </div>
     );
   }
@@ -111,7 +111,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
             <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest mb-1">
               Daily Cipher Sighting
             </div>
-            <h1 className="text-2xl font-bold">Report Filed</h1>
+            <h1 className="text-2xl font-bold">Mission Complete</h1>
             <p className="text-sm text-gray-500 mt-1">{date}</p>
           </div>
 
@@ -130,7 +130,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
           </Card>
 
           <Card>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Investigation Breakdown</h3>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Mission Report</h3>
             <ResultsMap
               guessLat={pinLat}
               guessLng={pinLng}
@@ -146,12 +146,12 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span>Base Pin Score</span>
+                <span>Accuracy Score</span>
                 <span className="text-white font-mono">{baseScore}</span>
               </div>
               {evidenceRevealed > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-red-400">Evidence Used ({evidenceRevealed})</span>
+                  <span className="text-red-400">Intel Cost ({evidenceRevealed})</span>
                   <span className="text-red-400 font-mono">-{evidenceDeduction}</span>
                 </div>
               )}
@@ -169,10 +169,10 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
           </Card>
 
           <Button fullWidth variant="primary" onClick={() => window.location.reload()}>
-            Play Again
+            Run it again
           </Button>
           <Button fullWidth variant="secondary" onClick={() => router.push('/game')}>
-            Continue Investigation
+            Back on patrol
           </Button>
           <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
             Leaderboard
@@ -188,11 +188,11 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
   if (existingScore !== null) {
     return (
       <div className="flex flex-col min-h-dvh bg-black text-white items-center justify-center p-4 animate-fade-in">
-        <p className="text-gray-400 text-center">You already filed a report for today&apos;s sighting.</p>
+        <p className="text-gray-400 text-center">Today&apos;s sighting is already in the system.</p>
         <p className="text-yellow-400 font-mono text-lg mt-2">Score: {existingScore.toLocaleString()}</p>
         <div className="flex flex-col gap-3 mt-6 w-full max-w-xs">
           <Button fullWidth variant="primary" onClick={() => router.push('/game')}>
-            Continue Investigation
+            Back on patrol
           </Button>
           <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
             Leaderboard
@@ -216,7 +216,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
               onClick={() => setPhase('exploring')}
               className="text-sm text-gray-400 hover:text-white transition-colors"
             >
-              &larr; Back to Street View
+              &larr; Reopen the scene
             </button>
             <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
               Daily — {date}
@@ -244,7 +244,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
             fullWidth
             variant="primary"
           >
-            Submit Report
+            Lock in your findings
           </Button>
 
           <button
@@ -290,7 +290,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
           onClick={() => setPhase('pinning')}
           className="w-full py-3 px-6 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors active:scale-[0.98]"
         >
-          Ready to Pin
+          Place your guess
         </button>
       </div>
     </div>

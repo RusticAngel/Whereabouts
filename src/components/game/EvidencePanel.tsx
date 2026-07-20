@@ -56,8 +56,8 @@ export function EvidencePanel({ evidence, onReveal }: EvidencePanelProps) {
           onClick={handleReveal}
         >
           {confirming
-            ? `Tap again to confirm — -${nextCost} pts`
-            : `Reveal Evidence (${revealedCount + 1}/${Math.min(evidence.length, MAX_EVIDENCE)}) — costs ${nextCost} pts`}
+            ? `Confirm — this costs ${nextCost} pts`
+            : `Open intel packet (${revealedCount + 1}/${Math.min(evidence.length, MAX_EVIDENCE)}) — costs ${nextCost} pts`}
         </Button>
       )}
     </div>

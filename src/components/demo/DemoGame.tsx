@@ -82,10 +82,10 @@ export function DemoGame({ location }: DemoGameProps) {
         <div className="max-w-lg mx-auto w-full space-y-6">
           <div className="text-center">
             <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest mb-1">
-              Tutorial Report
+              Case Debrief
             </div>
-            <h1 className="text-2xl font-bold">Report Filed</h1>
-            <p className="text-sm text-gray-500 mt-1">Score not saved — create an account to track your progress</p>
+            <h1 className="text-2xl font-bold">Mission Complete</h1>
+            <p className="text-sm text-gray-500 mt-1">Sign up to track your rank on the global leaderboard</p>
           </div>
 
           <Card>
@@ -103,7 +103,7 @@ export function DemoGame({ location }: DemoGameProps) {
           </Card>
 
           <Card>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Investigation Breakdown</h3>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Mission Report</h3>
             <ResultsMap
               guessLat={pinLat}
               guessLng={pinLng}
@@ -117,12 +117,12 @@ export function DemoGame({ location }: DemoGameProps) {
                 <span className="text-white font-mono">{result.distanceKm.toLocaleString()} km</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span>Base Pin Score</span>
+                <span>Accuracy Score</span>
                 <span className="text-white font-mono">{baseScore}</span>
               </div>
               {evidenceRevealed > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-red-400">Evidence Used ({evidenceRevealed})</span>
+                  <span className="text-red-400">Intel Cost ({evidenceRevealed})</span>
                   <span className="text-red-400 font-mono">-{evidenceDeduction}</span>
                 </div>
               )}
@@ -155,7 +155,7 @@ export function DemoGame({ location }: DemoGameProps) {
             onClick={() => setShowScoring(!showScoring)}
             className="w-full text-xs text-gray-500 hover:text-gray-300 transition-colors text-center"
           >
-            {showScoring ? 'Hide' : 'Show'} how scoring works
+            {showScoring ? 'Hide' : 'Show'} how points work
           </button>
 
           {showScoring && (
@@ -187,7 +187,7 @@ export function DemoGame({ location }: DemoGameProps) {
               Sign Up to Save Your Score
             </Link>
             <Button fullWidth variant="secondary" onClick={() => window.location.reload()}>
-              Play Again
+              Run it again
             </Button>
             <Button fullWidth variant="ghost" onClick={() => router.push('/')}>
               Back to Home
@@ -209,7 +209,7 @@ export function DemoGame({ location }: DemoGameProps) {
               onClick={() => setPhase('exploring')}
               className="text-sm text-gray-400 hover:text-white transition-colors"
             >
-              &larr; Back to Street View
+              &larr; Reopen the case
             </button>
             <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
               Tutorial
@@ -249,7 +249,7 @@ export function DemoGame({ location }: DemoGameProps) {
             fullWidth
             variant="primary"
           >
-            Submit Report
+            Lock in your findings
           </Button>
 
           <button
@@ -263,18 +263,18 @@ export function DemoGame({ location }: DemoGameProps) {
         <CoachMark
           steps={[
             {
-              title: 'Place Your Pin',
-              body: 'Tap anywhere on the map to drop a pin where you think Cipher is. Drag the pin to fine-tune your position.',
+              title: 'Drop your marker',
+              body: 'Where is Cipher hiding? Tap the map to plant your pin — you can drag to refine your position.',
               position: 'bottom-center',
             },
             {
-              title: 'Ask the AI Assistant',
-              body: 'Tap "Ask AI" for directional hints based on your pin placement. You get up to 3 hints — the first arrives quickly, later ones take longer. Hints adjust based on your confidence level.',
+              title: 'Call for backup',
+              body: 'Need help? The AI analyst gives you directional intel. 3 hints per case — each takes a moment longer.',
               position: 'bottom-center',
             },
             {
-              title: 'Choose Confidence & Submit',
-              body: 'Select Low (×1.0), Medium (×1.2), or High (×1.5 if correct, ÷2 if wrong). Then tap Submit to see your results!',
+              title: 'Set your stakes',
+              body: 'Lock in your confidence: Low (safe), Medium (×1.2), or High (×1.5 if right, ÷2 if wrong). The bigger the risk, the bigger the reward.',
               position: 'bottom-center',
             },
           ]}
@@ -317,25 +317,25 @@ export function DemoGame({ location }: DemoGameProps) {
           onClick={() => setPhase('pinning')}
           className="w-full py-3 px-6 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors active:scale-[0.98]"
         >
-          Ready to Pin
+          Place your guess
         </button>
       </div>
 
       <CoachMark
         steps={[
           {
-            title: 'Look Around',
-            body: 'This is a 360° Street View. Drag or swipe to look around and search for clues about where Cipher might be hiding.',
+            title: 'Scan the scene',
+            body: 'Cipher was last seen here. Look around — every detail matters. Swipe to explore the full scene.',
             position: 'top-center',
           },
           {
-            title: 'Gather Evidence',
-            body: 'Tap each evidence card to reveal intel. Each clue costs points: first −200, second −400, third −600. Use them wisely!',
+            title: 'Collect intel',
+            body: 'Evidence costs points — use it wisely. First clue: −200. The fewer you need, the higher your score.',
             position: 'bottom-center',
           },
           {
-            title: 'Ready to Pin',
-            body: 'When you\'ve gathered enough intel, tap "Ready to Pin" to switch to the map and drop your guess.',
+            title: 'Place your guess',
+            body: 'Think you\'ve found Cipher? Lock in your guess on the map.',
             position: 'bottom-center',
           },
         ]}

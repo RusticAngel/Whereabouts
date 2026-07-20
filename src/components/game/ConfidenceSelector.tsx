@@ -8,15 +8,15 @@ interface ConfidenceSelectorProps {
 }
 
 const OPTIONS: { value: Confidence; label: string; description: string }[] = [
-  { value: 'low', label: 'Low', description: 'Safe — no bonus or penalty' },
-  { value: 'medium', label: 'Medium', description: 'Small multiplier if close' },
-  { value: 'high', label: 'High', description: 'Big bonus if right, penalty if wrong' },
+  { value: 'low', label: 'Low', description: 'Safe bet — no risk, no bonus' },
+  { value: 'medium', label: 'Medium', description: 'Moderate risk — ×1.2 if close' },
+  { value: 'high', label: 'High', description: 'High stakes — ×1.5 or ÷2' },
 ];
 
 export function ConfidenceSelector({ value, onChange }: ConfidenceSelectorProps) {
   return (
     <div className="space-y-2">
-      <p className="text-sm text-gray-400 font-medium">Confidence Level</p>
+      <p className="text-sm text-gray-400 font-medium">Set your stakes</p>
       <div className="flex gap-2">
         {OPTIONS.map((opt) => {
           const selected = value === opt.value;

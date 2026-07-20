@@ -66,7 +66,7 @@ export function HintPanel({
 
   return (
     <div className="space-y-2">
-      <p className="text-sm text-gray-400 font-medium">AI Assistant</p>
+      <p className="text-sm text-gray-400 font-medium">Analyst HQ</p>
       {hints.map((hint, i) => {
         const isNewest = i === hints.length - 1;
         const isCollapsed = !isNewest && collapsed.has(i);
@@ -104,7 +104,7 @@ export function HintPanel({
       {thinking && (
         <div className="flex items-start gap-2 text-sm text-gray-500 bg-gray-800/30 rounded-lg px-3 py-2 border-l-2 border-purple-500/30">
           <span className="text-purple-400/50 text-xs font-mono mt-0.5 shrink-0">AI</span>
-          <span className="animate-pulse">Thinking…</span>
+          <span className="animate-pulse">Analyzing…</span>
         </div>
       )}
       {hintsUsed < MAX_HINTS && (
@@ -115,7 +115,7 @@ export function HintPanel({
           disabled={thinking || pinLat === null}
           className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 hover:border-purple-500/50"
         >
-          {hintsUsed === 0 ? 'Ask AI' : `Ask AI (${MAX_HINTS - hintsUsed} left)`}
+          {hintsUsed === 0 ? 'Request intel' : `Request intel (${MAX_HINTS - hintsUsed} remaining)`}
         </Button>
       )}
     </div>
