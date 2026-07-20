@@ -55,3 +55,6 @@ Neon.txt
 
 # opencode plans (not committed)
 .opencode/plans/*.md
+
+# Assets (source icons, demo videos — generated icons already in android/)
+Assets/
