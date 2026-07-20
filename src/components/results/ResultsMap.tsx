@@ -38,7 +38,8 @@ export default function ResultsMap({ guessLat, guessLng, actualLat, actualLng, d
       keyboard: false,
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '' }).addTo(map);
+    map.attributionControl?.remove();
 
     const guessIcon = L.divIcon({
       className: 'pin-marker',

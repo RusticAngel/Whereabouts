@@ -287,7 +287,15 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Daily isPano filter**: Fixed `daily/page.tsx` query to filter by `isPano: true` (was returning all Mapillary images regardless of panorama status).
 - **Pro/referral system designed**: Free tier (3-5 plays/day), Pro at $1.99/mo (unlimited), referral rewards (5+3 days), 3-day free trial. See `.opencode/plans/pro-referral.md` for full spec. Not yet implemented.
 
+## 2026-07-20 (Hackathon Submission + UX Refactor + Leaflet Attribution)
+- **CoachMark z-index fix**: `absolute` → `fixed` positioning so tutorial cards overlay map correctly on pin phase.
+- **Password toggle**: Eye icon button on `auth/page.tsx` password field toggles `type` between `password`/`text`.
+- **UX text refactor**: ~90 strings across 12 files rewritten to game-driven/mission-based tone (e.g., "Submit Report" → "Lock in your findings", "Ready to Pin" → "Place your guess", "Create Account" → "Join the Hunt", "Report Filed" → "Mission Complete", "Evidence Used" → "Intel Cost").
+- **Leaflet attribution removed**: Set `attributionControl: false` on PinMap. ResultsMap already had it but got `map.attributionControl?.remove()` safety net.
+- **Lemon Squeezy research**: SA not supported by Stripe directly. LS supports SA bank payouts but has add-on fees (5% + $0.50 + international/PayPal/subscription surcharges). Account partially created — verification skipped, will revisit post-hackathon.
+- **Submitted to OpenAI Build Week**: Deadline July 21 5PM PDT. Confirmation email received. Demo video recorded, `/feedback` Session ID submitted.
+
 ## Next Moves
-- [ ] Record video demo for judges (30-60 sec screen recording)
 - [ ] Replace non-360 Mapillary images for levels 17-19, 22, 25-27
 - [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md`)
+- [ ] Set up Lemon Squeezy properly for subscriptions
