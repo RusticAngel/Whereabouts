@@ -112,10 +112,10 @@ export function ChallengeScreen({ challengeId, location, userId }: ChallengeScre
       try {
         await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
         setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       } catch {
-        alert(`Share this link:\n\n${shareUrl}`);
+        alert(`Share this link with your friends:\n\n${shareUrl}`);
       }
-      setTimeout(() => setCopied(false), 2000);
     }
   }, [userId]);
 

@@ -9,6 +9,7 @@ import { calculateFinalScore, getNarrativeFeedback, applyStreakMultiplier } from
 import { evidenceCost } from '@/lib/game/evidence';
 import { EvidencePanel } from '@/components/game/EvidencePanel';
 import { ConfidenceSelector } from '@/components/game/ConfidenceSelector';
+import { HintPanel } from '@/components/game/HintPanel';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ResultCard } from '@/components/results/ResultCard';
@@ -52,6 +53,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
   } | null>(null);
   const [streak, setStreak] = useState(0);
   const [challengeCopied, setChallengeCopied] = useState(false);
+  const [hintsCount, setHintsCount] = useState(0);
   const savingRef = useRef(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
@@ -102,6 +104,10 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
     savingRef.current = false;
   }, [pinLat, pinLng, evidenceRevealed, confidence, location.lat, location.lng, location.id, userId, date, hasCoords, existingScore, streak]);
 
+  const handleHint = useCallback(() => {
+    setHintsCount((c) => c + 1);
+  }, []);
+
   const handleChallengeFriends = useCallback(async () => {
     const newChallengeId = await createChallenge();
     if (!newChallengeId) return;
@@ -117,10 +123,10 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
       try {
         await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
         setChallengeCopied(true);
+        setTimeout(() => setChallengeCopied(false), 2000);
       } catch {
-        alert(`Challenge link:\n\n${shareUrl}`);
+        alert(`Share this link with your friends:\n\n${shareUrl}`);
       }
-      setTimeout(() => setChallengeCopied(false), 2000);
     }
   }, [result]);
 
@@ -269,6 +275,18 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
         </div>
 
         <div className="shrink-0 px-4 pb-8 max-w-lg mx-auto w-full space-y-3 mt-3">
+          {canSubmit && (
+            <HintPanel
+              pinLat={pinLat}
+              pinLng={pinLng}
+              targetLat={parseFloat(location.lat!)}
+              targetLng={parseFloat(location.lng!)}
+              hintsUsed={hintsCount}
+              confidence={confidence}
+              onHint={handleHint}
+            />
+          )}
+
           {canSubmit && (
             <ConfidenceSelector value={confidence} onChange={setConfidence} />
           )}

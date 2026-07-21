@@ -295,7 +295,20 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Lemon Squeezy research**: SA not supported by Stripe directly. LS supports SA bank payouts but has add-on fees (5% + $0.50 + international/PayPal/subscription surcharges). Account partially created — verification skipped, will revisit post-hackathon.
 - **Submitted to OpenAI Build Week**: Deadline July 21 5PM PDT. Confirmation email received. Demo video recorded, `/feedback` Session ID submitted.
 
+## 2026-07-21 (Multiplayer System + Results Redesign)
+- **Multiplayer**: Created `challenges` + `challenge_results` tables, seed-based case generator, `createChallenge`/`saveChallengeResult`/`getFocusedLeaderboard` server actions
+- **Challenge route**: `/challenge/[challengeId]` with full two-phase game loop, inline leaderboard, relative performance feedback (beat/lost by km), plays count social proof
+- **Rematch system**: `rematch_of` column on challenges, `createRematchChallenge` action, "New Round (Can you beat them?)" button
+- **Daily streak**: Changed from flat +100 bonus to multiplicative (×1.05 per day, cap 1.25×), `applyStreakMultiplier()` in scoring.ts
+- **Results redesign**: New `ResultCard.tsx` + `ShareButton.tsx` with `html2canvas` PNG generation and native share, deployed across ChallengeScreen, DailyGame, ResultsScreen, DemoGame
+- **Tiebreaker sorting**: All leaderboards sort by `score DESC, distance_km ASC, time_seconds ASC NULLS LAST`
+- **Edge cases**: 0/1/2 player leaderboard handling, "View Full Leaderboard" toggle, deep link web banner
+- **DB performance**: Indexes on `challenge_results(challenge_id)` and `(user_id)`
+- **README**: Rewritten with setup instructions, accurate tech stack, Codex + GPT-5.6 usage documentation
+- **Pushed to GitHub**: All changes live at `https://github.com/RusticAngel/Whereabouts.git`
+
 ## Next Moves
 - [ ] Replace non-360 Mapillary images for levels 17-19, 22, 25-27
 - [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md`)
 - [ ] Set up Lemon Squeezy properly for subscriptions
+- [ ] **Disable challenges for closed testing**: Add `NEXT_PUBLIC_CHALLENGES_ENABLED=false` env var. Gate `createChallenge()`/`createRematchChallenge()` to return null. Hide challenge buttons in UI. Set after hackathon deadline, re-enable on Play Store launch.

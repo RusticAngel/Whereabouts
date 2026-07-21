@@ -121,10 +121,10 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
       try {
         await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
         setChallengeCopied(true);
+        setTimeout(() => setChallengeCopied(false), 2000);
       } catch {
-        alert(`Challenge link:\n\n${shareUrl}`);
+        alert(`Share this link with your friends:\n\n${shareUrl}`);
       }
-      setTimeout(() => setChallengeCopied(false), 2000);
     }
   };
 
