@@ -44,3 +44,8 @@ export function calculateFinalScore(
 
   return gross;
 }
+
+export function applyStreakMultiplier(baseScore: number, streak: number): number {
+  const cappedStreak = Math.min(streak, 5);
+  return Math.round(baseScore * (1 + cappedStreak * 0.05));
+}

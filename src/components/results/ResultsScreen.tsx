@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { getRound } from '@/app/actions';
-import { NarrativeFeedback } from './NarrativeFeedback';
+import { getRound, createChallenge } from '@/app/actions';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { ResultCard } from './ResultCard';
+import { ShareButton } from './ShareButton';
 import { evidenceCost } from '@/lib/game/evidence';
 
 const StreetView = dynamic(() => import('@/components/game/StreetView'), {
@@ -49,6 +50,8 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [challengeCopied, setChallengeCopied] = useState(false);
+  const cardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -102,6 +105,29 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
     }
   };
 
+  const handleChallengeFriends = async () => {
+    if (!data) return;
+    const newChallengeId = await createChallenge();
+    if (!newChallengeId) return;
+
+    const shareUrl = `${window.location.origin}/challenge/${newChallengeId}`;
+    const shareText = `I tracked Cipher to within ${(data.distanceKm ?? 0).toLocaleString()}km! Think you can beat me? 🌍`;
+
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: 'FindMe Challenge', text: shareText, url: shareUrl });
+      } catch { }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+        setChallengeCopied(true);
+      } catch {
+        alert(`Challenge link:\n\n${shareUrl}`);
+      }
+      setTimeout(() => setChallengeCopied(false), 2000);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-dvh bg-black text-white">
@@ -131,26 +157,17 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
       </div>
 
       <div className="flex-1 -mt-16 sm:-mt-20 relative z-10 p-4 max-w-lg mx-auto w-full space-y-6">
-        <div className="text-center">
-          <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest mb-1">
-            Case #{data.level}
-          </div>
-          <h1 className="text-2xl font-bold text-white">Mission Complete</h1>
-        </div>
+        <ResultCard
+          ref={cardRef}
+          score={data.score}
+          distanceKm={data.distanceKm ?? 0}
+          label={`Case #${data.level}`}
+        />
 
-        {data.distanceKm !== null && (
-          <Card>
-            <NarrativeFeedback distanceKm={data.distanceKm} />
-          </Card>
-        )}
-
-        {data.distanceKm !== null && (
-          <div className="text-center mb-6">
-            <p className="text-3xl sm:text-4xl font-bold text-white">
-              You were <span className="text-yellow-400">{data.distanceKm.toLocaleString()} km</span> away
-            </p>
-          </div>
-        )}
+        <ShareButton
+          targetRef={cardRef}
+          shareText={`Case #${data.level}: ${data.score.toLocaleString()} pts — ${(data.distanceKm ?? 0).toLocaleString()} km away 🌍`}
+        />
 
         {(data.pinScore !== null || data.distanceKm !== null) && data.imageLat && data.imageLng && (
           <Card>
@@ -207,6 +224,9 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
           </Button>
           <Button fullWidth variant="outline" onClick={handleShare}>
             {copied ? 'Copied!' : 'Share your score'}
+          </Button>
+          <Button fullWidth variant="primary" onClick={handleChallengeFriends}>
+            {challengeCopied ? 'Copied!' : 'Challenge Friends'}
           </Button>
           <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
             Leaderboard

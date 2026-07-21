@@ -46,3 +46,34 @@ export interface RoundSaveData {
   confidence: string;
   totalScore: number;
 }
+
+export interface ChallengeResultData {
+  id: string;
+  challengeId: string;
+  userId: string;
+  username: string;
+  score: number;
+  distanceKm: number;
+  timeSeconds?: number;
+  evidenceRevealed: number;
+  confidence: string;
+}
+
+export interface ChallengeData {
+  id: string;
+  seed: string;
+  imageId: string;
+  createdBy: string;
+  creatorUsername: string;
+  creatorScore?: number;
+  playsCount: number;
+  rematchOf: string | null;
+  results: ChallengeResultData[];
+}
+
+export interface RelativeResult {
+  above?: { username: string; score: number; distanceKm: number } | null;
+  below?: { username: string; score: number; distanceKm: number } | null;
+  rank: number;
+  total: number;
+}

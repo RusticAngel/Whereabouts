@@ -5,7 +5,7 @@ const authMiddleware = auth.middleware({
   loginUrl: '/auth',
 });
 
-const PROTECTED_ROUTES = ['/game', '/results', '/leaderboard', '/daily', '/case-file'];
+const PROTECTED_ROUTES = ['/game', '/results', '/leaderboard', '/daily', '/case-file', '/challenge'];
 
 function isProtectedRoute(pathname: string): boolean {
   return PROTECTED_ROUTES.some(

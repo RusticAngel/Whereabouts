@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { LocationData, Confidence } from '@/types';
+import { LocationData, Confidence, ChallengeResultData } from '@/types';
 import { calculateDistance } from '@/lib/game/pin';
-import { calculateFinalScore, getNarrativeFeedback, applyStreakMultiplier } from '@/lib/game';
+import { calculateFinalScore, getNarrativeFeedback } from '@/lib/game';
 import { evidenceCost } from '@/lib/game/evidence';
 import { EvidencePanel } from '@/components/game/EvidencePanel';
 import { ConfidenceSelector } from '@/components/game/ConfidenceSelector';
@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ResultCard } from '@/components/results/ResultCard';
 import { ShareButton } from '@/components/results/ShareButton';
-import { saveRound, upsertDailyScore, getProfileStreak, createChallenge } from '@/app/actions';
+import { saveChallengeResult, getChallenge, createChallenge, createRematchChallenge, getFocusedLeaderboard } from '@/app/actions';
 
 const StreetView = dynamic(() => import('@/components/game/StreetView'), {
   ssr: false,
@@ -30,14 +30,13 @@ const ResultsMap = dynamic(() => import('@/components/results/ResultsMap'), {
   loading: () => <div className="w-full h-48 bg-gray-800 rounded-lg animate-pulse" />,
 });
 
-interface DailyGameProps {
+interface ChallengeScreenProps {
+  challengeId: string;
   location: LocationData;
   userId: string;
-  date: string;
-  existingScore: number | null;
 }
 
-export function DailyGame({ location, userId, date, existingScore }: DailyGameProps) {
+export function ChallengeScreen({ challengeId, location, userId }: ChallengeScreenProps) {
   const router = useRouter();
   const [phase, setPhase] = useState<'exploring' | 'pinning' | 'results'>('exploring');
   const [pinLat, setPinLat] = useState<number | null>(null);
@@ -50,64 +49,60 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
     pinScore: number;
     totalScore: number;
   } | null>(null);
-  const [streak, setStreak] = useState(0);
-  const [challengeCopied, setChallengeCopied] = useState(false);
+  const [focusedAbove, setFocusedAbove] = useState<ChallengeResultData | null>(null);
+  const [focusedBelow, setFocusedBelow] = useState<ChallengeResultData | null>(null);
+  const [allResults, setAllResults] = useState<ChallengeResultData[]>([]);
+  const [showFullLeaderboard, setShowFullLeaderboard] = useState(false);
+  const [playsCount, setPlaysCount] = useState(0);
+  const [rematchId, setRematchId] = useState<string | null>(null);
+  const [rematching, setRematching] = useState(false);
+  const [copied, setCopied] = useState(false);
   const savingRef = useRef(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
-
   const hasCoords = location.lat && location.lng;
 
-  useEffect(() => {
-    if (existingScore !== null) return;
-    (async () => {
-      const data = await getProfileStreak(userId);
-      setStreak(data.streak);
-    })();
-  }, [userId, existingScore]);
-
   const handleSubmit = useCallback(async () => {
-    if (savingRef.current || pinLat === null || pinLng === null || !hasCoords || existingScore !== null) return;
+    if (savingRef.current || pinLat === null || pinLng === null || !hasCoords) return;
     savingRef.current = true;
     setSaving(true);
 
     const actualLat = parseFloat(location.lat!);
     const actualLng = parseFloat(location.lng!);
     const distanceKm = Math.round(calculateDistance(pinLat, pinLng, actualLat, actualLng));
-    const baseScore = calculateFinalScore(distanceKm, evidenceRevealed, confidence);
-    const totalScore = applyStreakMultiplier(baseScore, streak);
+    const totalScore = calculateFinalScore(distanceKm, evidenceRevealed, confidence);
     const pinScore = calculateFinalScore(distanceKm, 0, 'low');
 
-    const roundId = await saveRound(
-      userId,
-      location.id,
-      0,
-      totalScore,
-      true,
-      {
-        pinGuessLat: String(pinLat),
-        pinGuessLng: String(pinLng),
-        pinScore,
-        evidenceRevealed,
-        confidence,
-        distanceKm,
-      }
-    );
+    await saveChallengeResult(challengeId, userId, {
+      score: totalScore,
+      distanceKm,
+      evidenceRevealed,
+      confidence,
+    });
 
-    if (roundId) {
-      await upsertDailyScore(userId, date, totalScore, undefined, distanceKm);
-      setResult({ distanceKm, pinScore: totalScore, totalScore });
-      setPhase('results');
+    const [challengeData, focused] = await Promise.all([
+      getChallenge(challengeId),
+      getFocusedLeaderboard(challengeId, userId),
+    ]);
+    if (challengeData) {
+      setPlaysCount(challengeData.playsCount);
+      setRematchId(challengeData.rematchOf);
     }
+    setFocusedAbove(focused.above);
+    setFocusedBelow(focused.below);
+    setAllResults(focused.allResults);
+
+    setResult({ distanceKm, pinScore: totalScore, totalScore });
+    setPhase('results');
     setSaving(false);
     savingRef.current = false;
-  }, [pinLat, pinLng, evidenceRevealed, confidence, location.lat, location.lng, location.id, userId, date, hasCoords, existingScore, streak]);
+  }, [pinLat, pinLng, evidenceRevealed, confidence, location.lat, location.lng, challengeId, userId, hasCoords]);
 
   const handleChallengeFriends = useCallback(async () => {
     const newChallengeId = await createChallenge();
     if (!newChallengeId) return;
 
     const shareUrl = `${window.location.origin}/challenge/${newChallengeId}`;
-    const shareText = `I scored ${result?.totalScore.toLocaleString()} on today's FindMe daily! Think you can beat me? 🌍`;
+    const shareText = `Think you can track Cipher? Take on my challenge! 🌍`;
 
     if (typeof navigator.share === 'function') {
       try {
@@ -116,13 +111,13 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
     } else {
       try {
         await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-        setChallengeCopied(true);
+        setCopied(true);
       } catch {
-        alert(`Challenge link:\n\n${shareUrl}`);
+        alert(`Share this link:\n\n${shareUrl}`);
       }
-      setTimeout(() => setChallengeCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2000);
     }
-  }, [result]);
+  }, [userId]);
 
   if (saving) {
     return (
@@ -140,6 +135,29 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
     const isHighWrong = confidence === 'high' && result.distanceKm >= 100;
     const confidenceLabel = confidence.charAt(0).toUpperCase() + confidence.slice(1);
 
+    const totalPlayers = allResults.length;
+
+    const isAlone = totalPlayers <= 1;
+    const isFirst = !focusedAbove && !!focusedBelow;
+    const isLast = !focusedBelow && !!focusedAbove;
+    const showFocused = totalPlayers >= 3;
+    const rank = allResults.findIndex(r => r.userId === userId) + 1;
+
+    const handleRematch = async () => {
+      setRematching(true);
+      const newId = await createRematchChallenge(challengeId, userId);
+      if (newId) {
+        const shareUrl = `${window.location.origin}/challenge/${newId}`;
+        const shareText = `Rematch! Same players, new location. Think you can beat me? 🌍`;
+        if (typeof navigator.share === 'function') {
+          try { await navigator.share({ title: 'FindMe Rematch', text: shareText, url: shareUrl }); } catch { }
+        } else {
+          try { await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`); } catch { }
+        }
+      }
+      setRematching(false);
+    };
+
     return (
       <div className="flex flex-col min-h-dvh bg-black text-white p-4 animate-fade-in">
         <div className="max-w-lg mx-auto w-full space-y-6">
@@ -147,14 +165,41 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
             ref={cardRef}
             score={result.totalScore}
             distanceKm={result.distanceKm}
-            label={`Daily — ${date}`}
-            streak={streak}
+            rank={totalPlayers >= 2 ? rank : undefined}
+            totalPlayers={totalPlayers >= 2 ? totalPlayers : undefined}
+            aboveName={focusedAbove?.username}
+            aboveDistance={focusedAbove?.distanceKm}
+            belowName={focusedBelow?.username}
+            belowDistance={focusedBelow?.distanceKm}
+            isFirst={isFirst}
+            isLast={isLast}
+            label="Challenge"
           />
 
           <ShareButton
             targetRef={cardRef}
-            shareText={`Today's FindMe daily: ${result.totalScore.toLocaleString()} pts — ${result.distanceKm.toLocaleString()} km away 🌍`}
+            shareText={`I placed #${rank} of ${totalPlayers} on FindMe! Score: ${result.totalScore.toLocaleString()} pts 🌍`}
           />
+
+          <Card>
+            <div className={`rounded-xl border p-4 text-center text-sm font-medium ${
+              result.distanceKm < 1
+                ? 'text-green-400 border-green-400/30 bg-green-400/10'
+                : result.distanceKm < 50
+                  ? 'text-yellow-400 border-yellow-400/30 bg-yellow-400/10'
+                  : result.distanceKm < 1000
+                    ? 'text-orange-400 border-orange-400/30 bg-orange-400/10'
+                    : 'text-red-400 border-red-400/30 bg-red-400/10'
+            }`}>
+              {getNarrativeFeedback(result.distanceKm)}
+            </div>
+          </Card>
+
+          <div className="text-center mb-2">
+            <p className="text-3xl sm:text-4xl font-bold text-white">
+              You were <span className="text-yellow-400">{result.distanceKm.toLocaleString()} km</span> away
+            </p>
+          </div>
 
           <Card>
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Mission Report</h3>
@@ -168,9 +213,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
             <div className="mt-3 space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Distance</span>
-                <span className="text-white font-mono">
-                  {result.distanceKm.toLocaleString()} km
-                </span>
+                <span className="text-white font-mono">{result.distanceKm.toLocaleString()} km</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Accuracy Score</span>
@@ -195,46 +238,72 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
             </div>
           </Card>
 
-          {streak > 0 && (
-            <div className="text-center text-sm text-yellow-400">
-              🔥 {streak}-day streak (×{((1 + Math.min(streak, 5) * 0.05).toFixed(2))} multiplier)
-            </div>
+          {totalPlayers >= 2 && (
+            <Card>
+              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                {showFocused && !showFullLeaderboard ? 'Challenge Standings' : 'Leaderboard'}
+              </h3>
+              <div className="space-y-2 text-sm">
+                {(showFocused && !showFullLeaderboard ? (
+                  <>
+                    {focusedAbove && (
+                      <div className="flex justify-between items-center text-gray-300">
+                        <span><span className="text-gray-500 mr-2">⬆️</span>{focusedAbove.username}</span>
+                        <span className="font-mono">{focusedAbove.score.toLocaleString()} pts</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center text-yellow-400 border-y border-gray-700 py-1">
+                      <span><span className="text-yellow-500 mr-2">👉</span>You</span>
+                      <span className="font-mono">{result.totalScore.toLocaleString()} pts</span>
+                    </div>
+                    {focusedBelow && (
+                      <div className="flex justify-between items-center text-gray-300">
+                        <span><span className="text-gray-500 mr-2">⬇️</span>{focusedBelow.username}</span>
+                        <span className="font-mono">{focusedBelow.score.toLocaleString()} pts</span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  allResults.map((r, i) => (
+                    <div key={r.id} className={`flex justify-between items-center ${r.userId === userId ? 'text-yellow-400' : 'text-gray-300'}`}>
+                      <span className="flex items-center gap-2">
+                        <span className="text-gray-500 w-5 text-right">{i + 1}.</span>
+                        {r.username}
+                        {r.userId === userId && <span className="text-[10px] text-yellow-500">(you)</span>}
+                      </span>
+                      <span className="font-mono">{r.score.toLocaleString()} pts</span>
+                    </div>
+                  ))
+                ))}
+              </div>
+              {showFocused && (
+                <button
+                  onClick={() => setShowFullLeaderboard(!showFullLeaderboard)}
+                  className="w-full text-xs text-gray-500 hover:text-gray-300 transition-colors mt-3"
+                >
+                  {showFullLeaderboard ? 'Show less' : 'View Full Leaderboard'}
+                </button>
+              )}
+            </Card>
           )}
-          <Button fullWidth variant="primary" onClick={handleChallengeFriends}>
-            {challengeCopied ? 'Copied!' : 'Challenge Friends'}
-          </Button>
-          <Button fullWidth variant="secondary" onClick={() => window.location.reload()}>
-            Run it again
-          </Button>
-          <Button fullWidth variant="secondary" onClick={() => router.push('/game')}>
-            Back on patrol
-          </Button>
-          <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
-            Leaderboard
-          </Button>
-          <Button fullWidth variant="ghost" onClick={() => router.push('/')}>
-            Back to Home
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
-  if (existingScore !== null) {
-    return (
-      <div className="flex flex-col min-h-dvh bg-black text-white items-center justify-center p-4 animate-fade-in">
-        <p className="text-gray-400 text-center">Today&apos;s sighting is already in the system.</p>
-        <p className="text-yellow-400 font-mono text-lg mt-2">Score: {existingScore.toLocaleString()}</p>
-        <div className="flex flex-col gap-3 mt-6 w-full max-w-xs">
-          <Button fullWidth variant="primary" onClick={() => router.push('/game')}>
-            Back on patrol
-          </Button>
-          <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
-            Leaderboard
-          </Button>
-          <Button fullWidth variant="ghost" onClick={() => router.push('/')}>
-            Back to Home
-          </Button>
+          <div className="flex flex-col gap-3">
+            <Button fullWidth variant="primary" onClick={handleChallengeFriends}>
+              {copied ? 'Copied!' : 'Challenge Friends'}
+            </Button>
+            <Button fullWidth variant="secondary" onClick={handleRematch} disabled={rematching}>
+              {rematching ? 'Creating rematch…' : '🔥 New Round (Can you beat them?)'}
+            </Button>
+            <Button fullWidth variant="secondary" onClick={() => window.location.reload()}>
+              Run it again
+            </Button>
+            <Button fullWidth variant="secondary" onClick={() => router.push('/game')}>
+              Back on patrol
+            </Button>
+            <Button fullWidth variant="ghost" onClick={() => router.push('/')}>
+              Back to Home
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -254,7 +323,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
               &larr; Reopen the scene
             </button>
             <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
-              Daily — {date}
+              Challenge
             </div>
           </div>
         </div>
@@ -313,7 +382,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
             &larr; Home
           </button>
           <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
-            Daily Cipher Sighting — {date}
+            Challenge
           </div>
         </div>
       </div>

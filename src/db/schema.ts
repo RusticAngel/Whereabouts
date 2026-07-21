@@ -37,6 +37,8 @@ export const dailyScores = pgTable('daily_scores', {
   userId: uuid('user_id').notNull(),
   date: date('date').notNull().defaultNow(),
   totalScore: integer('total_score').notNull(),
+  timeSeconds: integer('time_seconds'),
+  distanceKm: integer('distance_km'),
 }, (t) => ({
   unq: uniqueIndex('daily_scores_user_date').on(t.userId, t.date),
 }));
@@ -46,5 +48,31 @@ export const profiles = pgTable('profiles', {
   username: text('username').unique(),
   avatarUrl: text('avatar_url'),
   currentLevel: integer('current_level').default(1),
+  dailyStreak: integer('daily_streak').default(0),
+  lastDailyDate: date('last_daily_date'),
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+export const challenges = pgTable('challenges', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  seed: text('seed').notNull().unique(),
+  imageId: uuid('image_id').notNull().references(() => images.id),
+  createdBy: uuid('created_by').notNull().references(() => profiles.id),
+  rematchOf: uuid('rematch_of'),
+  playsCount: integer('plays_count').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const challengeResults = pgTable('challenge_results', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  challengeId: uuid('challenge_id').notNull().references(() => challenges.id),
+  userId: uuid('user_id').notNull().references(() => profiles.id),
+  score: integer('score').notNull(),
+  distanceKm: integer('distance_km').notNull(),
+  timeSeconds: integer('time_seconds'),
+  evidenceRevealed: integer('evidence_revealed').notNull().default(0),
+  confidence: text('confidence').notNull().default('low'),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (t) => ({
+  unq: uniqueIndex('challenge_results_player').on(t.challengeId, t.userId),
+}));

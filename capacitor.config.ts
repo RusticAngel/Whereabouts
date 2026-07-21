@@ -7,6 +7,11 @@ const config: CapacitorConfig = {
   server: {
     url: 'https://whereabouts-navy.vercel.app',
   },
+  plugins: {
+    DeepLinks: {
+      schemes: ['findme'],
+    },
+  },
 };
 
 export default config;

@@ -14,6 +14,8 @@ import { HintPanel } from '@/components/game/HintPanel';
 import { CoachMark } from '@/components/game/CoachMark';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { ResultCard } from '@/components/results/ResultCard';
+import { ShareButton } from '@/components/results/ShareButton';
 
 const StreetView = dynamic(() => import('@/components/game/StreetView'), {
   ssr: false,
@@ -44,6 +46,7 @@ export function DemoGame({ location }: DemoGameProps) {
   const [hintsCount, setHintsCount] = useState(0);
   const [tutorialDone, setTutorialDone] = useState(false);
   const [showScoring, setShowScoring] = useState(false);
+  const cardRef = useRef<HTMLDivElement | null>(null);
   const resultRef = useRef<{
     distanceKm: number;
     pinScore: number;
@@ -80,27 +83,17 @@ export function DemoGame({ location }: DemoGameProps) {
     return (
       <div className="flex flex-col min-h-dvh bg-black text-white p-4 animate-fade-in">
         <div className="max-w-lg mx-auto w-full space-y-6">
-          <div className="text-center">
-            <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest mb-1">
-              Case Debrief
-            </div>
-            <h1 className="text-2xl font-bold">Mission Complete</h1>
-            <p className="text-sm text-gray-500 mt-1">Sign up to track your rank on the global leaderboard</p>
-          </div>
+          <ResultCard
+            ref={cardRef}
+            score={result.totalScore}
+            distanceKm={result.distanceKm}
+            label="Tutorial"
+          />
 
-          <Card>
-            <div className={`rounded-xl border p-4 text-center text-sm font-medium ${
-              result.distanceKm < 1
-                ? 'text-green-400 border-green-400/30 bg-green-400/10'
-                : result.distanceKm < 50
-                  ? 'text-yellow-400 border-yellow-400/30 bg-yellow-400/10'
-                  : result.distanceKm < 1000
-                    ? 'text-orange-400 border-orange-400/30 bg-orange-400/10'
-                    : 'text-red-400 border-red-400/30 bg-red-400/10'
-            }`}>
-              {getNarrativeFeedback(result.distanceKm)}
-            </div>
-          </Card>
+          <ShareButton
+            targetRef={cardRef}
+            shareText={`FindMe Tutorial: ${result.totalScore.toLocaleString()} pts — ${result.distanceKm.toLocaleString()} km away 🌍`}
+          />
 
           <Card>
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Mission Report</h3>
@@ -185,6 +178,9 @@ export function DemoGame({ location }: DemoGameProps) {
           <div className="flex flex-col gap-3">
             <Link href="/auth" className="w-full block px-4 py-3 rounded-lg bg-yellow-400 text-black font-semibold text-center hover:bg-yellow-300 transition-colors">
               Sign Up to Save Your Score
+            </Link>
+            <Link href="/auth" className="w-full block px-4 py-3 rounded-lg border border-yellow-400/50 text-yellow-400 font-semibold text-center hover:bg-yellow-400/10 transition-colors">
+              Sign Up to Challenge Friends
             </Link>
             <Button fullWidth variant="secondary" onClick={() => window.location.reload()}>
               Run it again
