@@ -1,3 +1,4 @@
+import { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth/server';
 
 const handler = auth.handler();
@@ -24,8 +25,8 @@ async function stripSecureFromResponse(response: Response, requestUrl: string): 
   });
 }
 
-function wrap(method: (request: Request, context: { params: Promise<{ path: string[] }> }) => Promise<Response>) {
-  return async (request: Request, context: { params: Promise<{ path: string[] }> }) => {
+function wrap(method: (...args: any[]) => Promise<Response>) {
+  return async (request: NextRequest, context: { params: Promise<unknown> }) => {
     const response = await method(request, context);
     return stripSecureFromResponse(response, request.url);
   };

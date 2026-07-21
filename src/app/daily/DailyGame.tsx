@@ -15,6 +15,7 @@ import { Card } from '@/components/ui/Card';
 import { ResultCard } from '@/components/results/ResultCard';
 import { ShareButton } from '@/components/results/ShareButton';
 import { saveRound, upsertDailyScore, getProfileStreak, createChallenge } from '@/app/actions';
+import { shareChallenge } from '@/lib/share';
 
 const StreetView = dynamic(() => import('@/components/game/StreetView'), {
   ssr: false,
@@ -115,19 +116,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
     const shareUrl = `${window.location.origin}/challenge/${newChallengeId}`;
     const shareText = `I scored ${result?.totalScore.toLocaleString()} on today's FindMe daily! Think you can beat me? 🌍`;
 
-    if (typeof navigator.share === 'function') {
-      try {
-        await navigator.share({ title: 'FindMe Challenge', text: shareText, url: shareUrl });
-      } catch { }
-    } else {
-      try {
-        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-        setChallengeCopied(true);
-        setTimeout(() => setChallengeCopied(false), 2000);
-      } catch {
-        alert(`Share this link with your friends:\n\n${shareUrl}`);
-      }
-    }
+    await shareChallenge(shareText, shareUrl, setChallengeCopied);
   }, [result]);
 
   if (saving) {

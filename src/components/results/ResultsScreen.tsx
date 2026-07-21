@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/Card';
 import { ResultCard } from './ResultCard';
 import { ShareButton } from './ShareButton';
 import { evidenceCost } from '@/lib/game/evidence';
+import { shareChallenge } from '@/lib/share';
 
 const StreetView = dynamic(() => import('@/components/game/StreetView'), {
   ssr: false,
@@ -113,19 +114,7 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
     const shareUrl = `${window.location.origin}/challenge/${newChallengeId}`;
     const shareText = `I tracked Cipher to within ${(data.distanceKm ?? 0).toLocaleString()}km! Think you can beat me? 🌍`;
 
-    if (typeof navigator.share === 'function') {
-      try {
-        await navigator.share({ title: 'FindMe Challenge', text: shareText, url: shareUrl });
-      } catch { }
-    } else {
-      try {
-        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-        setChallengeCopied(true);
-        setTimeout(() => setChallengeCopied(false), 2000);
-      } catch {
-        alert(`Share this link with your friends:\n\n${shareUrl}`);
-      }
-    }
+    await shareChallenge(shareText, shareUrl, setChallengeCopied);
   };
 
   if (loading) {

@@ -14,6 +14,7 @@ import { Card } from '@/components/ui/Card';
 import { ResultCard } from '@/components/results/ResultCard';
 import { ShareButton } from '@/components/results/ShareButton';
 import { saveChallengeResult, getChallenge, createChallenge, createRematchChallenge, getFocusedLeaderboard } from '@/app/actions';
+import { shareChallenge } from '@/lib/share';
 
 const StreetView = dynamic(() => import('@/components/game/StreetView'), {
   ssr: false,
@@ -104,20 +105,8 @@ export function ChallengeScreen({ challengeId, location, userId }: ChallengeScre
     const shareUrl = `${window.location.origin}/challenge/${newChallengeId}`;
     const shareText = `Think you can track Cipher? Take on my challenge! 🌍`;
 
-    if (typeof navigator.share === 'function') {
-      try {
-        await navigator.share({ title: 'FindMe Challenge', text: shareText, url: shareUrl });
-      } catch { }
-    } else {
-      try {
-        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } catch {
-        alert(`Share this link with your friends:\n\n${shareUrl}`);
-      }
-    }
-  }, [userId]);
+    await shareChallenge(shareText, shareUrl, setCopied);
+  }, []);
 
   if (saving) {
     return (
