@@ -3,10 +3,7 @@ import { auth } from '@/lib/auth/server';
 
 const handler = auth.handler();
 
-async function stripSecureFromResponse(response: Response, requestUrl: string): Promise<Response> {
-  const url = new URL(requestUrl);
-  if (url.protocol === 'https:') return response;
-
+async function stripSecureFromResponse(response: Response): Promise<Response> {
   const setCookies = response.headers.getSetCookie();
   if (!setCookies.length) return response;
 
@@ -28,7 +25,7 @@ async function stripSecureFromResponse(response: Response, requestUrl: string): 
 function wrap(method: (...args: any[]) => Promise<Response>) {
   return async (request: NextRequest, context: { params: Promise<unknown> }) => {
     const response = await method(request, context);
-    return stripSecureFromResponse(response, request.url);
+    return stripSecureFromResponse(response);
   };
 }
 
