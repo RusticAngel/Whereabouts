@@ -34,7 +34,21 @@ export default async function middleware(request: NextRequest) {
       }
       const modifiedRequest = new NextRequest(request.url, init as any);
       const authResult = await authMiddleware(modifiedRequest);
-      if (authResult) return authResult;
+      if (authResult) {
+        const location = authResult.headers.get('Location');
+        if (location && location.startsWith('/auth')) {
+          const redirectUrl = new URL(location, request.url);
+          if (!redirectUrl.searchParams.has('redirect')) {
+            redirectUrl.searchParams.set('redirect', pathname);
+            const redirect = NextResponse.redirect(redirectUrl);
+            for (const cookie of authResult.headers.getSetCookie()) {
+              redirect.headers.append('Set-Cookie', cookie);
+            }
+            return redirect;
+          }
+        }
+        return authResult;
+      }
     }
 
     return NextResponse.next({
@@ -43,7 +57,22 @@ export default async function middleware(request: NextRequest) {
   }
 
   if (isProtectedRoute(pathname) && !request.headers.has('Next-Action')) {
-    return authMiddleware(request);
+    const authResult = await authMiddleware(request);
+    if (authResult) {
+      const location = authResult.headers.get('Location');
+      if (location && location.startsWith('/auth')) {
+        const redirectUrl = new URL(location, request.url);
+        if (!redirectUrl.searchParams.has('redirect')) {
+          redirectUrl.searchParams.set('redirect', pathname);
+          const redirect = NextResponse.redirect(redirectUrl);
+          for (const cookie of authResult.headers.getSetCookie()) {
+            redirect.headers.append('Set-Cookie', cookie);
+          }
+          return redirect;
+        }
+      }
+      return authResult;
+    }
   }
 }
 

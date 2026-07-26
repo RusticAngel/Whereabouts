@@ -1,14 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { authClient } from '@/lib/auth/client';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 
 export default function AuthPage() {
-  const router = useRouter();
+  const [redirectTo, setRedirectTo] = useState('/');
   const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setRedirectTo(params.get('redirect') || '/');
+  }, []);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,7 +50,8 @@ export default function AuthPage() {
           setLoading(false);
           return;
         }
-        router.push('/');
+        await new Promise((r) => setTimeout(r, 500));
+        window.location.href = redirectTo;
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong');
@@ -57,7 +62,7 @@ export default function AuthPage() {
   return (
     <div className="flex flex-col min-h-dvh items-center justify-center p-6 bg-black text-white">
       <button
-        onClick={() => router.push('/')}
+        onClick={() => { window.location.href = '/'; }}
         className="self-start text-sm text-gray-500 hover:text-white transition-colors mb-4"
       >
         &larr; Back to Home
