@@ -12,6 +12,11 @@ body {
   color: #ffffff;
 }
 
+@supports not (min-height: 100dvh) {
+  .min-h-dvh { min-height: 100vh; }
+  .h-dvh { height: 100vh; }
+}
+
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
