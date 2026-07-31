@@ -126,6 +126,7 @@ Total max deduction: 1200
 - Some images are `is_pano: false` at the Mapillary API level but still load in mapillary-js (flat images). Levels needing replacement marked in session history.
 - Run with: `node --experimental-strip-types --env-file .env.local seed.ts`
 - Seed truncates old data first: `DELETE FROM rounds`, `DELETE FROM daily_scores`, `DELETE FROM images`
+- **Verifying a new image ID**: metadata API (is_pano, quality_score, thumbnail) is NOT sufficient. Verify with the real viewer: serve `node_modules/mapillary-js/dist/mapillary.js` + a test page that constructs `mapillary.Viewer({ imageId })` and waits for the `load` event (20s timeout), run in headless Edge/Chrome, read the `load`/timeout result from the dumped DOM title. Use `moveTo` rejection as the failure indicator — it rejects for ALL non-navigable viewers regardless of image validity.
 
 ## Mobile Responsiveness
 - Viewport meta tag + `suppressHydrationWarning` on `<html>`
@@ -144,6 +145,7 @@ Total max deduction: 1200
 - Leaflet tiles may fail to load in constrained networks — 3s timeout shows a Retry button that re-creates the map.
 - Mapillary `cover: true` requires user tap to activate 360° view.
 - Mapillary API returns `is_pano: false` for some seed image IDs (flat images). All 28 levels now use verified 360° panoramas (see session history 2026-07-31). Verify new IDs before seeding.
+- **Mapillary metadata is NOT ground truth for rendering**: `is_pano: true`, `quality_score`, and a fetchable `thumb_original_url` do NOT guarantee mapillary-js can render an image. Some images (e.g. `1132467503932451`) have valid metadata but the viewer's `load` event never fires → "Street View unavailable". Verify new IDs with the actual viewer (headless Edge + mapillary.js, wait for `load` event), not the metadata API.
 - `navigator.share()` may not be available on all Android WebViews — clipboard fallback handles these cases.
 - Android APK still uses `com.whereabouts.app` applicationId (build.gradle not synced after rename).
 
@@ -312,6 +314,7 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **dvh fallback**: App uses `min-h-dvh`/`h-dvh` which are unsupported in old Chromium (WhatsApp in-app WebView on Huawei) — layout collapsed top-left. Added `@supports not (min-height: 100dvh)` fallbacks mapping to `100vh` in `globals.css`. Fixes broken sign-in page on those devices.
 - **Level 20 Athens replaced**: Old `1032446730680203` (Filopappou Hill, wooded, no landmarks) → `1381897719782917` (Q:0.931, Dionysiou Areopagitou near Herodes Atticus). Updated seed.ts + prod DB row + fixed stale Cairo briefing/evidence text in DB.
 - **Level 27 Moscow replaced**: Old `321507412726277` was far western Moscow (55.7545, 37.3510) showing only snow/trees — briefing described Kremlin/Red Square but image was nowhere near it. Replaced with `1132467503932451` (Q:0.622) at Red Square center (55.753969, 37.623097) between St. Basil's and GUM. Briefing/evidence needed no changes. Updated seed.ts + prod DB.
+- **Level 27 Red Square fix (second attempt)**: `1132467503932451` had valid metadata (is_pano, thumbnail) but mapillary-js could NOT render it — `load` event never fires. Diagnosed via headless Edge harness (served mapillary.js from node_modules, waited for `load`, dumped DOM title). Verified only the actual viewer matters. Replaced with `846806025906372` (Q:0.453, 55.753301, 37.621834) at Red Square near St. Basil's — confirmed loadable in viewer. Updated seed.ts + prod DB.
 - **All 28 levels now verified 360°**: L17-19, L22, L25-27 (flat) + L20 (Cairo→Athens) + L27 (Moscow→Red Square) all replaced. Remaining Search Note: Mapillary bbox API 500s in dense areas — use small boxes + `limit` + `AbortSignal.timeout`.
 
 ## Next Moves
