@@ -380,9 +380,9 @@ const seedData = [
     ],
   },
   {
-    mapillary_id: '321507412726277',
-    lat: '55.754460',
-    lng: '37.350970',
+    mapillary_id: '1132467503932451',
+    lat: '55.753969',
+    lng: '37.623097',
     provider: 'mapillary',
     is_pano: true,
     level_order: 27,
