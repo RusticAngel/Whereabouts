@@ -4,7 +4,7 @@ import { auth } from '@/lib/auth/server';
 import { db } from '@/db';
 import { images, rounds, dailyScores, profiles, challenges, challengeResults } from '@/db/schema';
 import { eq, sql, and } from 'drizzle-orm';
-import { LocationData, EvidenceItem, CaseFileEntry, ChallengeData, ChallengeResultData, RelativeResult } from '@/types';
+import { LocationData, EvidenceItem, CaseFileEntry, ChallengeData, ChallengeResultData } from '@/types';
 import { getMaxLevel } from '@/lib/game/progression';
 import { generateCaseSeed, getImageIndexFromSeed } from '@/lib/game/caseGenerator';
 

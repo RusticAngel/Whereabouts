@@ -27,6 +27,7 @@ const TIERS = [
   },
   {
     key: 'rookie',
+    min: 0,
     title: 'Rookie Tracker',
     badge: '🧭',
     text: 'Cipher slipped through more nets than you care to count. But here\'s the thing about a trail — it only ends when you stop walking it. You kept going, case after case. The skills you built here will serve you on every hunt that comes next.',

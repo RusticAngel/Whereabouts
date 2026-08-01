@@ -11,7 +11,6 @@ import { getCampaignScores } from '@/app/actions';
 export const dynamic = 'force-dynamic';
 
 const TOTAL_LEVELS = 38;
-const REAL_LEVELS = 38;
 
 export default async function NewGamePage({ searchParams }: { searchParams: Promise<{ level?: string; replay?: string }> }) {
   const { level: levelParam, replay } = await searchParams;
@@ -37,35 +36,6 @@ export default async function NewGamePage({ searchParams }: { searchParams: Prom
         levelsCompleted={levelsCompleted}
         totalLevels={TOTAL_LEVELS}
       />
-    );
-  }
-
-  if (level > REAL_LEVELS) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-dvh bg-black text-white p-6">
-        <div className="max-w-md mx-auto text-center space-y-6">
-          <div className="w-16 h-16 mx-auto rounded-full bg-yellow-400/10 flex items-center justify-center">
-            <span className="text-3xl">&#128220;</span>
-          </div>
-          <h1 className="text-2xl font-bold text-yellow-400">New Intel Incoming</h1>
-          <p className="text-gray-400 leading-relaxed">
-            Cipher is still out there.<br />
-            Our field agents are working on new leads. Check back soon.
-          </p>
-          <a
-            href="/case-file"
-            className="inline-block px-6 py-2.5 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition-colors"
-          >
-            Back to case file
-          </a>
-          <a
-            href="/"
-            className="inline-block px-6 py-2.5 bg-gray-800 text-gray-400 rounded-lg font-medium hover:bg-gray-700 transition-colors"
-          >
-            Back to Home
-          </a>
-        </div>
-      </div>
     );
   }
 
