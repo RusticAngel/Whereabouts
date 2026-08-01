@@ -18,6 +18,8 @@ const ARCS = [
   { label: 'Ghost Trail', levels: '15–18', start: 15, end: 18 },
   { label: 'Deep Cover', levels: '19–22', start: 19, end: 22 },
   { label: 'Final Trace', levels: '23–28', start: 23, end: 28 },
+  { label: 'The Escape', levels: '29–33', start: 29, end: 33 },
+  { label: 'The Final Lead', levels: '34–38', start: 34, end: 38 },
 ];
 
 export function CaseFile({ entries, currentLevel }: CaseFileProps) {

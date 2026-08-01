@@ -139,7 +139,7 @@ export async function advanceLevel(userId: string): Promise<number> {
     .onConflictDoUpdate({
       target: profiles.id,
       set: {
-        currentLevel: sql`LEAST(${profiles.currentLevel} + 1, ${maxLevel})`,
+        currentLevel: sql`LEAST(${profiles.currentLevel} + 1, ${maxLevel} + 1)`,
         username: sql`COALESCE(${profiles.username}, ${userName})`,
       },
     })

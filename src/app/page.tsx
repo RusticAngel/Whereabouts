@@ -122,7 +122,7 @@ export default async function Home() {
             {[
               {
                 title: '360&deg; Street View',
-                desc: 'Real Mapillary panoramas from 28 global locations. Look around every angle.',
+                desc: 'Real Mapillary panoramas from 38 global locations. Look around every angle.',
               },
               {
                 title: 'Sensory Evidence',
@@ -134,7 +134,7 @@ export default async function Home() {
               },
               {
                 title: 'Campaign Progression',
-                desc: '28 levels across 7 narrative arcs. Each location brings you closer to Cipher.',
+                desc: '38 levels across 9 narrative arcs. Each location brings you closer to Cipher.',
               },
               {
                 title: 'Daily Challenge',

@@ -1,7 +1,7 @@
 # Trace — Session Memory
 
 ## Project
-Detective-style location deduction game. Players track a missing character (Cipher) across 28 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
+Detective-style location deduction game. Players track a missing character (Cipher) across 38 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
 
 ## Stack
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind v4)
@@ -96,7 +96,7 @@ Total max deduction: 1200
 | `src/lib/game/scoring.ts` | calculatePinScore (tiered), calculateFinalScore (pin - evidence + confidence multiplier) |
 | `src/lib/game/evidence.ts` | evidenceCost (scaled: 200/400/600), revealEvidence, getRevealedEvidence |
 | `src/lib/game/narrative.ts` | getNarrativeFeedback (4 tiers, 3 variants each, random) |
-| `src/lib/game/progression.ts` | getCurrentLevel, advanceLevel, getMaxLevel (TOTAL_LEVELS = 28) |
+| `src/lib/game/progression.ts` | getCurrentLevel, advanceLevel, getMaxLevel (TOTAL_LEVELS = 38) |
 | `src/lib/game/pin.ts` | calculateDistance (Haversine) |
 | `src/lib/game/analytics.ts` | trackEvent(name, payload) — console-only, 5 event types + evidenceCount |
 | `src/components/game/InvestigationScreen.tsx` | Core game loop — briefing → onboarding → investigation → submit → results redirect |
@@ -110,23 +110,25 @@ Total max deduction: 1200
 | `src/components/results/ResultsMap.tsx` | Read-only Leaflet map with staged fade-in (player pin → actual pin → connecting line) |
 | `src/components/results/NarrativeFeedback.tsx` | Distance-based narrative card |
 | `src/components/results/CaseFile.tsx` | Campaign progress overview |
+| `src/components/results/FinaleScreen.tsx` | End-of-campaign finale with 3-tier epilogue (campaign total based) |
 | `src/app/game/[imageId]/page.tsx` | Active game route (supports ?replay=1) |
-| `src/app/game/page.tsx` | New game route — auto-advances to current level, placeholder screen for 15-28 |
+| `src/app/game/page.tsx` | New game route — auto-advances to current level, finale screen when level > TOTAL_LEVELS |
 | `src/app/daily/DailyGame.tsx` | Daily challenge (self-contained game + inline results + daily score) |
 | `src/app/daily/page.tsx` | Daily challenge route (deterministic image selection by date hash) |
 | `src/proxy.ts` | Route guard + cookie prefix middleware |
 | `src/app/api/auth/[...path]/route.ts` | Auth handler wrapper (cookie Secure stripping over HTTP) |
 | `capacitor.config.ts` | Capacitor config (server URL, Android settings) |
-| `seed.ts` | DB seed — 28 Mapillary 360° images (all real locations) |
+| `seed.ts` | DB seed — 38 Mapillary 360° images (all real locations) |
 | `drizzle.config.ts` | Drizzle Kit config for `db:push` |
 
 ## Seed Data
-- **28 real images** (all Mapillary 360° panoramas, no Unsplash)
+- **38 real images** (all Mapillary 360° panoramas, no Unsplash)
 - Each has `mapillary_id`, `lat`/`lng` (real-world coordinates), `briefing`, `evidence[]`, `is_pano: true`, `level_order`
 - Some images are `is_pano: false` at the Mapillary API level but still load in mapillary-js (flat images). Levels needing replacement marked in session history.
 - Run with: `node --experimental-strip-types --env-file .env.local seed.ts`
 - Seed truncates old data first: `DELETE FROM rounds`, `DELETE FROM daily_scores`, `DELETE FROM images`
 - **Verifying a new image ID**: metadata API (is_pano, quality_score, thumbnail) is NOT sufficient. Verify with the real viewer: serve `node_modules/mapillary-js/dist/mapillary.js` + a test page that constructs `mapillary.Viewer({ imageId })` and waits for the `load` event (20s timeout), run in headless Edge/Chrome, read the `load`/timeout result from the dumped DOM title. Use `moveTo` rejection as the failure indicator — it rejects for ALL non-navigable viewers regardless of image validity.
+- **Finding new images**: v3 API (`api.mapillary.com`) is dead. Use v4 `graph.mapillary.com/images` — bbox must be `[west,south,east,north]` (lon,lat order), max area 0.010 sq deg, `limit=40` (200 fails), paginate with `after` cursor. API aggressively rate-limits ("reduce the amount of data" 500s) — pace 20-30s+ between requests. `quality_score` is 0-1 (not 0-5). Pedestrian plazas often have NO car-captured panos; target car-accessible streets near landmarks.
 
 ## Mobile Responsiveness
 - Viewport meta tag + `suppressHydrationWarning` on `<html>`
@@ -317,8 +319,19 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Level 27 Red Square fix (second attempt)**: `1132467503932451` had valid metadata (is_pano, thumbnail) but mapillary-js could NOT render it — `load` event never fires. Diagnosed via headless Edge harness (served mapillary.js from node_modules, waited for `load`, dumped DOM title). Verified only the actual viewer matters. Replaced with `846806025906372` (Q:0.453, 55.753301, 37.621834) at Red Square near St. Basil's — confirmed loadable in viewer. Updated seed.ts + prod DB.
 - **All 28 levels now verified 360°**: L17-19, L22, L25-27 (flat) + L20 (Cairo→Athens) + L27 (Moscow→Red Square) all replaced. Remaining Search Note: Mapillary bbox API 500s in dense areas — use small boxes + `limit` + `AbortSignal.timeout`.
 
+## 2026-08-01 (10 New Levels 29-38 + Campaign Finale)
+- **New levels 29-38**: Added 10 Mapillary 360° images, all viewer-verified (headless Edge `load` event). Oslo `1435433820363165` (Q:0.931), Warsaw `912845668480564` (Q:0.936), Barcelona `1310993664042893` (Q:0.925), Toronto `1876545883114519` (Q:0.879), Lima `1028057648155164` (Q:0.857), Chicago `1849867198514817` (Q:0.840), Taipei `1114035679097190` (Q:0.826), Copenhagen `1156128369023100` (Q:0.708), Toronto `947237610705874` (Q:0.877), Lima `163868632672339` (Q:0.850).
+- **City-finding workflow** (v4 Graph API): pedestrian plazas have NO car-captured panos (Vienna Stephansplatz = 0 panos despite dense imagery). Target car-accessible streets. Dense cities bury panos — small boxes + pagination. Rate limits: pace 20-30s+ between requests.
+- **TOTAL_LEVELS 28→38**: `progression.ts`, `game/page.tsx` (also REAL_LEVELS). `advanceLevel` in actions.ts now caps at `maxLevel + 1` (sentinel 39) so finishing level 38 lands on the finale.
+- **Finale screen**: `src/components/results/FinaleScreen.tsx` replaces the dead "Case Closed" branch in `game/page.tsx` — 3-tier epilogue (Legendary ≥120k, Seasoned ≥60k, Rookie) driven by `getCampaignScores` campaign total + levels completed.
+- **ARCS extended**: `CaseFile.tsx` now has 9 arcs (added The Escape 29-33, The Final Lead 34-38).
+- **Copy updated**: landing page (38 locations / 9 arcs), OnboardingModal (38 locations), leaderboard level input max 38.
+- **Prod DB**: INSERTed 10 new image rows (levels 29-38) via inline `.mjs` script (seed.ts truncates — never run it on prod). Verified 38 pano images total.
+
 ## Next Moves
 - [x] Replace non-360 Mapillary images for levels 17-19, 22, 25-27 (+ L20 Athens, L27 Red Square) — all 28 levels verified 360°
+- [x] Add 10 new levels (29-38) + campaign finale screen
+- [ ] Play-test levels 29-38 on device; swap any that look wrong (dark/tight/duplicate-feeling Toronto+Lima doubles)
 - [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md`)
 - [ ] Set up Lemon Squeezy properly for subscriptions
 - [ ] **Disable challenges for closed testing**: Add `NEXT_PUBLIC_CHALLENGES_ENABLED=false` env var. Gate `createChallenge()`/`createRematchChallenge()` to return null. Hide challenge buttons in UI. Set after hackathon deadline, re-enable on Play Store launch.

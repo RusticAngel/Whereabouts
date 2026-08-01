@@ -5,11 +5,13 @@ import { profiles, images } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { LocationData, EvidenceItem } from '@/types';
 import { InvestigationScreen } from '@/components/game/InvestigationScreen';
+import { FinaleScreen } from '@/components/results/FinaleScreen';
+import { getCampaignScores } from '@/app/actions';
 
 export const dynamic = 'force-dynamic';
 
-const TOTAL_LEVELS = 28;
-const REAL_LEVELS = 28;
+const TOTAL_LEVELS = 38;
+const REAL_LEVELS = 38;
 
 export default async function NewGamePage({ searchParams }: { searchParams: Promise<{ level?: string; replay?: string }> }) {
   const { level: levelParam, replay } = await searchParams;
@@ -26,24 +28,15 @@ export default async function NewGamePage({ searchParams }: { searchParams: Prom
   const level = levelParam ? parseInt(levelParam, 10) : (profile?.currentLevel ?? 1);
 
   if (level > TOTAL_LEVELS) {
+    const entries = await getCampaignScores(session.user.id);
+    const campaignTotal = entries.reduce((sum, e) => sum + e.bestScore, 0);
+    const levelsCompleted = entries.filter((e) => e.completed).length;
     return (
-      <div className="flex flex-col items-center justify-center min-h-dvh bg-black text-white p-6">
-        <div className="max-w-md mx-auto text-center space-y-6">
-          <h1 className="text-2xl font-bold text-yellow-400">Case Closed</h1>
-          <p className="text-gray-400">All 28 leads have been investigated. Cipher has vanished — for now.</p>
-          <div className="flex flex-col gap-3">
-            <a href="/case-file" className="w-full block px-4 py-2.5 bg-white text-black rounded-lg font-medium text-center hover:bg-gray-200 transition-colors">
-              Review case history
-            </a>
-            <a href="/leaderboard" className="w-full block px-4 py-2.5 bg-gray-800 text-white rounded-lg font-medium text-center hover:bg-gray-700 transition-colors">
-              Leaderboard
-            </a>
-            <a href="/" className="w-full block px-4 py-2.5 bg-gray-800 text-gray-400 rounded-lg font-medium text-center hover:bg-gray-700 transition-colors">
-              Back to Home
-            </a>
-          </div>
-        </div>
-      </div>
+      <FinaleScreen
+        campaignTotal={campaignTotal}
+        levelsCompleted={levelsCompleted}
+        totalLevels={TOTAL_LEVELS}
+      />
     );
   }
 
