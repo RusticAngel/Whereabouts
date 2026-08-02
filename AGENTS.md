@@ -1,7 +1,7 @@
 # Trace — Session Memory
 
 ## Project
-Detective-style location deduction game. Players track a missing character (Cipher) across 38 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
+Detective-style location deduction game. Players track a missing character (Cipher) across 58 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
 
 ## Stack
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind v4)
@@ -96,7 +96,7 @@ Total max deduction: 1200
 | `src/lib/game/scoring.ts` | calculatePinScore (tiered), calculateFinalScore (pin - evidence + confidence multiplier) |
 | `src/lib/game/evidence.ts` | evidenceCost (scaled: 200/400/600), revealEvidence, getRevealedEvidence |
 | `src/lib/game/narrative.ts` | getNarrativeFeedback (4 tiers, 3 variants each, random) |
-| `src/lib/game/progression.ts` | getCurrentLevel, advanceLevel, getMaxLevel (TOTAL_LEVELS = 38) |
+| `src/lib/game/progression.ts` | getCurrentLevel, advanceLevel, getMaxLevel (TOTAL_LEVELS = 58) |
 | `src/lib/game/pin.ts` | calculateDistance (Haversine) |
 | `src/lib/game/analytics.ts` | trackEvent(name, payload) — console-only, 5 event types + evidenceCount |
 | `src/components/game/InvestigationScreen.tsx` | Core game loop — briefing → onboarding → investigation → submit → results redirect |
@@ -118,11 +118,11 @@ Total max deduction: 1200
 | `src/proxy.ts` | Route guard + cookie prefix middleware |
 | `src/app/api/auth/[...path]/route.ts` | Auth handler wrapper (cookie Secure stripping over HTTP) |
 | `capacitor.config.ts` | Capacitor config (server URL, Android settings) |
-| `seed.ts` | DB seed — 38 Mapillary 360° images (all real locations) |
+| `seed.ts` | DB seed — 58 Mapillary 360° images (all real locations) |
 | `drizzle.config.ts` | Drizzle Kit config for `db:push` |
 
 ## Seed Data
-- **38 real images** (all Mapillary 360° panoramas, no Unsplash)
+- **58 real images** (all Mapillary 360° panoramas, no Unsplash)
 - Each has `mapillary_id`, `lat`/`lng` (real-world coordinates), `briefing`, `evidence[]`, `is_pano: true`, `level_order`
 - Some images are `is_pano: false` at the Mapillary API level but still load in mapillary-js (flat images). Levels needing replacement marked in session history.
 - Run with: `node --experimental-strip-types --env-file .env.local seed.ts`
@@ -328,10 +328,20 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Copy updated**: landing page (38 locations / 9 arcs), OnboardingModal (38 locations), leaderboard level input max 38.
 - **Prod DB**: INSERTed 10 new image rows (levels 29-38) via inline `.mjs` script (seed.ts truncates — never run it on prod). Verified 38 pano images total.
 
+## 2026-08-03 (20 New Levels 39-58 + Second Campaign Chapter)
+- **New levels 39-58**: Added 20 Mapillary 360° images, all viewer-verified (headless Edge `load` event). Vienna `1223061188862071`, Brussels `383941866526863`, Zurich `1726803481852850`, Stockholm `2071254793601220`, Lisbon `248196660812275`, Edinburgh `1134333291594835`, Manchester `127382756034213`, Vancouver `1001085774920510`, Montreal `1066274921703305`, Santiago `1308060500205243`, Munich `1304577095065126`, Budapest `1233826624693009`, Helsinki `1709767269785245`, Casablanca `301721381429817`, Bucharest `1555347708555017`, Ho Chi Minh City `1114352006591397`, Quito `147584781592159`, Milan `1159299205171675`, Porto `1106114640183473`, Seville `1683990689630149`.
+- **City-finding** (v4 Graph API): single-call bboxes over 0.005 sq deg often 500; used cells ~0.003 with pagination + pacing.
+- **TOTAL_LEVELS 38→58**: `progression.ts`, `game/page.tsx`. Finale at level 59 sentinel.
+- **ARCS extended**: `CaseFile.tsx` now has 13 arcs (added The New Chapter 39-43, The Continental 44-48, Deep Waters 49-53, The Closed Circle 54-58).
+- **Copy updated**: landing page (58 locations / 13 arcs), OnboardingModal (58 locations), leaderboard level input max 58, README.
+- **Prod DB**: INSERTed 20 new image rows (levels 39-58) via inline `.mjs` script (seed.ts truncates — never run it on prod). Verified 58 pano images total.
+- **Narrative**: Day 82→Day 120 (level 59 finale). New "second chapter" arc beats continuing the Cipher chase across a fresh continental circuit.
+
 ## Next Moves
 - [x] Replace non-360 Mapillary images for levels 17-19, 22, 25-27 (+ L20 Athens, L27 Red Square) — all 28 levels verified 360°
 - [x] Add 10 new levels (29-38) + campaign finale screen
-- [ ] Play-test levels 29-38 on device; swap any that look wrong (dark/tight/duplicate-feeling Toronto+Lima doubles)
+- [x] Add 20 new levels (39-58) — 4 new arcs, campaign now 58 levels/13 arcs
+- [ ] Play-test levels 29-58 on device; swap any that look wrong
 - [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md`)
 - [ ] Set up Lemon Squeezy properly for subscriptions
 - [ ] **Disable challenges for closed testing**: Add `NEXT_PUBLIC_CHALLENGES_ENABLED=false` env var. Gate `createChallenge()`/`createRematchChallenge()` to return null. Hide challenge buttons in UI. Set after hackathon deadline, re-enable on Play Store launch.

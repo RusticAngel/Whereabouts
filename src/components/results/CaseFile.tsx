@@ -20,6 +20,10 @@ const ARCS = [
   { label: 'Final Trace', levels: '23–28', start: 23, end: 28 },
   { label: 'The Escape', levels: '29–33', start: 29, end: 33 },
   { label: 'The Final Lead', levels: '34–38', start: 34, end: 38 },
+  { label: 'The New Chapter', levels: '39–43', start: 39, end: 43 },
+  { label: 'The Continental', levels: '44–48', start: 44, end: 48 },
+  { label: 'Deep Waters', levels: '49–53', start: 49, end: 53 },
+  { label: 'The Closed Circle', levels: '54–58', start: 54, end: 58 },
 ];
 
 export function CaseFile({ entries, currentLevel }: CaseFileProps) {
