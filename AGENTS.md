@@ -328,6 +328,18 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Copy updated**: landing page (38 locations / 9 arcs), OnboardingModal (38 locations), leaderboard level input max 38.
 - **Prod DB**: INSERTed 10 new image rows (levels 29-38) via inline `.mjs` script (seed.ts truncates — never run it on prod). Verified 38 pano images total.
 
+## 2026-08-04 (Level 29/37 Image Swap + App Deep Links + Challenge Save Fix)
+- **Level 29 Oslo → Rio de Janeiro**: `1435433820363165` → `347395906813883` (q 0.848, Copacabana beachfront, -22.963816024, -43.174170128). Briefing/evidence rewritten (wave mosaic promenade, tropical heat, green peaks).
+- **Level 37 Toronto duplicate → distinct pano**: old `947237610705874` sat ~25 m from level 32's `1876545883114519` (both CN Tower waterfront). Replaced with `1296910268889992` (q 0.941) on Shuter St in the Yonge–Dundas neon core (43.654822899, -79.376532921), far from the waterfront. Briefing/evidence rewritten (digital-canvas facade, amplified crossroad, forever-shade canyon).
+- **App deep-link flow**: The `/challenge/{id}` route is auth-gated, so a challenged device landed on the bare web signup. Added:
+  - `@capacitor/app@8.1.1` (npm; also edits `capacitor.build.gradle` + `capacitor.settings.gradle` via cap sync).
+  - `src/components/challenge/DeepLinkRouter.tsx` — global listener on `appUrlOpen` + `getLaunchUrl`, routes `findme://challenge/{id}` → in-app `/challenge/{id}`. Mounted in root layout. Guarded by `Capacitor.isNativePlatform()`.
+  - `DeepLinkBanner.tsx` — now renders on `/auth` too (was challenge-page-only, unreachable pre-auth); dismissal persisted via localStorage `findme_banner_dismissed`.
+- **Challenge save fix**: `saveChallengeResult` in `actions.ts` now ensures a `profiles` row exists (`INSERT ... ON CONFLICT DO NOTHING`) before writing `challenge_results` — fresh signups previously failed the FK constraint and the result silently never saved.
+- **ChallengeScreen** `handleSubmit` wrapped in try/catch/finally: on failure shows "Could not transmit your intel" red error text instead of leaving the spinner stuck forever; spinner always released.
+- **lockfile note**: `npm install@capacitor/app` pruned the `@next/swc-*` platform binaries from package-lock.json (would break Vercel's Linux build). Hand-edited the lockfile to add only `@capacitor/app` — never rerun `npm i` blindly on this lockfile.
+- Committed `e046afe`, pushed → deployed. **APK needs rebuild** to include `@capacitor/app` + deep-link handling.
+
 ## 2026-08-03 (20 New Levels 39-58 + Second Campaign Chapter)
 - **New levels 39-58**: Added 20 Mapillary 360° images, all viewer-verified (headless Edge `load` event). Vienna `1223061188862071`, Brussels `383941866526863`, Zurich `1726803481852850`, Stockholm `2071254793601220`, Lisbon `248196660812275`, Edinburgh `1134333291594835`, Manchester `127382756034213`, Vancouver `1001085774920510`, Montreal `1066274921703305`, Santiago `1308060500205243`, Munich `1304577095065126`, Budapest `1233826624693009`, Helsinki `1709767269785245`, Casablanca `301721381429817`, Bucharest `1555347708555017`, Ho Chi Minh City `1114352006591397`, Quito `147584781592159`, Milan `1159299205171675`, Porto `1106114640183473`, Seville `1683990689630149`.
 - **City-finding** (v4 Graph API): single-call bboxes over 0.005 sq deg often 500; used cells ~0.003 with pagination + pacing.
@@ -342,6 +354,7 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [x] Add 10 new levels (29-38) + campaign finale screen
 - [x] Add 20 new levels (39-58) — 4 new arcs, campaign now 58 levels/13 arcs
 - [ ] Play-test levels 29-58 on device; swap any that look wrong
+- [ ] Rebuild APK (needs `@capacitor/app` + deep-link handling; `com.findme.app`)
 - [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md`)
 - [ ] Set up Lemon Squeezy properly for subscriptions
 - [ ] **Disable challenges for closed testing**: Add `NEXT_PUBLIC_CHALLENGES_ENABLED=false` env var. Gate `createChallenge()`/`createRematchChallenge()` to return null. Hide challenge buttons in UI. Set after hackathon deadline, re-enable on Play Store launch.
