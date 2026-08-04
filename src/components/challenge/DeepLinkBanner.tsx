@@ -1,17 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+
+const DISMISS_KEY = 'findme_banner_dismissed';
 
 export function DeepLinkBanner({ challengeId }: { challengeId: string }) {
-  const [isMobile, setIsMobile] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-
-  useEffect(() => {
-    const ua = navigator.userAgent;
-    setIsMobile(/android|iphone|ipad|ipod/i.test(ua));
-  }, []);
+  const [isMobile] = useState(() =>
+    typeof navigator !== 'undefined' && /android|iphone|ipad|ipod/i.test(navigator.userAgent)
+  );
+  const [dismissed, setDismissed] = useState(() => {
+    try {
+      return typeof localStorage !== 'undefined' && localStorage.getItem(DISMISS_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
 
   if (!isMobile || dismissed) return null;
+
+  const dismiss = () => {
+    localStorage.setItem(DISMISS_KEY, '1');
+    setDismissed(true);
+  };
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-yellow-400/10 border-b border-yellow-400/20 backdrop-blur-sm">
@@ -27,7 +37,7 @@ export function DeepLinkBanner({ challengeId }: { challengeId: string }) {
             Open App
           </a>
           <button
-            onClick={() => setDismissed(true)}
+            onClick={dismiss}
             className="text-xs text-gray-500 hover:text-gray-400"
           >
             ✕

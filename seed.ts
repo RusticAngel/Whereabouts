@@ -410,17 +410,17 @@ const seedData = [
 
   // ── Arc 8: The Escape (Levels 29–33) ──
   {
-    mapillary_id: '1435433820363165',
-    lat: '59.914429742799',
-    lng: '10.743207146712',
+    mapillary_id: '347395906813883',
+    lat: '-22.963816026861',
+    lng: '-43.174170127568',
     provider: 'mapillary',
     is_pano: true,
     level_order: 29,
-    briefing: 'Day 62: Cipher slipped through your fingers in the megacity. A garbled message surfaces from a Nordic capital — a city of fjords and forest, where the streets run straight to a royal palace and the air is clean and cold. The chase is far from over.',
+    briefing: 'Day 62: Cipher slipped through your fingers in the megacity. A garbled message surfaces from a tropical port — a city pressed between a crescent of golden sand and sheer green mountains. The air is thick with salt and music, and the sea is never far away. The chase is far from over.',
     evidence: [
-      { type: 'visual', value: 'royal_boulevard', label: 'A wide boulevard runs arrow-straight toward a stately palace on a low rise at its end. Bronze lions and horsemen guard the approach, their patina green with northern rain.' },
-      { type: 'sensory', value: 'crisp_nordic_air', label: 'The air is crisp and dry, carrying the faint scent of the fjord and the cool of pine forests. The light is clear and even — a northern sun that lingers low on the horizon.' },
-      { type: 'visual', value: 'tram_streets', label: 'Trams glide silently along rails set into the cobblestones, their bells ringing softly. The streets are immaculate, the buildings a restrained palette of brick, stone, and pastel plaster.' },
+      { type: 'visual', value: 'wave_mosaic', label: 'The pavement underfoot is a rippling black-and-white wave, laid in a flowing mosaic that runs the full length of the shore — the work of a single artist sweeping along the seafront in one unbroken curve.' },
+      { type: 'sensory', value: 'tropical_heat', label: 'The heat is heavy and wet, clinging to the skin. The scent of the ocean and verdant jungle mixes on the close, humid air, and the daylight here is dazzling and constant.' },
+      { type: 'visual', value: 'green_peaks', label: 'Rising sharply behind the city, massive green mountains plunge straight into the bay, their slopes too steep to build on. The jungle reaches down almost to the water, a wall of green against the blue.' },
     ],
   },
   {
@@ -524,17 +524,17 @@ const seedData = [
     ],
   },
   {
-    mapillary_id: '947237610705874',
-    lat: '43.642430481946',
-    lng: '-79.381318693964',
+    mapillary_id: '1296910268889992',
+    lat: '43.654822899404',
+    lng: '-79.376532921659',
     provider: 'mapillary',
     is_pano: true,
     level_order: 37,
-    briefing: 'Day 78: Cipher doubles back to the lakeside metropolis — perhaps to slip the net, perhaps to retrieve something. The canyon of glass looms again, and the streetcars ring their bells at every crossing. This is a city of plans and grids; every corner feels deliberate.',
+    briefing: 'Day 78: Cipher doubles back to the lakeside metropolis — but this time away from the water, into the neon heart of its downtown. The trail winds through a ravine of towers alive with colour and noise, where a great rectangle of light burns even at noon. Cipher lingers in the crowd, nearly invisible.',
     evidence: [
-      { type: 'visual', value: 'grid_avenues', label: 'The avenues run in a rigid grid, wide and straight, numbered and predictable. At their crossings, elegant street lamps and signage frame the glass towers — order imposed on a grand scale.' },
-      { type: 'visual', value: 'green_roofs', label: 'Amid the grey and blue glass, flashes of green appear — rooftop gardens, trees in planter boxes, a park carved into the vertical landscape. The city has learned to grow upward as well as build.' },
-      { type: 'auditory', value: 'bell_and_rumble', label: 'The soundtrack is urban and layered: the ding-ding of streetcar bells, the low rumble of traffic, and the occasional helicopter beating overhead. Time seems to move faster in these canyons.' },
+      { type: 'visual', value: 'digital_canvas_facade', label: 'A single facade towers above the corner, wrapped head to foot in a seamless wall of light — a shimmering screen that dissolves into the street in cascades of colour. It is a building that has become pure advertisement.' },
+      { type: 'auditory', value: 'amplified_crossroad', label: 'The noise is layered and relentless — booming ads, busking music, and a roar of thousands of voices echoing off the glass. Crowds surge across the crossing from all four directions at once.' },
+      { type: 'sensory', value: 'forever_shade', label: 'The towers press so close that the street sits in near-constant shadow, save for the glow of the screens. Even at midday the canyon keeps its blue-grey gloom, lit from within rather than from the sky.' },
     ],
   },
   {

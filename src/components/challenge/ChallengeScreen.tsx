@@ -58,6 +58,7 @@ export function ChallengeScreen({ challengeId, location, userId }: ChallengeScre
   const [rematchId, setRematchId] = useState<string | null>(null);
   const [rematching, setRematching] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const savingRef = useRef(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const hasCoords = location.lat && location.lng;
@@ -67,35 +68,40 @@ export function ChallengeScreen({ challengeId, location, userId }: ChallengeScre
     savingRef.current = true;
     setSaving(true);
 
-    const actualLat = parseFloat(location.lat!);
-    const actualLng = parseFloat(location.lng!);
-    const distanceKm = Math.round(calculateDistance(pinLat, pinLng, actualLat, actualLng));
-    const totalScore = calculateFinalScore(distanceKm, evidenceRevealed, confidence);
-    const pinScore = calculateFinalScore(distanceKm, 0, 'low');
+    try {
+      const actualLat = parseFloat(location.lat!);
+      const actualLng = parseFloat(location.lng!);
+      const distanceKm = Math.round(calculateDistance(pinLat, pinLng, actualLat, actualLng));
+      const totalScore = calculateFinalScore(distanceKm, evidenceRevealed, confidence);
+      const pinScore = calculateFinalScore(distanceKm, 0, 'low');
 
-    await saveChallengeResult(challengeId, userId, {
-      score: totalScore,
-      distanceKm,
-      evidenceRevealed,
-      confidence,
-    });
+      await saveChallengeResult(challengeId, userId, {
+        score: totalScore,
+        distanceKm,
+        evidenceRevealed,
+        confidence,
+      });
 
-    const [challengeData, focused] = await Promise.all([
-      getChallenge(challengeId),
-      getFocusedLeaderboard(challengeId, userId),
-    ]);
-    if (challengeData) {
-      setPlaysCount(challengeData.playsCount);
-      setRematchId(challengeData.rematchOf);
+      const [challengeData, focused] = await Promise.all([
+        getChallenge(challengeId),
+        getFocusedLeaderboard(challengeId, userId),
+      ]);
+      if (challengeData) {
+        setPlaysCount(challengeData.playsCount);
+        setRematchId(challengeData.rematchOf);
+      }
+      setFocusedAbove(focused.above);
+      setFocusedBelow(focused.below);
+      setAllResults(focused.allResults);
+
+      setResult({ distanceKm, pinScore: totalScore, totalScore });
+      setPhase('results');
+    } catch {
+      setError('Could not transmit your intel. Check your connection and try again.');
+    } finally {
+      setSaving(false);
+      savingRef.current = false;
     }
-    setFocusedAbove(focused.above);
-    setFocusedBelow(focused.below);
-    setAllResults(focused.allResults);
-
-    setResult({ distanceKm, pinScore: totalScore, totalScore });
-    setPhase('results');
-    setSaving(false);
-    savingRef.current = false;
   }, [pinLat, pinLng, evidenceRevealed, confidence, location.lat, location.lng, challengeId, userId, hasCoords]);
 
   const handleChallengeFriends = useCallback(async () => {
@@ -329,6 +335,10 @@ export function ChallengeScreen({ challengeId, location, userId }: ChallengeScre
         <div className="shrink-0 px-4 pb-8 max-w-lg mx-auto w-full space-y-3 mt-3">
           {canSubmit && (
             <ConfidenceSelector value={confidence} onChange={setConfidence} />
+          )}
+
+          {error && (
+            <p className="text-sm text-red-400 text-center">{error}</p>
           )}
 
           <Button

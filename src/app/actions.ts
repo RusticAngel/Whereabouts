@@ -344,6 +344,11 @@ export async function saveChallengeResult(
   const { data: session } = await auth.getSession();
   if (!session?.user) return;
 
+  await db
+    .insert(profiles)
+    .values({ id: userId, username: session.user.name ?? null })
+    .onConflictDoNothing({ target: profiles.id });
+
   const [existing] = await db
     .select({ id: challengeResults.id })
     .from(challengeResults)

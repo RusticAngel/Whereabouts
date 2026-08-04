@@ -1,18 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { authClient } from '@/lib/auth/client';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { DeepLinkBanner } from '@/components/challenge/DeepLinkBanner';
 
 export default function AuthPage() {
-  const [redirectTo, setRedirectTo] = useState('/');
+  const [redirectTo] = useState(() => {
+    if (typeof window === 'undefined') return '/';
+    return new URLSearchParams(window.location.search).get('redirect') || '/';
+  });
+  const challengeMatch = redirectTo.match(/\/challenge\/([0-9a-f-]+)/i);
+  const challengeId = challengeMatch ? challengeMatch[1] : null;
   const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setRedirectTo(params.get('redirect') || '/');
-  }, []);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -61,6 +62,7 @@ export default function AuthPage() {
 
   return (
     <div className="flex flex-col min-h-dvh items-center justify-center p-6 bg-black text-white">
+      {challengeId && <DeepLinkBanner challengeId={challengeId} />}
       <button
         onClick={() => { window.location.href = '/'; }}
         className="self-start text-sm text-gray-500 hover:text-white transition-colors mb-4"
