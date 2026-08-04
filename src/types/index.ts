@@ -28,6 +28,10 @@ export interface LocationData {
   level_order: number;
   provider: string;
   mapillary_id?: string | null;
+  city_name?: string | null;
+  country_name?: string | null;
+  landmark_name?: string | null;
+  fun_fact?: string | null;
   isPlaceholder?: boolean;
 }
 

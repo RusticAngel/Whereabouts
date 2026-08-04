@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/Button';
-import { getHint } from '@/lib/game/hints';
+import { getDynamicHint, DynamicHint } from '@/lib/game/dynamicHints';
 import { Confidence } from '@/types';
 
 interface HintPanelProps {
@@ -12,11 +12,18 @@ interface HintPanelProps {
   targetLng: number;
   hintsUsed: number;
   confidence: Confidence;
+  cityName?: string | null;
+  countryName?: string | null;
+  landmarkName?: string | null;
   onHint: () => void;
 }
 
 const DELAYS = [300, 500, 900];
 const MAX_HINTS = 3;
+
+interface HintEntry extends DynamicHint {
+  index: number;
+}
 
 export function HintPanel({
   pinLat,
@@ -25,10 +32,13 @@ export function HintPanel({
   targetLng,
   hintsUsed,
   confidence,
+  cityName,
+  countryName,
+  landmarkName,
   onHint,
 }: HintPanelProps) {
   const [thinking, setThinking] = useState(false);
-  const [hints, setHints] = useState<string[]>([]);
+  const [hints, setHints] = useState<HintEntry[]>([]);
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set());
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -40,15 +50,18 @@ export function HintPanel({
     const delay = DELAYS[Math.min(hintsUsed, DELAYS.length - 1)];
 
     timerRef.current = setTimeout(() => {
-      const hintText = getHint({
+      const hint = getDynamicHint({
         pinLat,
         pinLng,
         targetLat,
         targetLng,
         hintsUsed,
         confidence,
+        cityName,
+        countryName,
+        landmarkName,
       });
-      setHints((prev) => [...prev, hintText]);
+      setHints((prev) => [...prev, { ...hint, index: prev.length }]);
       setCollapsed(new Set(Array.from({ length: hintsUsed }, (_, i) => i)));
       setThinking(false);
       onHint();
@@ -94,7 +107,7 @@ export function HintPanel({
             }`}
           >
             <span className="text-purple-400 text-xs font-mono mt-0.5 shrink-0">{isNewest ? 'AI' : `#${i + 1}`}</span>
-            <span className="flex-1">{hint}</span>
+            <span className="flex-1">{hint.text}</span>
             {!isNewest && (
               <button onClick={() => toggleCollapse(i)} className="text-gray-600 hover:text-gray-400 text-xs shrink-0 ml-1">−</button>
             )}

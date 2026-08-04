@@ -3,6 +3,7 @@ type EventName =
   | 'pin_placed'
   | 'evidence_revealed'
   | 'hint_used'
+  | 'clue_revealed'
   | 'report_submitted'
   | 'level_completed';
 
@@ -14,6 +15,7 @@ interface EventPayload {
   evidenceUsed?: number;
   evidenceCount?: number;
   hintsUsed?: number;
+  cluesRevealed?: number;
 }
 
 export function trackEvent(name: EventName, payload: EventPayload = {}) {

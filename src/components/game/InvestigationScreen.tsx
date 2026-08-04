@@ -6,12 +6,14 @@ import dynamic from 'next/dynamic';
 import { LocationData, Confidence } from '@/types';
 import { calculateDistance } from '@/lib/game/pin';
 import { calculateFinalScore } from '@/lib/game';
-import { saveRound, advanceLevel } from '@/app/actions';
+import { saveRound, advanceLevel, getDynamicClues } from '@/app/actions';
 import { trackEvent } from '@/lib/game/analytics';
+import type { DynamicClue } from '@/lib/game/dynamicClues';
 import { BriefingPanel } from './BriefingPanel';
 import { EvidencePanel } from './EvidencePanel';
 import { ConfidenceSelector } from './ConfidenceSelector';
 import { HintPanel } from './HintPanel';
+import { CluesPanel } from './CluesPanel';
 import { OnboardingModal } from './OnboardingModal';
 import { Button } from '@/components/ui/Button';
 
@@ -48,20 +50,24 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
   const [confidence, setConfidence] = useState<Confidence>('low');
   const [hintsCount, setHintsCount] = useState(0);
   const [saveFailed, setSaveFailed] = useState(false);
-  const [timeUp, setTimeUp] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300);
+  const [clues, setClues] = useState<DynamicClue[]>([]);
   const savingRef = useRef(false);
   const pinTrackedRef = useRef(false);
   const startedRef = useRef(false);
 
   const hasCoords = location.lat && location.lng;
+  const timeUp = timeLeft <= 0;
 
   useEffect(() => {
     if (phase === 'exploring' && !startedRef.current) {
       startedRef.current = true;
       trackEvent('game_started', { level });
+      getDynamicClues(location.id).then((c) => {
+        if (Array.isArray(c) && c.length) setClues(c);
+      });
     }
-  }, [phase, level]);
+  }, [phase, level, location.id]);
 
   useEffect(() => {
     if (pinLat !== null && pinLng !== null && !pinTrackedRef.current) {
@@ -72,21 +78,11 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
 
   useEffect(() => {
     if (phase !== 'exploring') return;
-    if (timeLeft <= 0) {
-      setTimeUp(true);
-      return;
-    }
     const id = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          setTimeUp(true);
-          return 0;
-        }
-        return t - 1;
-      });
+      setTimeLeft((t) => (t <= 1 ? 0 : t - 1));
     }, 1000);
     return () => clearInterval(id);
-  }, [phase, timeLeft]);
+  }, [phase]);
 
   const handleReveal = useCallback((count: number) => {
     setEvidenceRevealed(count);
@@ -98,6 +94,10 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
     setHintsCount(next);
     trackEvent('hint_used', { level, hintsUsed: next });
   }, [hintsCount, level]);
+
+  const handleClue = useCallback((count: number) => {
+    trackEvent('clue_revealed', { level, cluesRevealed: count });
+  }, [level]);
 
   const handleSubmit = useCallback(async () => {
     if (savingRef.current || pinLat === null || pinLng === null || !hasCoords) return;
@@ -220,9 +220,11 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
           {!timeUp && <EvidencePanel evidence={location.evidence} onReveal={handleReveal} />}
           {timeUp && (
             <div className="text-xs text-yellow-400 text-center py-2 px-3 bg-yellow-400/10 rounded-lg border border-yellow-400/20 font-medium">
-              Time's up. Evidence is sealed.
+              Time&apos;s up. Evidence is sealed.
             </div>
           )}
+
+          <CluesPanel clues={clues} onClueUsed={handleClue} />
 
           <button
             onClick={() => setPhase('pinning')}
@@ -273,9 +275,14 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
               targetLng={parseFloat(location.lng!)}
               hintsUsed={hintsCount}
               confidence={confidence}
+              cityName={location.city_name}
+              countryName={location.country_name}
+              landmarkName={location.landmark_name}
               onHint={handleHint}
             />
           )}
+
+          <CluesPanel clues={clues} onClueUsed={handleClue} />
 
           {canSubmit && (
             <ConfidenceSelector value={confidence} onChange={setConfidence} />

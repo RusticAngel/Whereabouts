@@ -7,6 +7,16 @@ import { eq, sql, and } from 'drizzle-orm';
 import { LocationData, EvidenceItem, CaseFileEntry, ChallengeData, ChallengeResultData } from '@/types';
 import { getMaxLevel } from '@/lib/game/progression';
 import { generateCaseSeed, getImageIndexFromSeed } from '@/lib/game/caseGenerator';
+import { getCluesForImage, DynamicClue } from '@/lib/game/dynamicClues';
+
+export async function getDynamicClues(imageId: string): Promise<DynamicClue[]> {
+  try {
+    const clues = await getCluesForImage(imageId);
+    return clues;
+  } catch {
+    return [];
+  }
+}
 
 export async function getLocationForLevel(level: number): Promise<LocationData | null> {
   const [image] = await db
@@ -27,6 +37,10 @@ export async function getLocationForLevel(level: number): Promise<LocationData |
     level_order: image.levelOrder ?? 1,
     provider: image.provider ?? 'mapillary',
     mapillary_id: image.mapillaryId ?? null,
+    city_name: image.cityName ?? null,
+    country_name: image.countryName ?? null,
+    landmark_name: image.landmarkName ?? null,
+    fun_fact: image.funFact ?? null,
   };
 }
 

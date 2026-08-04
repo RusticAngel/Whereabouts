@@ -41,6 +41,10 @@ export default async function GamePage({ params, searchParams }: { params: Promi
     level_order: image.levelOrder ?? level,
     provider: image.provider ?? 'mapillary',
     mapillary_id: image.mapillaryId ?? null,
+    city_name: image.cityName ?? null,
+    country_name: image.countryName ?? null,
+    landmark_name: image.landmarkName ?? null,
+    fun_fact: image.funFact ?? null,
   };
 
   return (

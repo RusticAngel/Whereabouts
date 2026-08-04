@@ -13,6 +13,10 @@ export const images = pgTable('images', {
   provider: text('provider').notNull().default('unsplash'),
   mapillaryId: text('mapillary_id'),
   isPano: boolean('is_pano').notNull().default(false),
+  cityName: text('city_name'),
+  countryName: text('country_name'),
+  landmarkName: text('landmark_name'),
+  funFact: text('fun_fact'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -75,4 +79,13 @@ export const challengeResults = pgTable('challenge_results', {
   createdAt: timestamp('created_at').defaultNow(),
 }, (t) => ({
   unq: uniqueIndex('challenge_results_player').on(t.challengeId, t.userId),
+}));
+
+export const locationClues = pgTable('location_clues', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  imageId: uuid('image_id').notNull().references(() => images.id),
+  clues: jsonb('clues').notNull().default('[]'),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (t) => ({
+  unq: uniqueIndex('location_clues_image').on(t.imageId),
 }));
