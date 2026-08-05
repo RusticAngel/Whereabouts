@@ -360,6 +360,14 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Neon DDL gotcha** (add to memory): `sql.unsafe('CREATE TABLE ...')` through `@neondatabase/serverless` silently no-ops; DDL must use **tagged-template** SQL against the **direct** host (strip `-pooler` from `DATABASE_URL`). See `scripts/migrate-progression.mjs`.
 - **Next 16 route params are Promises**: `await params` in route handlers (`GET /api/badges/[userId]`).
 
+## 2026-08-05 (Friends System)
+- **Schema**: Added `last_active_at` (timestamptz) to `profiles` + new `friend_requests` table (`from_user_id`/`to_user_id` → profiles, `UNIQUE(from_user_id, to_user_id)`, index on `to_user_id`). Migration: `scripts/migrate-friends.mjs` (tagged-template, direct host, `node --env-file .env.local`) — **already run on live DB**.
+- **Server actions** (`actions.ts`): `searchUsers` (min 3 chars, ILIKE, excludes self + existing friends both directions), `sendFriendRequest` (**auto-accepts** if a reverse pending request exists), `acceptFriendRequest`, `rejectFriendRequest`, `removeFriend` (deletes both-direction rows), `getPendingRequests`, `getFriendList` (CASE-based join on either direction, sorted by last_active_at DESC), `getUserProfile` (public: username/level/title/bestScore/gamesPlayed/lastActiveAt), `getPendingRequestsCount`.
+- **Consistency fixes**: `social_butterfly` + `getDailyChallengeStatus` friend count now count **both directions** (`OR`); `last_active_at` touched in `updateUserXP`, `upsertDailyScore`, `saveChallengeResult`.
+- **UI**: `/friends` (auth-gated, protected route) + `FriendsPage`/`FriendListItem`/`AddFriendModal`; `/profile/[userId]` (static `/profile` takes precedence; 404 via `notFound()` for unknown users) + `FriendActions` (challenge → `createChallenge()` + deep-link share, two-tap remove confirm); `NotificationBadge` client component polls `getPendingRequestsCount` every 30s on the landing hero Friends link; `DailyChallengeLocked` "Invite friends" now routes to `/friends`.
+- **Notes**: challenge system remains link-based (`createChallenge()` no-args, shared via deep link — no per-recipient field). `referral_king` badge still unawardable (no referral mechanism).
+- **Verified**: `tsc --noEmit` clean, eslint clean on all changed files, migration ran, dev-runtime: `/friends` → 307 to `/auth`, unknown `/profile/{id}` → not-found page.
+
 ## Next Moves
 - [x] Replace non-360 Mapillary images for levels 17-19, 22, 25-27 (+ L20 Athens, L27 Red Square) — all 28 levels verified 360°
 - [x] Add 10 new levels (29-38) + campaign finale screen

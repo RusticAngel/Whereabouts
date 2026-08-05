@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, jsonb, integer, boolean, date, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, jsonb, integer, boolean, date, timestamp, uniqueIndex, index } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const images = pgTable('images', {
@@ -58,6 +58,7 @@ export const profiles = pgTable('profiles', {
   xp: integer('xp').default(0),
   level: integer('level').default(1),
   title: text('title').default('Rookie Agent'),
+  lastActiveAt: timestamp('last_active_at').defaultNow(),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -77,6 +78,16 @@ export const friends = pgTable('friends', {
   createdAt: timestamp('created_at').defaultNow(),
 }, (t) => ({
   unq: uniqueIndex('friends_pair').on(t.userId, t.friendUserId),
+}));
+
+export const friendRequests = pgTable('friend_requests', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  fromUserId: uuid('from_user_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+  toUserId: uuid('to_user_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (t) => ({
+  unq: uniqueIndex('friend_requests_unique').on(t.fromUserId, t.toUserId),
+  toIdx: index('friend_requests_to_idx').on(t.toUserId),
 }));
 
 export const challenges = pgTable('challenges', {

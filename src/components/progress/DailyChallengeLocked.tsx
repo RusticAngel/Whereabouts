@@ -64,12 +64,7 @@ export function DailyChallengeLocked({ xp, xpNeeded, friends, friendsNeeded }: D
           <Button fullWidth variant="primary" onClick={() => router.push('/game')}>
             Play more games
           </Button>
-          <Button
-            fullWidth
-            variant="secondary"
-            disabled
-            title="Friends are coming soon"
-          >
+          <Button fullWidth variant="secondary" onClick={() => router.push('/friends')}>
             Invite friends
           </Button>
           <Button fullWidth variant="ghost" onClick={() => router.push('/profile')}>

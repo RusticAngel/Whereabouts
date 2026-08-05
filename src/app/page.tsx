@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth/server';
 import Link from 'next/link';
+import { NotificationBadge } from '@/components/notifications/NotificationBadge';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,6 +60,7 @@ export default async function Home() {
                 >
                   Profile
                 </Link>
+                <NotificationBadge userId={user.id} />
               </>
             ) : (
               <>
