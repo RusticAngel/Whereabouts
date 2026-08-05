@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth/server';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { db } from '@/db';
 import { images, challenges } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
@@ -10,10 +11,12 @@ import { LocationData, EvidenceItem } from '@/types';
 export const dynamic = 'force-dynamic';
 
 export default async function ChallengePage({ params }: { params: Promise<{ challengeId: string }> }) {
-  const { data: session } = await auth.getSession();
-  if (!session?.user) redirect('/auth');
-
   const { challengeId } = await params;
+
+  const { data: session } = await auth.getSession();
+  if (!session?.user) {
+    redirect(`/auth?redirect=${encodeURIComponent(`/challenge/${challengeId}`)}`);
+  }
 
   const [challenge] = await db
     .select()
@@ -25,7 +28,7 @@ export default async function ChallengePage({ params }: { params: Promise<{ chal
     return (
       <div className="flex flex-col items-center justify-center min-h-dvh bg-black text-white gap-4 p-4">
         <p className="text-gray-400">Challenge not found.</p>
-        <a href="/" className="text-sm text-gray-500 hover:text-white transition-colors">Back to Home</a>
+        <Link href="/" className="text-sm text-gray-500 hover:text-white transition-colors">Back to Home</Link>
       </div>
     );
   }
@@ -40,7 +43,7 @@ export default async function ChallengePage({ params }: { params: Promise<{ chal
     return (
       <div className="flex flex-col items-center justify-center min-h-dvh bg-black text-white gap-4 p-4">
         <p className="text-gray-400">Location data unavailable.</p>
-        <a href="/" className="text-sm text-gray-500 hover:text-white transition-colors">Back to Home</a>
+        <Link href="/" className="text-sm text-gray-500 hover:text-white transition-colors">Back to Home</Link>
       </div>
     );
   }

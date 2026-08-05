@@ -1,9 +1,12 @@
 import { auth } from '@/lib/auth/server';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { db } from '@/db';
 import { images, dailyScores } from '@/db/schema';
-import { eq, sql, and } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { DailyGame } from './DailyGame';
+import { getDailyChallengeStatus } from '@/app/actions';
+import { DailyChallengeLocked } from '@/components/progress/DailyChallengeLocked';
 import { LocationData, EvidenceItem } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +32,19 @@ export default async function DailyPage() {
 
   const today = getTodayDate();
 
+  const status = await getDailyChallengeStatus(session.user.id);
+
+  if (!status.unlocked) {
+    return (
+      <DailyChallengeLocked
+        xp={status.xp}
+        xpNeeded={status.xpNeeded}
+        friends={status.friends}
+        friendsNeeded={status.friendsNeeded}
+      />
+    );
+  }
+
   const allImages = await db
     .select()
     .from(images)
@@ -38,7 +54,7 @@ export default async function DailyPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-dvh bg-black text-white gap-4">
         <p className="text-gray-400">No sightings available.</p>
-        <a href="/" className="text-sm text-gray-500 hover:text-white transition-colors">Back to Home</a>
+        <Link href="/" className="text-sm text-gray-500 hover:text-white transition-colors">Back to Home</Link>
       </div>
     );
   }

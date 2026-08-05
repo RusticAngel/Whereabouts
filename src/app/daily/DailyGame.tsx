@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { LocationData, Confidence } from '@/types';
 import { calculateDistance } from '@/lib/game/pin';
-import { calculateFinalScore, getNarrativeFeedback, applyStreakMultiplier } from '@/lib/game';
+import { calculateFinalScore, applyStreakMultiplier } from '@/lib/game';
 import { evidenceCost } from '@/lib/game/evidence';
 import { EvidencePanel } from '@/components/game/EvidencePanel';
 import { ConfidenceSelector } from '@/components/game/ConfidenceSelector';
@@ -14,7 +14,9 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ResultCard } from '@/components/results/ResultCard';
 import { ShareButton } from '@/components/results/ShareButton';
-import { saveRound, upsertDailyScore, getProfileStreak, createChallenge } from '@/app/actions';
+import { saveRound, upsertDailyScore, getProfileStreak, createChallenge, awardGameRewards } from '@/app/actions';
+import { GameRewards } from '@/app/actions';
+import { RewardsPopups } from '@/components/progress/RewardsPopups';
 import { shareChallenge } from '@/lib/share';
 
 const StreetView = dynamic(() => import('@/components/game/StreetView'), {
@@ -55,6 +57,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
   const [streak, setStreak] = useState(0);
   const [challengeCopied, setChallengeCopied] = useState(false);
   const [hintsCount, setHintsCount] = useState(0);
+  const [rewards, setRewards] = useState<GameRewards | null>(null);
   const savingRef = useRef(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
@@ -100,6 +103,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
       await upsertDailyScore(userId, date, totalScore, undefined, distanceKm);
       setResult({ distanceKm, pinScore: totalScore, totalScore });
       setPhase('results');
+      setRewards(await awardGameRewards(roundId));
     }
     setSaving(false);
     savingRef.current = false;
@@ -137,6 +141,7 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
 
     return (
       <div className="flex flex-col min-h-dvh bg-black text-white p-4 animate-fade-in">
+        <RewardsPopups rewards={rewards} />
         <div className="max-w-lg mx-auto w-full space-y-6">
           <ResultCard
             ref={cardRef}

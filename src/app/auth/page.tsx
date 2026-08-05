@@ -61,7 +61,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-dvh items-center justify-center p-6 bg-black text-white">
+    <div className={`flex flex-col min-h-dvh items-center justify-center p-6 overflow-y-auto bg-black text-white ${challengeId ? 'pt-16' : ''}`}>
       {challengeId && <DeepLinkBanner challengeId={challengeId} />}
       <button
         onClick={() => { window.location.href = '/'; }}

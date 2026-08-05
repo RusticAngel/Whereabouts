@@ -349,6 +349,17 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Prod DB**: INSERTed 20 new image rows (levels 39-58) via inline `.mjs` script (seed.ts truncates — never run it on prod). Verified 58 pano images total.
 - **Narrative**: Day 82→Day 120 (level 59 finale). New "second chapter" arc beats continuing the Cipher chase across a fresh continental circuit.
 
+## 2026-08-05 (Deep-Link Auth Fixes + Progression System)
+- **Deep-link/auth bug fixes**:
+  - `src/app/api/auth/[...path]/route.ts`: cookie stripping (`__Secure-` + `Secure`) is now **conditional on request scheme** — HTTPS passes through unchanged (matches documented behavior); local HTTP still strips for LAN dev. Previously stripped unconditionally in prod, risking session-cookie drops in secure-context webviews/in-app browsers.
+  - `src/lib/auth/server.ts`: added `cookies: { sameSite: 'lax' }` so the session cookie is sent on top-level cross-site navigations (challenge links opened from WhatsApp/email). Default was `strict`.
+  - `src/proxy.ts`: fixed `?redirect=` never being appended — Neon's middleware returns an **absolute** Location (`http://host/auth`), which failed the old `location.startsWith('/auth')` check. Added `isAuthRedirect()` (pathname-based). Both branches updated. Also removed the `as any`/`RequestInit` typing hack in the `NextRequest` reconstruction.
+  - `src/app/challenge/[challengeId]/page.tsx`: page-level auth redirect now includes `?redirect=/challenge/{id}` (was bare `/auth`). Swapped `<a>` → `Link`.
+  - `src/app/auth/page.tsx`: added `overflow-y-auto` + conditional `pt-16` (banner offset) so the centered form scrolls instead of clipping top on small screens.
+- **Progression & Reward System** (XP/levels/titles, 16 badges, daily-unlock gate, dopamine popups, profile page): see earlier session — all verified, migrated to live DB.
+- **Neon DDL gotcha** (add to memory): `sql.unsafe('CREATE TABLE ...')` through `@neondatabase/serverless` silently no-ops; DDL must use **tagged-template** SQL against the **direct** host (strip `-pooler` from `DATABASE_URL`). See `scripts/migrate-progression.mjs`.
+- **Next 16 route params are Promises**: `await params` in route handlers (`GET /api/badges/[userId]`).
+
 ## Next Moves
 - [x] Replace non-360 Mapillary images for levels 17-19, 22, 25-27 (+ L20 Athens, L27 Red Square) — all 28 levels verified 360°
 - [x] Add 10 new levels (29-38) + campaign finale screen

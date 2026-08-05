@@ -53,6 +53,12 @@ export default async function Home() {
                 >
                   Leaderboard
                 </Link>
+                <Link
+                  href="/profile"
+                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
+                >
+                  Profile
+                </Link>
               </>
             ) : (
               <>

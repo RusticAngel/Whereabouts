@@ -17,6 +17,10 @@ function addSecurePrefix(cookieHeader: string): string {
   return cookieHeader.replace(/(^|;\s*)(neon-auth\.)/g, '$1__Secure-$2');
 }
 
+function isAuthRedirect(location: string): boolean {
+  return new URL(location, 'https://placeholder.invalid').pathname.startsWith('/auth');
+}
+
 export default async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const cookieHeader = request.headers.get('cookie');
@@ -28,15 +32,15 @@ export default async function middleware(request: NextRequest) {
     requestHeaders.set('cookie', modifiedCookie);
 
     if (isProtectedRoute(pathname) && !request.headers.has('Next-Action')) {
-      const init: RequestInit = { method: request.method, headers: requestHeaders };
+      const init = { method: request.method, headers: requestHeaders };
       if (request.method !== 'GET' && request.method !== 'HEAD') {
-        init.body = request.body;
+        (init as { body?: BodyInit }).body = request.body as BodyInit;
       }
-      const modifiedRequest = new NextRequest(request.url, init as any);
+      const modifiedRequest = new NextRequest(request.url, init);
       const authResult = await authMiddleware(modifiedRequest);
       if (authResult) {
         const location = authResult.headers.get('Location');
-        if (location && location.startsWith('/auth')) {
+        if (location && isAuthRedirect(location)) {
           const redirectUrl = new URL(location, request.url);
           if (!redirectUrl.searchParams.has('redirect')) {
             redirectUrl.searchParams.set('redirect', pathname);
@@ -60,7 +64,7 @@ export default async function middleware(request: NextRequest) {
     const authResult = await authMiddleware(request);
     if (authResult) {
       const location = authResult.headers.get('Location');
-      if (location && location.startsWith('/auth')) {
+      if (location && isAuthRedirect(location)) {
         const redirectUrl = new URL(location, request.url);
         if (!redirectUrl.searchParams.has('redirect')) {
           redirectUrl.searchParams.set('redirect', pathname);

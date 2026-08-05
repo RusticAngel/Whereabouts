@@ -2,12 +2,13 @@
 
 import { auth } from '@/lib/auth/server';
 import { db } from '@/db';
-import { images, rounds, dailyScores, profiles, challenges, challengeResults } from '@/db/schema';
-import { eq, sql, and } from 'drizzle-orm';
+import { images, rounds, dailyScores, profiles, challenges, challengeResults, badges, friends } from '@/db/schema';
+import { eq, sql, and, lte } from 'drizzle-orm';
 import { LocationData, EvidenceItem, CaseFileEntry, ChallengeData, ChallengeResultData } from '@/types';
 import { getMaxLevel } from '@/lib/game/progression';
 import { generateCaseSeed, getImageIndexFromSeed } from '@/lib/game/caseGenerator';
 import { getCluesForImage, DynamicClue } from '@/lib/game/dynamicClues';
+import { computeLevel, titleForLevel, levelProgress, badgeById, STREAK_REWARDS, XP, BadgeDef } from '@/lib/game/progressionRewards';
 
 export async function getDynamicClues(imageId: string): Promise<DynamicClue[]> {
   try {
@@ -437,7 +438,7 @@ export async function upsertDailyScore(userId: string, date: string, totalScore:
     newStreak = current.dailyStreak ?? 0;
   }
 
-  const cappedStreak = Math.min(newStreak, 5);
+  const cappedStreak = Math.max(1, newStreak);
   await db
     .update(profiles)
     .set({ dailyStreak: cappedStreak, lastDailyDate: date })
@@ -543,5 +544,226 @@ export async function getFocusedLeaderboard(
     current: mapped[idx],
     below: idx < mapped.length - 1 ? mapped[idx + 1] : null,
     allResults: mapped,
+  };
+}
+
+export async function getDailyChallengeStatus(userId: string) {
+  const [profile] = await db
+    .select({ xp: profiles.xp })
+    .from(profiles)
+    .where(eq(profiles.id, userId))
+    .limit(1);
+
+  const friendRows = await db
+    .select({ id: friends.id })
+    .from(friends)
+    .where(eq(friends.userId, userId));
+
+  const xp = profile?.xp ?? 0;
+  const friendCount = friendRows.length;
+
+  const xpUnlocked = xp >= 100;
+  const friendsUnlocked = friendCount >= 3;
+
+  return {
+    unlocked: xpUnlocked || friendsUnlocked,
+    xp,
+    xpNeeded: Math.max(0, 100 - xp),
+    friends: friendCount,
+    friendsNeeded: Math.max(0, 3 - friendCount),
+  };
+}
+
+export async function updateUserXP(
+  userId: string,
+  earnedXP: number
+): Promise<{ xp: number; level: number; title: string; leveledUp: boolean }> {
+  const [profile] = await db
+    .select({ xp: profiles.xp })
+    .from(profiles)
+    .where(eq(profiles.id, userId))
+    .limit(1);
+
+  const oldXp = profile?.xp ?? 0;
+  const newXp = oldXp + Math.max(0, earnedXP);
+  const newLevel = computeLevel(newXp);
+  const newTitle = titleForLevel(newLevel);
+  const oldLevel = computeLevel(oldXp);
+
+  await db
+    .insert(profiles)
+    .values({ id: userId, xp: newXp, level: newLevel, title: newTitle })
+    .onConflictDoUpdate({
+      target: profiles.id,
+      set: { xp: newXp, level: newLevel, title: newTitle },
+    });
+
+  return { xp: newXp, level: newLevel, title: newTitle, leveledUp: newLevel > oldLevel };
+}
+
+export async function checkAndAwardBadges(userId: string): Promise<BadgeDef[]> {
+  const [profile] = await db
+    .select({ dailyStreak: profiles.dailyStreak })
+    .from(profiles)
+    .where(eq(profiles.id, userId))
+    .limit(1);
+
+  const [played] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(rounds)
+    .where(and(eq(rounds.userId, userId), eq(rounds.completed, true)));
+
+  const [perfects] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(rounds)
+    .where(and(eq(rounds.userId, userId), eq(rounds.pinScore, 5000)));
+
+  const closeRows = await db
+    .select({ id: rounds.id })
+    .from(rounds)
+    .where(and(eq(rounds.userId, userId), lte(rounds.distanceKm, 1)));
+
+  const dailyRows = await db
+    .select({ date: dailyScores.date })
+    .from(dailyScores)
+    .where(eq(dailyScores.userId, userId));
+
+  const friendRows = await db
+    .select({ id: friends.id })
+    .from(friends)
+    .where(eq(friends.userId, userId));
+
+  const gamesPlayed = played?.count ?? 0;
+  const perfectScores = perfects?.count ?? 0;
+  const hasCloseCall = closeRows.length > 0;
+  const distinctDailyCount = new Set(dailyRows.map((r) => r.date)).size;
+  const friendCount = friendRows.length;
+  const streak = profile?.dailyStreak ?? 0;
+
+  const earned: string[] = [];
+  if (gamesPlayed >= 1) earned.push('first_steps');
+  if (gamesPlayed >= 10) earned.push('explorer');
+  if (gamesPlayed >= 50) earned.push('adventurer');
+  if (gamesPlayed >= 100) earned.push('cartographer');
+  if (perfectScores >= 1) earned.push('perfect_score');
+  if (perfectScores >= 3) earned.push('sharpshooter');
+  if (hasCloseCall) earned.push('close_call');
+  if (streak >= 3) earned.push('streak_starter');
+  if (streak >= 7) earned.push('streak_committed');
+  if (streak >= 30) earned.push('streak_master');
+  if (streak >= 60) earned.push('streak_addict');
+  if (streak >= 90) earned.push('streak_legend');
+  if (streak >= 365) earned.push('streak_immortal');
+  if (distinctDailyCount >= 7) earned.push('daily_dedication');
+  if (friendCount >= 10) earned.push('social_butterfly');
+
+  if (earned.length === 0) return [];
+
+  const inserted = await db
+    .insert(badges)
+    .values(earned.map((badgeId) => ({ userId, badgeId })))
+    .onConflictDoNothing({ target: [badges.userId, badges.badgeId] })
+    .returning({ badgeId: badges.badgeId });
+
+  const newlyEarned: BadgeDef[] = [];
+  for (const row of inserted) {
+    const def = badgeById(row.badgeId);
+    if (def) newlyEarned.push(def);
+  }
+  return newlyEarned;
+}
+
+export interface GameRewards {
+  xpGained: number;
+  leveledUp: boolean;
+  newLevel: number;
+  newTitle: string;
+  badges: BadgeDef[];
+  streak: number;
+  streakMilestone: (typeof STREAK_REWARDS)[number] | null;
+  perfect: boolean;
+}
+
+export async function awardGameRewards(roundId: string): Promise<GameRewards | null> {
+  const { data: session } = await auth.getSession();
+  if (!session?.user) return null;
+
+  const [round] = await db
+    .select()
+    .from(rounds)
+    .where(eq(rounds.id, roundId))
+    .limit(1);
+
+  if (!round) return null;
+
+  const userId = session.user.id;
+  const distanceKm = round.distanceKm ?? 0;
+  const pinScore = round.pinScore ?? 0;
+  const perfect = pinScore === 5000;
+  const isDaily = (round.level ?? 0) === 0;
+
+  const [profile] = await db
+    .select({ dailyStreak: profiles.dailyStreak })
+    .from(profiles)
+    .where(eq(profiles.id, userId))
+    .limit(1);
+
+  const streak = profile?.dailyStreak ?? 0;
+  const streakMilestone: (typeof STREAK_REWARDS)[number] | null =
+    STREAK_REWARDS.find((r) => r.days === streak) ?? null;
+
+  let earned = XP.PLAY;
+  if (distanceKm > 10 && distanceKm <= 100) earned += XP.ACCURATE_100;
+  if (distanceKm <= 10) earned += XP.ACCURATE_10;
+  if (perfect) earned += XP.PERFECT;
+  if (isDaily) earned += XP.DAILY;
+  if (streakMilestone?.xp) earned += streakMilestone.xp;
+
+  const xpResult = await updateUserXP(userId, earned);
+  const badgesGained = await checkAndAwardBadges(userId);
+
+  return {
+    xpGained: earned,
+    leveledUp: xpResult.leveledUp,
+    newLevel: xpResult.level,
+    newTitle: xpResult.title,
+    badges: badgesGained,
+    streak,
+    streakMilestone,
+    perfect,
+  };
+}
+
+export async function getProfileProgress(userId: string) {
+  const [profile] = await db
+    .select()
+    .from(profiles)
+    .where(eq(profiles.id, userId))
+    .limit(1);
+
+  if (!profile) return null;
+
+  const xp = profile.xp ?? 0;
+  const progress = levelProgress(xp);
+
+  const badgeRows = await db
+    .select({ badgeId: badges.badgeId })
+    .from(badges)
+    .where(eq(badges.userId, userId));
+
+  const badgeList = badgeRows
+    .map((r) => badgeById(r.badgeId))
+    .filter((b): b is BadgeDef => Boolean(b));
+
+  return {
+    username: profile.username,
+    xp,
+    level: profile.level ?? progress.level,
+    title: profile.title ?? titleForLevel(progress.level),
+    progress100: progress.progress100,
+    nextLevelAt: progress.currentCeil,
+    streak: profile.dailyStreak ?? 0,
+    currentLevel: profile.currentLevel ?? 1,
+    badges: badgeList,
   };
 }

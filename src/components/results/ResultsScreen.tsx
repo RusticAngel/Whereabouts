@@ -3,11 +3,13 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { getRound, createChallenge } from '@/app/actions';
+import { getRound, createChallenge, awardGameRewards } from '@/app/actions';
+import { GameRewards } from '@/app/actions';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ResultCard } from './ResultCard';
 import { ShareButton } from './ShareButton';
+import { RewardsPopups } from '@/components/progress/RewardsPopups';
 import { evidenceCost } from '@/lib/game/evidence';
 import { shareChallenge } from '@/lib/share';
 
@@ -52,6 +54,7 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [challengeCopied, setChallengeCopied] = useState(false);
+  const [rewards, setRewards] = useState<GameRewards | null>(null);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -79,6 +82,7 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
         imageLng: round.image_data.lng,
       });
       setLoading(false);
+      setRewards(await awardGameRewards(roundId));
     })();
   }, [roundId, router]);
 
@@ -136,6 +140,7 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
 
   return (
     <div className="flex flex-col min-h-dvh bg-black text-white animate-fade-in">
+      <RewardsPopups rewards={rewards} />
       <div className="relative w-full aspect-[4/3] sm:aspect-video bg-gray-900 overflow-hidden">
         {data.provider === 'mapillary' && data.mapillaryId ? (
           <StreetView imageId={data.mapillaryId} />

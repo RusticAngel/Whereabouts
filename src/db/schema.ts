@@ -1,4 +1,5 @@
 import { pgTable, uuid, text, jsonb, integer, boolean, date, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
 export const images = pgTable('images', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -54,8 +55,29 @@ export const profiles = pgTable('profiles', {
   currentLevel: integer('current_level').default(1),
   dailyStreak: integer('daily_streak').default(0),
   lastDailyDate: date('last_daily_date'),
+  xp: integer('xp').default(0),
+  level: integer('level').default(1),
+  title: text('title').default('Rookie Agent'),
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+export const badges = pgTable('badges', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+  badgeId: text('badge_id').notNull(),
+  unlockedAt: timestamp('unlocked_at').defaultNow(),
+}, (t) => ({
+  unq: uniqueIndex('badges_user_badge').on(t.userId, t.badgeId),
+}));
+
+export const friends = pgTable('friends', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+  friendUserId: uuid('friend_user_id').notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (t) => ({
+  unq: uniqueIndex('friends_pair').on(t.userId, t.friendUserId),
+}));
 
 export const challenges = pgTable('challenges', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -88,4 +110,9 @@ export const locationClues = pgTable('location_clues', {
   createdAt: timestamp('created_at').defaultNow(),
 }, (t) => ({
   unq: uniqueIndex('location_clues_image').on(t.imageId),
+}));
+
+export const profilesRelations = relations(profiles, ({ many }) => ({
+  friends: many(friends, { relationName: 'user_friends' }),
+  badges: many(badges),
 }));
