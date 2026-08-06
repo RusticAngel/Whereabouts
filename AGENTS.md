@@ -368,6 +368,15 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Notes**: challenge system remains link-based (`createChallenge()` no-args, shared via deep link — no per-recipient field). `referral_king` badge still unawardable (no referral mechanism).
 - **Verified**: `tsc --noEmit` clean, eslint clean on all changed files, migration ran, dev-runtime: `/friends` → 307 to `/auth`, unknown `/profile/{id}` → not-found page.
 
+## 2026-08-05 (Post-test fixes: tutorial overlay, revealing clues, timer)
+- **CoachMark behind map fixed**: Leaflet internal panes use `z-index` up to ~1000, and the `PinMap` container didn't create a stacking context, so map tiles rendered above the fixed CoachMark overlay (z-50/z-60). Fix: added `relative z-0` to the map container div in `PinMap.tsx` (one-line change; fixes the tutorial everywhere PinMap is used).
+- **Clues: street-view-only + region-based**:
+  - Removed `CluesPanel` from the pinning/map phase (`InvestigationScreen.tsx`) — clues now only show during exploration.
+  - Rewrote `src/lib/game/dynamicClues.ts`: dropped geonames + Wikipedia enrichment (which leaked country in clue 1 and city in clue 3, plus fun-fact extracts naming landmarks). New 3-tier **region-based** progression with no proper nouns — T1 coarse region ("Somewhere in Western Europe"), T2 character ("a coastal city"), T3 character+region ("A nordic capital in Northern Europe"). Uses `COUNTRY_PROFILES` map + `REGION_BOXES` lat/lng classifier fallback (works even where `country_name` is NULL in DB). Clues stay cached in `location_clues`.
+  - Prod cleanup: `DELETE FROM location_clues` ran (cache was already empty — no stale revealing clues lingered).
+- **Timer 5→2 min**: `InvestigationScreen.tsx` `useState(300)` → `useState(120)`. Only in-game timer in the app (demo/daily/challenge have none).
+- **Note**: `PinMap.tsx` has **pre-existing** eslint errors (`no-explicit-any` line 6, refs-during-render lines 30-31) identical to untouched `ResultsMap.tsx:7` — not introduced by these fixes; `tsc` passes clean.
+
 ## Next Moves
 - [x] Replace non-360 Mapillary images for levels 17-19, 22, 25-27 (+ L20 Athens, L27 Red Square) — all 28 levels verified 360°
 - [x] Add 10 new levels (29-38) + campaign finale screen

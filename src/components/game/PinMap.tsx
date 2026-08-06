@@ -148,7 +148,7 @@ export default function PinMap({ onPinPlaced, disabled, initialLat, initialLng, 
 
   return (
     <div className="relative w-full h-full">
-      <div ref={containerRef} className="w-full h-full rounded-lg overflow-hidden" />
+      <div ref={containerRef} className="w-full h-full rounded-lg overflow-hidden relative z-0" />
 
       {initializing && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-800 rounded-lg z-10 gap-3 animate-pulse">

@@ -9,140 +9,169 @@ export interface DynamicClue {
 }
 
 export interface ClueContext {
-  cityName?: string | null;
   countryName?: string | null;
-  landmarkName?: string | null;
-  funFact?: string | null;
   lat?: string | null;
   lng?: string | null;
 }
 
+interface RegionProfile {
+  region: string;
+  character: string;
+  cityType: string;
+}
+
+// ---- Country -> coarse region profile (never names the country/city) ----
+
+const COUNTRY_PROFILES: Record<string, RegionProfile> = {
+  'USA': { region: 'North America', character: 'vast', cityType: 'metropolis' },
+  'United States': { region: 'North America', character: 'vast', cityType: 'metropolis' },
+  'UK': { region: 'Western Europe', character: 'maritime', cityType: 'capital' },
+  'United Kingdom': { region: 'Western Europe', character: 'maritime', cityType: 'capital' },
+  'England': { region: 'Western Europe', character: 'maritime', cityType: 'capital' },
+  'Scotland': { region: 'Western Europe', character: 'nordic', cityType: 'capital' },
+  'France': { region: 'Western Europe', character: 'elegant', cityType: 'capital' },
+  'Ireland': { region: 'Western Europe', character: 'island', cityType: 'capital' },
+  'Spain': { region: 'Southern Europe', character: 'mediterranean', cityType: 'old city' },
+  'Portugal': { region: 'Southern Europe', character: 'atlantic coastal', cityType: 'port city' },
+  'Italy': { region: 'Southern Europe', character: 'mediterranean', cityType: 'fashion capital' },
+  'Greece': { region: 'Southern Europe', character: 'mediterranean', cityType: 'ancient capital' },
+  'Turkey': { region: 'Eurasia', character: 'coastal', cityType: 'ancient capital' },
+  'UAE': { region: 'Middle East', character: 'desert-edge', cityType: 'metropolis' },
+  'United Arab Emirates': { region: 'Middle East', character: 'desert-edge', cityType: 'metropolis' },
+  'India': { region: 'South Asia', character: 'tropical', cityType: 'metropolis' },
+  'China': { region: 'East Asia', character: 'subtropical', cityType: 'harbour city' },
+  'Taiwan': { region: 'East Asia', character: 'subtropical island', cityType: 'capital' },
+  'Japan': { region: 'East Asia', character: 'island', cityType: 'metropolis' },
+  'Vietnam': { region: 'Southeast Asia', character: 'tropical', cityType: 'metropolis' },
+  'Morocco': { region: 'North Africa', character: 'desert-edge', cityType: 'old city' },
+  'Egypt': { region: 'North Africa', character: 'desert', cityType: 'ancient capital' },
+  'South Africa': { region: 'Southern Africa', character: 'ocean-facing', cityType: 'harbour city' },
+  'Iceland': { region: 'Northern Europe', character: 'nordic island', cityType: 'capital' },
+  'Norway': { region: 'Northern Europe', character: 'nordic fjord', cityType: 'capital' },
+  'Sweden': { region: 'Northern Europe', character: 'nordic', cityType: 'capital' },
+  'Denmark': { region: 'Northern Europe', character: 'nordic', cityType: 'capital' },
+  'Finland': { region: 'Northern Europe', character: 'nordic', cityType: 'capital' },
+  'Russia': { region: 'Eastern Europe', character: 'nordic-steppe', cityType: 'capital' },
+  'Poland': { region: 'Central Europe', character: 'continental', cityType: 'capital' },
+  'Germany': { region: 'Central Europe', character: 'continental', cityType: 'capital' },
+  'Austria': { region: 'Central Europe', character: 'alpine', cityType: 'capital' },
+  'Switzerland': { region: 'Central Europe', character: 'alpine', cityType: 'city' },
+  'Hungary': { region: 'Central Europe', character: 'danubian', cityType: 'capital' },
+  'Romania': { region: 'Eastern Europe', character: 'continental', cityType: 'capital' },
+  'Belgium': { region: 'Western Europe', character: 'continental', cityType: 'capital' },
+  'Canada': { region: 'North America', character: 'nordic', cityType: 'metropolis' },
+  'Brazil': { region: 'South America', character: 'tropical', cityType: 'coastal metropolis' },
+  'Peru': { region: 'South America', character: 'pacific coastal', cityType: 'capital' },
+  'Chile': { region: 'South America', character: 'pacific coastal', cityType: 'capital' },
+  'Ecuador': { region: 'South America', character: 'andean', cityType: 'capital' },
+  'Argentina': { region: 'South America', character: 'continental', cityType: 'capital' },
+};
+
+// ---- Lat/lng -> coarse region (fallback when country name is missing) ----
+
+interface RegionBox {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+  profile: RegionProfile;
+}
+
+const REGION_BOXES: RegionBox[] = [
+  { north: 71, south: 24, east: -52, west: -168, profile: { region: 'North America', character: 'vast', cityType: 'city' } },
+  { north: -13, south: -56, east: -34, west: -82, profile: { region: 'South America', character: 'coastal', cityType: 'capital' } },
+  { north: 71, south: 54, east: 40, west: -25, profile: { region: 'Northern Europe', character: 'nordic', cityType: 'capital' } },
+  { north: 54, south: 40, east: 20, west: -11, profile: { region: 'Western Europe', character: 'continental', cityType: 'capital' } },
+  { north: 54, south: 44, east: 27, west: 10, profile: { region: 'Central Europe', character: 'continental', cityType: 'capital' } },
+  { north: 44, south: 30, east: 40, west: -10, profile: { region: 'Southern Europe', character: 'mediterranean', cityType: 'old city' } },
+  { north: 33, south: 18, east: 35, west: -10, profile: { region: 'North Africa', character: 'desert-edge', cityType: 'old city' } },
+  { north: 32, south: 12, east: 60, west: 35, profile: { region: 'Middle East', character: 'desert', cityType: 'metropolis' } },
+  { north: 18, south: -35, east: 52, west: 10, profile: { region: 'Southern Africa', character: 'ocean-facing', cityType: 'city' } },
+  { north: 35, south: 5, east: 90, west: 65, profile: { region: 'South Asia', character: 'tropical', cityType: 'metropolis' } },
+  { north: 25, south: -11, east: 120, west: 95, profile: { region: 'Southeast Asia', character: 'tropical', cityType: 'metropolis' } },
+  { north: 50, south: 20, east: 150, west: 100, profile: { region: 'East Asia', character: 'subtropical', cityType: 'metropolis' } },
+];
+
+function regionFromLatLng(lat: number, lng: number): RegionProfile | null {
+  for (const box of REGION_BOXES) {
+    if (lat <= box.north && lat >= box.south && lng <= box.east && lng >= box.west) {
+      return box.profile;
+    }
+  }
+  return null;
+}
+
+function profileForContext(ctx: ClueContext): RegionProfile | null {
+  if (ctx.countryName) {
+    const match = COUNTRY_PROFILES[ctx.countryName];
+    if (match) return match;
+  }
+  if (ctx.lat && ctx.lng) {
+    const lat = parseFloat(ctx.lat);
+    const lng = parseFloat(ctx.lng);
+    if (!isNaN(lat) && !isNaN(lng)) return regionFromLatLng(lat, lng);
+  }
+  return null;
+}
+
 // ---- Template pools (3-5 variations per tier, randomly selected) ----
 
-const SUBTLE_TEMPLATES = [
-  'The city you seek is in {country}.',
-  'This trail leads to a city somewhere in {country}.',
-  'The answer lies in {country}.',
-  'Start your search in {country} — that much is certain.',
-  'Someone here is painfully obvious about which {country} they are in.',
+const REGION_TEMPLATES = [
+  'The trail leads somewhere in {region}.',
+  'Somewhere in {region}, a city waits for you.',
+  'Your destination sits in {region}.',
+  'Cipher is laying low in {region} — narrow it down from there.',
+  'Keep in mind: this hunt ends in {region}.',
 ];
 
-const MEDIUM_TEMPLATES = [
-  'Keep an eye out for {landmark}.',
-  'Cipher was seen near {landmark}.',
-  'Before long, the street view will show {landmark}.',
-  'If you spot {landmark}, you have the right neighbourhood.',
-  'Legend says {landmark} is steps from the pin you are looking for.',
+const CHARACTER_TEMPLATES = [
+  'Cipher chose a {character} city — you can feel it in the air.',
+  'The scene speaks of a {character} place. Trust what you see.',
+  'This is a {character} city. Watch for the details that give it away.',
+  'A {character} setting — that much the intel confirms.',
 ];
 
-const DIRECT_TEMPLATES = [
-  'You are in {city}, {country}. Cipher is right there.',
-  'It is {city}, {country}. End of the line.',
-  '{city}, {country} — that is where this trail dies.',
-  'The trail ends in {city}, {country}.',
+const REGION_CHARACTER_TEMPLATES = [
+  'A {character} {cityType} in {region}. That is where the trail rests.',
+  'Think of a {character} {cityType} in {region} — Cipher is close.',
+  'The answer: a {character} {cityType} somewhere in {region}.',
+  'Lock your search onto a {character} {cityType} in {region}.',
 ];
 
-const FUN_FACT_TEMPLATES = [
-  'Extra intel: {funFact}',
-  'For the record: {funFact}',
-  'One more thing: {funFact}',
-  'Fun fact on record: {funFact}',
-];
+const FALLBACK_TEMPLATES: Record<1 | 2 | 3, string[]> = {
+  1: ['Somewhere far from home, a city waits to be found.'],
+  2: ['Follow the details — the environment will tell you where this is.'],
+  3: ['Trust what the scene shows you. Cipher picked this spot for a reason.'],
+};
 
 function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// ---- GeoNames (best-effort; requires GEONAMES_USERNAME; falls back gracefully) ----
-
-async function geonamesName(lat: string, lng: string): Promise<{ city?: string; country?: string }> {
-  const username = process.env.GEONAMES_USERNAME;
-  if (!username) return {};
-  try {
-    const url =
-      `https://api.geonames.org/findNearbyPlaceNameJSON?lat=${encodeURIComponent(lat)}` +
-      `&lng=${encodeURIComponent(lng)}&username=${encodeURIComponent(username)}`;
-    const r = await fetch(url, { signal: AbortSignal.timeout(5000) });
-    if (!r.ok) return {};
-    const j = await r.json();
-    const top = j?.geonames?.[0];
-    return {
-      city: top?.name ?? top?.toponymName ?? undefined,
-      country: top?.countryName ?? undefined,
-    };
-  } catch {
-    return {};
+function buildTierText(profile: RegionProfile | null, tier: 1 | 2 | 3): DynamicClue {
+  if (!profile) {
+    return { tier, text: pickRandom(FALLBACK_TEMPLATES[tier]), source: 'fallback' };
   }
-}
-
-// ---- Wikipedia (best-effort fun fact; falls back gracefully) ----
-
-async function wikipediaFunFact(
-  cityName: string,
-  countryName: string,
-  landmarkName?: string | null,
-): Promise<string | null> {
-  const query = landmarkName && landmarkName !== cityName ? landmarkName : `${cityName}, ${countryName}`;
-  try {
-    const url =
-      'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&exsentences=1' +
-      '&format=json&origin=*&redirects=1&titles=' +
-      encodeURIComponent(query);
-    const r = await fetch(url, { signal: AbortSignal.timeout(5000) });
-    if (!r.ok) return null;
-    const j = await r.json();
-    const pages = j?.query?.pages ?? {};
-    const page = Object.values(pages)[0] as { extract?: string } | undefined;
-    if (!page?.extract) return null;
-    const sentences = page.extract.split(/(?<=[.!?])\s+/);
-    const intro = sentences[0] ?? page.extract;
-    if (intro.length > 180) return intro.slice(0, 180).trimEnd() + '…';
-    return intro.trim();
-  } catch {
-    return null;
-  }
-}
-
-// ---- Tier construction ----
-
-function buildTierText(
-  ctx: ClueContext,
-  tier: 1 | 2 | 3,
-  funFact?: string | null,
-): DynamicClue {
   if (tier === 1) {
-    const country = ctx.countryName || ctx.cityName || 'a place you have visited before';
-    return { tier, text: pickRandom(SUBTLE_TEMPLATES).replace('{country}', country), source: 'db' };
+    return { tier, text: pickRandom(REGION_TEMPLATES).replace('{region}', profile.region), source: 'db' };
   }
   if (tier === 2) {
-    const landmark = ctx.landmarkName || 'something unmistakable';
-    return { tier, text: pickRandom(MEDIUM_TEMPLATES).replace('{landmark}', landmark), source: 'db' };
+    return { tier, text: pickRandom(CHARACTER_TEMPLATES).replaceAll('{character}', profile.character), source: 'db' };
   }
-  const city = ctx.cityName || 'here';
-  const country = ctx.countryName || '';
-  const base = pickRandom(DIRECT_TEMPLATES).replace('{city}', city).replace('{country}', country);
-  const fact = funFact || ctx.funFact;
-  if (fact) {
-    return {
-      tier,
-      text: `${base} ${pickRandom(FUN_FACT_TEMPLATES).replace('{funFact}', fact)}`,
-      source: funFact ? 'wikipedia' : 'db',
-    };
-  }
-  return { tier, text: base, source: 'db' };
+  return {
+    tier,
+    text: pickRandom(REGION_CHARACTER_TEMPLATES)
+      .replace('{character}', profile.character)
+      .replace('{cityType}', profile.cityType)
+      .replace('{region}', profile.region),
+    source: 'db',
+  };
 }
 
-/**
- * Fetches the image's location context, enriching missing fields with
- * GeoNames (city/country) and Wikipedia (fun fact) where possible.
- */
 async function loadContext(imageId: string): Promise<ClueContext> {
   const [img] = await db
     .select({
-      cityName: images.cityName,
       countryName: images.countryName,
-      landmarkName: images.landmarkName,
-      funFact: images.funFact,
       lat: images.lat,
       lng: images.lng,
     })
@@ -151,33 +180,17 @@ async function loadContext(imageId: string): Promise<ClueContext> {
     .limit(1);
 
   if (!img) return {};
-
-  const ctx: ClueContext = {
-    cityName: img.cityName,
+  return {
     countryName: img.countryName,
-    landmarkName: img.landmarkName,
-    funFact: img.funFact,
     lat: img.lat,
     lng: img.lng,
   };
-
-  // Enrich missing city/country via GeoNames.
-  if ((!ctx.cityName || !ctx.countryName) && ctx.lat && ctx.lng) {
-    try {
-      const g = await geonamesName(ctx.lat, ctx.lng);
-      ctx.cityName = ctx.cityName || g.city || null;
-      ctx.countryName = ctx.countryName || g.country || null;
-    } catch {
-      // noop
-    }
-  }
-
-  return ctx;
 }
 
 /**
- * Generates (or returns cached) 3 progressive clues for an image.
- * Results are cached in `location_clues` so repeat requests avoid the network.
+ * Generates (or returns cached) 3 progressive region-based clues for an image.
+ * Clues only ever reveal coarse region/character — never the country, city,
+ * or a landmark name. Results are cached in `location_clues`.
  */
 export async function getCluesForImage(imageId: string): Promise<DynamicClue[]> {
   const [cached] = await db
@@ -192,18 +205,9 @@ export async function getCluesForImage(imageId: string): Promise<DynamicClue[]> 
   }
 
   const ctx = await loadContext(imageId);
+  const profile = profileForContext(ctx);
 
-  // Wikipedia enrichment for a fun fact (only tiers 3 use it).
-  let wikiFact: string | null = null;
-  if (!ctx.funFact && ctx.cityName && ctx.countryName) {
-    try {
-      wikiFact = await wikipediaFunFact(ctx.cityName, ctx.countryName, ctx.landmarkName);
-    } catch {
-      wikiFact = null;
-    }
-  }
-
-  const clues: DynamicClue[] = [1, 2, 3].map((tier) => buildTierText(ctx, tier as 1 | 2 | 3, wikiFact));
+  const clues: DynamicClue[] = [1, 2, 3].map((tier) => buildTierText(profile, tier as 1 | 2 | 3));
 
   try {
     await db

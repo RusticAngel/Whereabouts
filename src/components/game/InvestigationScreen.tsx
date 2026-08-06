@@ -50,7 +50,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
   const [confidence, setConfidence] = useState<Confidence>('low');
   const [hintsCount, setHintsCount] = useState(0);
   const [saveFailed, setSaveFailed] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(300);
+  const [timeLeft, setTimeLeft] = useState(120);
   const [clues, setClues] = useState<DynamicClue[]>([]);
   const savingRef = useRef(false);
   const pinTrackedRef = useRef(false);
@@ -281,8 +281,6 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
               onHint={handleHint}
             />
           )}
-
-          <CluesPanel clues={clues} onClueUsed={handleClue} />
 
           {canSubmit && (
             <ConfidenceSelector value={confidence} onChange={setConfidence} />
