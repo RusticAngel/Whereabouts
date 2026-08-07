@@ -10,7 +10,7 @@ import { getCampaignScores } from '@/app/actions';
 
 export const dynamic = 'force-dynamic';
 
-const TOTAL_LEVELS = 58;
+const TOTAL_LEVELS = 79;
 
 export default async function NewGamePage({ searchParams }: { searchParams: Promise<{ level?: string; replay?: string }> }) {
   const { level: levelParam, replay } = await searchParams;

@@ -1,7 +1,7 @@
 # Trace — Session Memory
 
 ## Project
-Detective-style location deduction game. Players track a missing character (Cipher) across 58 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
+Detective-style location deduction game. Players track a missing character (Cipher) across 59 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
 
 ## Stack
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind v4)
@@ -96,7 +96,7 @@ Total max deduction: 1200
 | `src/lib/game/scoring.ts` | calculatePinScore (tiered), calculateFinalScore (pin - evidence + confidence multiplier) |
 | `src/lib/game/evidence.ts` | evidenceCost (scaled: 200/400/600), revealEvidence, getRevealedEvidence |
 | `src/lib/game/narrative.ts` | getNarrativeFeedback (4 tiers, 3 variants each, random) |
-| `src/lib/game/progression.ts` | getCurrentLevel, advanceLevel, getMaxLevel (TOTAL_LEVELS = 58) |
+| `src/lib/game/progression.ts` | getCurrentLevel, advanceLevel, getMaxLevel (TOTAL_LEVELS = 59) |
 | `src/lib/game/pin.ts` | calculateDistance (Haversine) |
 | `src/lib/game/analytics.ts` | trackEvent(name, payload) — console-only, 5 event types + evidenceCount |
 | `src/components/game/InvestigationScreen.tsx` | Core game loop — briefing → onboarding → investigation → submit → results redirect |
@@ -118,11 +118,11 @@ Total max deduction: 1200
 | `src/proxy.ts` | Route guard + cookie prefix middleware |
 | `src/app/api/auth/[...path]/route.ts` | Auth handler wrapper (cookie Secure stripping over HTTP) |
 | `capacitor.config.ts` | Capacitor config (server URL, Android settings) |
-| `seed.ts` | DB seed — 58 Mapillary 360° images (all real locations) |
+| `seed.ts` | DB seed — 59 Mapillary 360° images (all real locations) |
 | `drizzle.config.ts` | Drizzle Kit config for `db:push` |
 
 ## Seed Data
-- **58 real images** (all Mapillary 360° panoramas, no Unsplash)
+- **59 real images** (all Mapillary 360° panoramas, no Unsplash)
 - Each has `mapillary_id`, `lat`/`lng` (real-world coordinates), `briefing`, `evidence[]`, `is_pano: true`, `level_order`
 - Some images are `is_pano: false` at the Mapillary API level but still load in mapillary-js (flat images). Levels needing replacement marked in session history.
 - Run with: `node --experimental-strip-types --env-file .env.local seed.ts`
@@ -377,11 +377,29 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Timer 5→2 min**: `InvestigationScreen.tsx` `useState(300)` → `useState(120)`. Only in-game timer in the app (demo/daily/challenge have none).
 - **Note**: `PinMap.tsx` has **pre-existing** eslint errors (`no-explicit-any` line 6, refs-during-render lines 30-31) identical to untouched `ResultsMap.tsx:7` — not introduced by these fixes; `tsc` passes clean.
 
+## 2026-08-06 (Level 59 South Africa + Verification Harness Fix)
+- **Harness bug found**: The viewer-verification harness called `viewer.moveTo(imageId)` **synchronously** right after constructing the Viewer. Per `mapillary.unminified.js` `isNavigable` getter (~line 85659), a viewer supplied an `imageId` is **not navigable until the cover is deactivated asynchronously** — so sync `moveTo()` threw "Calling moveTo is not supported when viewer is not navigable" for EVERY image (false negative; even known-good L56/L58 failed). Fix: judge success on the **`load` event** (fires only for renderable images; per AGENTS.md the documented signal) and only probe `moveTo` as a secondary log *after* load. Re-verified: L56 Milan, L58 Seville (controls) + new candidate all → `LOADED`. Harness lives at `C:\Users\willi\AppData\Local\Temp\opencode\mvtest\` (server.mjs on :8712 serving mapillary.js + test.html).
+- **Token gotcha**: `.env.local` values are **double-quoted** (`NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN="MLY|..."`). When reading via regex `(.*)`, preserve `Trim('"')` — otherwise calls to `graph.mapillary.com` return `400 Invalid OAuth access token - Cannot parse access token` (code 190).
+- **Level 59 added** (`TOTAL_LEVELS` 58→59): new Mapillary pano `968800325769902` (is_pano, Q:0.893, viewer-verified LOADED), Southern Cape coast South Africa (φ -34.185106, λ 22.159379) — first South Africa location, no collision. `seed.ts` updated; inserted to **prod DB** via `scripts/insert-level-59.mjs` (guard: skip if level_order exists). CaseFile arc "The Closed Circle" → 54–59. Copy updated: landing page (59 locations, 59 levels), OnboardingModal, leaderboard level max 59. `tsc --noEmit` clean. Existing 2026-08-03 notes had said "level 59 finale" — the finale now shifts to **level 60 sentinel**.
+- **Key API lesson**: metadata alone (is_pano/quality) is still NOT enough — the `load` event remains the only ground truth. Only trust the viewer.
+
+## 2026-08-07 (20 New Levels 60-79 + Autonomous Sweep Workflow)
+- **Added 20 Mapillary 360° levels (60-79)**, all viewer-verified `LOADED` (headless Edge `load` event + coords from `viewer.getPosition()`). Campaign now **79 levels / 15 arcs**, finale shifts to **level 80 sentinel**. Prod DB inserted via `scripts/insert-levels-60-79.mjs` (guard: skip if level_order exists; verified 58-79 present). `seed.ts` updated to mirror. `tsc --noEmit` clean.
+- **Cities/panos** (level → id, φ, λ): 60 Amsterdam `269865368152112` (52.3552, 4.8877) · 61 Prague `1213579772402340` (50.0736, 14.4223) · 62 Kraków `2110426486494821` (50.0524, 19.9419) · 63 Riga `1345175727758623` (56.9365, 24.1034) · 64 Tallinn `1867280463429019` (59.4351, 24.7466) · 65 Vilnius `158083712926491` (54.6798, 25.2706) · 66 Gothenburg `203347149229679` (57.7008, 11.9748) · 67 Cologne `1035359995710003` (50.9270, 6.9555) · 68 Salzburg `1489163629650625` (47.7995, 13.0543) · 69 Verona `1095393158606521` (45.4320, 10.9882) · 70 Lyon `2674339612866634` (45.7653, 4.8369) · 71 Toulouse `521009405719231` (43.5965, 1.4443) · 72 Florence `601197785030095` (43.7618, 11.2459) · 73 Zagreb `1028303848824827` (45.8139, 15.9707) · 74 Belgrade `1337309457208313` (44.8078, 20.4481) · 75 Monterrey `2838857266328526` (25.6745, -100.3157) · 76 Bogotá `1182439247084938` (4.7009, -74.0803) · 77 Nairobi `1834685420575564` (-1.2935, 36.8033) · 78 Auckland `6484948531611959` (-36.8578, 174.7589) · 79 Brisbane `509742016735704` (-27.4811, 153.0127).
+- **New arcs**: "The Long Road" 60-69, "The Final Signal" 70-79. Copy updated everywhere (landing 79 locations / 79 levels / 15 arcs, OnboardingModal 79, leaderboard max 79). Narrative Day 122→166 (level 79 finale).
+- **Autonomous find workflow** (`C:\Users\willi\AppData\Local\Temp\opencode\mvtest\find3-panos.mjs` / `find4-panos.mjs`): 5x5 grid of 0.0035° cells (min 0.0015°), `limit=40`, capped ~45 req/city, ~12s pacing, incremental `candidatesN.json`. **Throttle signature**: a city logging `0 panos / 25 req` (low request count) is NOT genuinely empty — the API is rate-limiting; the same cities yielded hundreds of panos on a re-sweep after cooldown (e.g. Verona 136, Salzburg 241, Toulouse 282, Vilnius 231). Genuinely-empty cities return 0 with a full `45 req` probe (Tbilisi, Nice, Valencia, Wellington/Brisbane `8`). Plan rounds and re-sweep 0s after ~1h+ cooldown.
+- **City coverage notes**: pedestrian plazas have NO car-captured panos; Mexico/Monterrey sparse but usable. Kyiv + Atlanta + many dense metros (Berlin even 0.001° cells) fail/rate-limit — leave dense metros to manual URL swaps. User to supply URLs over time; level order 60-79 is final as inserted.
+- **Harness coords**: `viewer.getPosition()` → `LngLat` (`.lat`/`.lng`) gives exact coords without the throttled Graph `geometry` field. Edge binary `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`, `--headless=new`. Harness server (`server.mjs`, port 8712) can die silently — check `Invoke-WebRequest` returns 200 and relaunch.
+- **Level 45 swap (Manchester)**: player-reported old pano `127382756034213` was an alley with construction (revealed nothing). Manchester's pedestrian shopping core (Market St, Deansgate, Piccadilly Gardens) has ZERO car-captured panos — only side streets. Replaced with `1139544569884411` (Q0.88, viewer-verified LOADED) on the main London Rd approach to Piccadilly Station (φ 53.476709, λ -2.233910), fits the existing "great station" briefing. Updated seed.ts + prod DB via `scripts/update-level-45.mjs` (UPDATE keyed on old mapillary_id). Lesson: for dense centres use targeted small bboxes at landmark coordinates (station fronts, main roads) — the 5x5 grid alone clustered on the wrong alley cluster.
+
+
 ## Next Moves
 - [x] Replace non-360 Mapillary images for levels 17-19, 22, 25-27 (+ L20 Athens, L27 Red Square) — all 28 levels verified 360°
 - [x] Add 10 new levels (29-38) + campaign finale screen
 - [x] Add 20 new levels (39-58) — 4 new arcs, campaign now 58 levels/13 arcs
-- [ ] Play-test levels 29-58 on device; swap any that look wrong
+- [x] Add 20 new levels (60-79) — 15 arcs, campaign now 79 levels. **Not yet committed.**
+- [ ] Play-test levels 29-79 on device; swap any that look wrong (incl. 60-79 new cities)
+- [ ] User to supply URLs for dense-metro range later; swaps = UPDATE rows in prod DB
 - [ ] Rebuild APK (needs `@capacitor/app` + deep-link handling; `com.findme.app`)
 - [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md`)
 - [ ] Set up Lemon Squeezy properly for subscriptions
