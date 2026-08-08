@@ -397,15 +397,66 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Cities/panos** (level → id, φ, λ): 80 Sofia `1151403859909959` (42.6890, 23.3147) · 81 Naples `1892127964679288` (40.8415, 14.2545) · 82 Antwerp `1094742239541201` (51.2059, 4.3926) · 83 Utrecht `1171732789935503` (52.0785, 5.1215) · 84 Eindhoven `2034838400282074` (51.4386, 5.4586) · 85 Leipzig `1132337161211555` (51.3410, 12.3599) · 86 Nuremberg `1208847766826412` (49.4547, 11.0717) · 87 Dresden `1242088007628802` (51.0513, 13.7374) · 88 Stuttgart `1676058293741656` (48.7689, 9.1802) · 89 Brno `1516463995635254` (49.1916, 16.5961) · 90 Marseille `237855875366663` (43.2968, 5.3627) · 91 Bordeaux `1280417876129320` (44.8339, -0.5906) · 92 Montpellier `1919549032290238` (43.6085, 3.8730) · 93 Nantes `801137517274893` (47.2147, -1.5532) · 94 Lille `3590136244603215` (50.6291, 3.0463) · 95 Hanoi `1052931505925621` (21.0187, 105.8237) · 96 Fukuoka `295524118728559` (33.5778, 130.3917) · 97 Kaohsiung `803725005367270` (22.6198, 120.2917) · 98 Medellín `1825469317826605` (6.2375, -75.5951) · 99 Guayaquil `201246589334015` (-2.2002, -79.9102).
 - **New arcs**: "The Open Circuit" 80-89, "The Closing Net" 90-99. Copy updated everywhere (landing 99 locations / 99 levels / 17 arcs, OnboardingModal 99, leaderboard max 99, README 99 locations). Narrative Day 166→202 (level 100 sentinel). CaseFile arcs extended to 17.
 
+## 2026-08-08 (Growth & Monetization Plan Decided)
+- **Verdict session**: User asked for an honest assessment (app is well-engineered, commercially uncertain — GeoGuessr competition, distribution, monetization placeholder). Response prioritized: auth friction, first-run funnel, retention loops, and narrative differentiation over more content.
+- **Pricing decided (ZAR)**: R37/mo subscription + one-off passes Day R3 / Week R15 / Month R45. R45 month pass kept deliberately as the no-commitment option.
+- **Free tier**: 5 campaign plays/day, **Daily always free** (growth), replays/tutorials free. Enforced only after monetization.
+- **Sequencing set**: Phase 1 (now) Google Sign-In + first-run funnel + PWA prompt + streak grace + weekly challenge + referral; Phase 2 Play closed test (12 testers, 14 days, no monetization — web stays unlimited through testing); Phase 3 (only after test) Play Billing sub+passes, entitlement model, quota gating, web→Play redirects.
+- **Commits**: bc230e6 (levels 80-99) pushed. Working tree clean after plan commit.
+- Full detail in "Growth & Monetization Plan" + "Next Moves" sections below.
+
 ## Next Moves
 - [x] Replace non-360 Mapillary images for levels 17-19, 22, 25-27 (+ L20 Athens, L27 Red Square) — all 28 levels verified 360°
 - [x] Add 10 new levels (29-38) + campaign finale screen
 - [x] Add 20 new levels (39-58) — 4 new arcs, campaign now 58 levels/13 arcs
 - [x] Add 20 new levels (60-79) — 15 arcs, campaign now 79 levels. Committed in 4031eea.
-- [x] Add 20 new levels (80-99) — 2 new arcs, campaign now 99 levels/17 arcs. **Not yet committed.**
+- [x] Add 20 new levels (80-99) — 2 new arcs, campaign now 99 levels/17 arcs. Committed in bc230e6.
 - [ ] Play-test levels 29-99 on device; swap any that look wrong (incl. 60-99 new cities)
 - [ ] User to supply URLs for dense-metro range later; swaps = UPDATE rows in prod DB
+
+## Growth & Monetization Plan (decided 2026-08-08) — see Next Moves below
+
+### Pricing (ZAR)
+- **Monthly subscription**: R37/mo (self-renewing)
+- **One-off passes** (Google Play IAP, no commitment): Day R3 · Week R15 · Month R45
+- R45 month pass intentionally kept alongside R37 sub — it's the no-commitment option (more expensive than subscribing is the accepted tradeoff)
+
+### Free tier (enforced ONLY when monetization lands, i.e. after closed test)
+- **5 campaign plays/day** cap
+- **Daily Challenge always free** (deliberate growth choice) — does NOT consume the 5-play pool
+- Replays / old cases / tutorials free. Weekly challenge also free (same growth rationale)
+
+### Sequencing
+- **Phase 1 (now, pre-test)**: Google Sign-In (Neon Auth social), first-run funnel (tutorial → real campaign), PWA install prompt, streak grace period, weekly challenge, referral system.
+- **Phase 2 (closed test)**: Play Console closed track (12 testers, 14 days), rebuild APK, gather qualitative feedback.
+- **Phase 3 (ONLY after closed test)**: Play Billing (sub + passes), entitlement model + quota gating, server-side purchase verification, web redirects to Play Store, referral → +N days Pro.
+
+## Next Moves
+### Phase 1 — pre-test feature builds (safe for closed testing)
+- [ ] **Google Sign-In**: Enable Google provider in Neon dashboard (GOOGLE_CLIENT_ID/SECRET + redirect URIs). Add "Continue with Google" button to `/auth` via `authClient.signIn.social({ provider: 'google', callbackURL })`. Verify Neon Auth `signIn.social` works with current `createAuthClient()` (default BetterAuth vanilla adapter). Proxy/cookie wrapper is provider-agnostic. **Android WebView needs app SHA-1 in Google Cloud console.**
+- [ ] **First-run funnel**: `DemoGame` results → primary "Start Tracking" → `/auth` then `/game`. Tutorial final step routes to `/game`.
+- [ ] **PWA install prompt**: `app/manifest.ts` + icons in `public/`, `beforeinstallprompt` handler, prompt after first game completion.
+- [ ] **Streak grace**: 24–48h window in `upsertDailyScore` so one missed day doesn't reset the chain; update `StreakPopup` copy.
+- [ ] **Weekly challenge**: `/weekly` route mirroring `/daily` — deterministic 3-location case from a week seed, new `weeklyChallengeResults` table (or reuse challenge shape), summed score + inline leaderboard. Free (not part of 5-play pool).
+- [ ] **Referral system**: schema + code-gen + fulfillment ready (grants +N days Pro — meaningful only after Phase 3). Deferred to Phase 3 unless user says otherwise.
+- [ ] **Small polish**: landing footer "Built for the OpenAI Build Week · 2026" — remove or replace.
+
+### Phase 2 — closed test (Google Play)
+- [ ] Play Console: create app `com.findme.app`, closed track, 12 testers, 14-day clock
+- [ ] Rebuild APK: `npx cap sync android && gradlew assembleDebug`; apply Google Sign-In SHA-1
+- [ ] Confirm `findme://` deep-links work in packaged build
+
+### Phase 3 — monetization (ONLY after closed test)
+- [ ] Play Billing: `com.android.billingclient:billing` + `PurchasesUpdatedListener` + Capacitor bridge (or JS bridge); R37 sub + R3/R15/R45 IAP products
+- [ ] Entitlement model: `profiles.pro_expires_at` + `daily_plays_used` + `daily_plays_date`; `purchases` table (productId, purchasedAt, expiresAt, source)
+- [ ] Server actions: `getProStatus`, `checkPlayQuota` (5/day unless PRO), `incrementPlayCount`
+- [ ] Gate campaign start (`game/page.tsx`, `InvestigationScreen`) — upgrade prompt, never full-block; daily/weekly/replays free
+- [ ] Server-side purchase verification: Play Developer API token verify + `SUBSCRIPTION_PURCHASED` webhook → set `pro_expires_at`
+- [ ] Web app: keep free funnel, redirect to Play Store for purchase
+- [ ] Wire referral: `fulfillReferral` grants +N days Pro (real PRO now exists)
+
+### Carry-over from prior planning (still valid)
 - [ ] Rebuild APK (needs `@capacitor/app` + deep-link handling; `com.findme.app`)
-- [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md`)
+- [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md` — superseded by plan above)
 - [ ] Set up Lemon Squeezy properly for subscriptions
 - [ ] **Disable challenges for closed testing**: Add `NEXT_PUBLIC_CHALLENGES_ENABLED=false` env var. Gate `createChallenge()`/`createRematchChallenge()` to return null. Hide challenge buttons in UI. Set after hackathon deadline, re-enable on Play Store launch.
