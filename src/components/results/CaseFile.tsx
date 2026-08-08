@@ -26,6 +26,8 @@ const ARCS = [
   { label: 'The Closed Circle', levels: '54–59', start: 54, end: 59 },
   { label: 'The Long Road', levels: '60–69', start: 60, end: 69 },
   { label: 'The Final Signal', levels: '70–79', start: 70, end: 79 },
+  { label: 'The Open Circuit', levels: '80–89', start: 80, end: 89 },
+  { label: 'The Closing Net', levels: '90–99', start: 90, end: 99 },
 ];
 
 export function CaseFile({ entries, currentLevel }: CaseFileProps) {

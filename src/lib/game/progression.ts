@@ -2,7 +2,7 @@ import { db } from '@/db';
 import { profiles } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-const TOTAL_LEVELS = 79;
+const TOTAL_LEVELS = 99;
 
 export async function getCurrentLevel(userId: string): Promise<number> {
   const [profile] = await db

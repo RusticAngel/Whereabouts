@@ -392,13 +392,18 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Harness coords**: `viewer.getPosition()` → `LngLat` (`.lat`/`.lng`) gives exact coords without the throttled Graph `geometry` field. Edge binary `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`, `--headless=new`. Harness server (`server.mjs`, port 8712) can die silently — check `Invoke-WebRequest` returns 200 and relaunch.
 - **Level 45 swap (Manchester)**: player-reported old pano `127382756034213` was an alley with construction (revealed nothing). Manchester's pedestrian shopping core (Market St, Deansgate, Piccadilly Gardens) has ZERO car-captured panos — only side streets. Replaced with `1139544569884411` (Q0.88, viewer-verified LOADED) on the main London Rd approach to Piccadilly Station (φ 53.476709, λ -2.233910), fits the existing "great station" briefing. Updated seed.ts + prod DB via `scripts/update-level-45.mjs` (UPDATE keyed on old mapillary_id). Lesson: for dense centres use targeted small bboxes at landmark coordinates (station fronts, main roads) — the 5x5 grid alone clustered on the wrong alley cluster.
 
+## 2026-08-08 (20 New Levels 80-99 + Campaign at 99 Levels)
+- **Added 20 Mapillary 360° levels (80-99)**, all viewer-verified `LOADED` (headless Edge `load` event + coords from `viewer.getPosition()`). Campaign now **99 levels / 17 arcs**, finale shifts to **level 100 sentinel**. Prod DB inserted via `scripts/insert-levels-80-99.mjs` (guard: skip if level_order exists; verified 80-99 present). `seed.ts` updated to mirror. `tsc --noEmit` clean.
+- **Cities/panos** (level → id, φ, λ): 80 Sofia `1151403859909959` (42.6890, 23.3147) · 81 Naples `1892127964679288` (40.8415, 14.2545) · 82 Antwerp `1094742239541201` (51.2059, 4.3926) · 83 Utrecht `1171732789935503` (52.0785, 5.1215) · 84 Eindhoven `2034838400282074` (51.4386, 5.4586) · 85 Leipzig `1132337161211555` (51.3410, 12.3599) · 86 Nuremberg `1208847766826412` (49.4547, 11.0717) · 87 Dresden `1242088007628802` (51.0513, 13.7374) · 88 Stuttgart `1676058293741656` (48.7689, 9.1802) · 89 Brno `1516463995635254` (49.1916, 16.5961) · 90 Marseille `237855875366663` (43.2968, 5.3627) · 91 Bordeaux `1280417876129320` (44.8339, -0.5906) · 92 Montpellier `1919549032290238` (43.6085, 3.8730) · 93 Nantes `801137517274893` (47.2147, -1.5532) · 94 Lille `3590136244603215` (50.6291, 3.0463) · 95 Hanoi `1052931505925621` (21.0187, 105.8237) · 96 Fukuoka `295524118728559` (33.5778, 130.3917) · 97 Kaohsiung `803725005367270` (22.6198, 120.2917) · 98 Medellín `1825469317826605` (6.2375, -75.5951) · 99 Guayaquil `201246589334015` (-2.2002, -79.9102).
+- **New arcs**: "The Open Circuit" 80-89, "The Closing Net" 90-99. Copy updated everywhere (landing 99 locations / 99 levels / 17 arcs, OnboardingModal 99, leaderboard max 99, README 99 locations). Narrative Day 166→202 (level 100 sentinel). CaseFile arcs extended to 17.
 
 ## Next Moves
 - [x] Replace non-360 Mapillary images for levels 17-19, 22, 25-27 (+ L20 Athens, L27 Red Square) — all 28 levels verified 360°
 - [x] Add 10 new levels (29-38) + campaign finale screen
 - [x] Add 20 new levels (39-58) — 4 new arcs, campaign now 58 levels/13 arcs
-- [x] Add 20 new levels (60-79) — 15 arcs, campaign now 79 levels. **Not yet committed.**
-- [ ] Play-test levels 29-79 on device; swap any that look wrong (incl. 60-79 new cities)
+- [x] Add 20 new levels (60-79) — 15 arcs, campaign now 79 levels. Committed in 4031eea.
+- [x] Add 20 new levels (80-99) — 2 new arcs, campaign now 99 levels/17 arcs. **Not yet committed.**
+- [ ] Play-test levels 29-99 on device; swap any that look wrong (incl. 60-99 new cities)
 - [ ] User to supply URLs for dense-metro range later; swaps = UPDATE rows in prod DB
 - [ ] Rebuild APK (needs `@capacitor/app` + deep-link handling; `com.findme.app`)
 - [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md`)

@@ -1,6 +1,6 @@
 # Find Me
 
-A detective-style location deduction game. Track a shadow operative named Cipher across 79 global locations using 360° Street View, environmental evidence, and your geographical intuition. Compete with friends via shareable challenges and climb the daily leaderboard.
+A detective-style location deduction game. Track a shadow operative named Cipher across 99 global locations using 360° Street View, environmental evidence, and your geographical intuition. Compete with friends via shareable challenges and climb the daily leaderboard.
 
 ## How it works
 
