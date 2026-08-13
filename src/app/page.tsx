@@ -1,13 +1,7 @@
-import { auth } from '@/lib/auth/server';
 import Link from 'next/link';
-import { NotificationBadge } from '@/components/notifications/NotificationBadge';
+import { SessionActions } from '@/components/home/SessionActions';
 
-export const dynamic = 'force-dynamic';
-
-export default async function Home() {
-  const { data: session } = await auth.getSession();
-  const user = session?.user;
-
+export default function Home() {
   return (
     <main className="flex flex-col bg-black text-white">
       {/* ── Hero ── */}
@@ -28,56 +22,7 @@ export default async function Home() {
             >
               Play Tutorial
             </Link>
-            {user ? (
-              <>
-                <Link
-                  href="/game"
-                  className="w-full sm:w-auto px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
-                >
-                  Continue Investigation
-                </Link>
-                <Link
-                  href="/daily"
-                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
-                >
-                  Daily Challenge
-                </Link>
-                <Link
-                  href="/case-file"
-                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
-                >
-                  Case File
-                </Link>
-                <Link
-                  href="/leaderboard"
-                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
-                >
-                  Leaderboard
-                </Link>
-                <Link
-                  href="/profile"
-                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
-                >
-                  Profile
-                </Link>
-                <NotificationBadge userId={user.id} />
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/auth"
-                  className="w-full sm:w-auto px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
-                >
-                  Start Tracking
-                </Link>
-                <Link
-                  href="/daily"
-                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
-                >
-                  Daily Challenge
-                </Link>
-              </>
-            )}
+            <SessionActions section="hero" />
           </div>
         </div>
       </section>
@@ -176,35 +121,7 @@ export default async function Home() {
             >
               Play Tutorial
             </Link>
-            {user ? (
-              <>
-                <Link
-                  href="/game"
-                  className="w-full sm:w-auto px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
-                >
-                  Continue Investigation
-                </Link>
-                <Link
-                  href="/case-file"
-                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
-                >
-                  Case File
-                </Link>
-                <Link
-                  href="/leaderboard"
-                  className="w-full sm:w-auto px-8 py-3 rounded-lg border border-gray-700 text-white font-semibold hover:bg-gray-900 transition-colors"
-                >
-                  Leaderboard
-                </Link>
-              </>
-            ) : (
-              <Link
-                href="/auth"
-                className="w-full sm:w-auto px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors"
-              >
-                Start Tracking
-              </Link>
-            )}
+            <SessionActions section="cta" />
           </div>
         </div>
       </section>

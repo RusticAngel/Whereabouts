@@ -3,6 +3,10 @@
     "src/app/api/keepalive/route.ts": {
       "memory": 512,
       "maxDuration": 30
+    },
+    "src/app/**/page.tsx": {
+      "memory": 512,
+      "maxDuration": 60
     }
   }
 }
