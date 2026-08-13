@@ -39,7 +39,7 @@ export function OnboardingModal({ onDismiss }: OnboardingModalProps) {
             Cipher has gone underground
           </h1>
           <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
-            We&apos;ve lost Cipher&apos;s trail. Your mission: track them across 99 global locations.
+            We&apos;ve lost Cipher&apos;s trail. Your mission: track them across 119 global locations.
             <br /><br />
             Search every 360&deg; scene for clues. Place your pin where you think they&apos;re hiding.
             <br /><br />
