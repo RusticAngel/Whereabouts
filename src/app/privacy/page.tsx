@@ -56,8 +56,10 @@ export default function PrivacyPage() {
             We retain your account data and game history for as long as your account is active. You can
             delete your account at any time from the <strong>Agent Profile</strong> page (the
             &ldquo;Delete Account&rdquo; button). This permanently removes your profile, game history,
-            badges, and progress. Alternatively, contact us at the email below and we will delete your
-            data on request.
+            badges, and progress. For the full steps and what happens to your data, see our{' '}
+            <Link href="/delete-account" className="text-yellow-400 hover:underline">
+              account deletion page
+            </Link>.
           </p>
 
           <h2 className="text-lg font-semibold text-white pt-4">6. Your Rights</h2>

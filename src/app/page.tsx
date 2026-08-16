@@ -131,6 +131,10 @@ export default function Home() {
         <Link href="/privacy" className="text-gray-600 hover:text-gray-400 transition-colors">
           Privacy Policy
         </Link>
+        <span className="mx-2">·</span>
+        <Link href="/delete-account" className="text-gray-600 hover:text-gray-400 transition-colors">
+          Delete Account
+        </Link>
       </footer>
     </main>
   );
