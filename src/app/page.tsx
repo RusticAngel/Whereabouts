@@ -128,7 +128,6 @@ export default function Home() {
 
       {/* ── Footer ── */}
       <footer className="px-6 py-8 border-t border-gray-800 text-center text-sm text-gray-600 space-y-2">
-        <p>Built for the OpenAI Build Week &middot; 2026</p>
         <Link href="/privacy" className="text-gray-600 hover:text-gray-400 transition-colors">
           Privacy Policy
         </Link>

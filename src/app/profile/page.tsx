@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getProfileProgress } from '@/app/actions';
+import { DeleteAccountButton } from '@/components/profile/DeleteAccountButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,6 +80,8 @@ export default async function ProfilePage() {
             </div>
           )}
         </div>
+
+        <DeleteAccountButton />
       </div>
     </main>
   );

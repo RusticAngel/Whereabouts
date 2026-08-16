@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { createChallenge, removeFriend } from '@/app/actions';
 import { shareChallenge } from '@/lib/share';
+import { challengesEnabled, CHALLENGES_HINT } from '@/lib/challenges';
 
 interface FriendActionsProps {
   friendId: string;
@@ -38,9 +39,12 @@ export function FriendActions({ friendId, friendName }: FriendActionsProps) {
 
   return (
     <div className="space-y-3">
-      <Button fullWidth variant="primary" onClick={handleChallenge} disabled={busy}>
+      <Button fullWidth variant="primary" onClick={handleChallenge} disabled={busy || !challengesEnabled}>
         {copied ? 'Link copied — send it to ' + friendName : 'Challenge Friend'}
       </Button>
+      {!challengesEnabled && (
+        <p className="text-center text-xs text-gray-500 -mt-2">{CHALLENGES_HINT}</p>
+      )}
       <Button
         fullWidth
         variant={confirmingRemove ? 'outline' : 'ghost'}

@@ -18,6 +18,7 @@ import { saveRound, upsertDailyScore, getProfileStreak, createChallenge, awardGa
 import { GameRewards } from '@/app/actions';
 import { RewardsPopups } from '@/components/progress/RewardsPopups';
 import { shareChallenge } from '@/lib/share';
+import { challengesEnabled, CHALLENGES_HINT } from '@/lib/challenges';
 
 const StreetView = dynamic(() => import('@/components/game/StreetView'), {
   ssr: false,
@@ -200,9 +201,12 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
               🔥 {streak}-day streak (×{((1 + Math.min(streak, 5) * 0.05).toFixed(2))} multiplier)
             </div>
           )}
-          <Button fullWidth variant="primary" onClick={handleChallengeFriends}>
+          <Button fullWidth variant="primary" onClick={handleChallengeFriends} disabled={!challengesEnabled}>
             {challengeCopied ? 'Copied!' : 'Challenge Friends'}
           </Button>
+          {!challengesEnabled && (
+            <p className="text-center text-xs text-gray-500 -mt-1">{CHALLENGES_HINT}</p>
+          )}
           <Button fullWidth variant="secondary" onClick={() => window.location.reload()}>
             Run it again
           </Button>

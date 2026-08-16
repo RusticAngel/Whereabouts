@@ -12,6 +12,7 @@ import { ShareButton } from './ShareButton';
 import { RewardsPopups } from '@/components/progress/RewardsPopups';
 import { evidenceCost } from '@/lib/game/evidence';
 import { shareChallenge } from '@/lib/share';
+import { challengesEnabled, CHALLENGES_HINT } from '@/lib/challenges';
 
 const StreetView = dynamic(() => import('@/components/game/StreetView'), {
   ssr: false,
@@ -219,9 +220,12 @@ export function ResultsScreen({ roundId }: ResultsScreenProps) {
           <Button fullWidth variant="outline" onClick={handleShare}>
             {copied ? 'Copied!' : 'Share your score'}
           </Button>
-          <Button fullWidth variant="primary" onClick={handleChallengeFriends}>
+          <Button fullWidth variant="primary" onClick={handleChallengeFriends} disabled={!challengesEnabled}>
             {challengeCopied ? 'Copied!' : 'Challenge Friends'}
           </Button>
+          {!challengesEnabled && (
+            <p className="text-center text-xs text-gray-500 -mt-1">{CHALLENGES_HINT}</p>
+          )}
           <Button fullWidth variant="outline" onClick={() => router.push('/leaderboard')}>
             Leaderboard
           </Button>

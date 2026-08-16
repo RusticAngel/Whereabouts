@@ -11,7 +11,7 @@ export default function PrivacyPage() {
         </Link>
 
         <h1 className="text-3xl font-bold">Privacy Policy</h1>
-        <p className="text-sm text-gray-500">Last updated: July 19, 2026</p>
+        <p className="text-sm text-gray-500">Last updated: August 16, 2026</p>
 
         <section className="space-y-4 text-sm text-gray-300 leading-relaxed">
           <p>
@@ -51,10 +51,13 @@ export default function PrivacyPage() {
             strictly necessary to operate the application.
           </p>
 
-          <h2 className="text-lg font-semibold text-white pt-4">5. Data Retention</h2>
+          <h2 className="text-lg font-semibold text-white pt-4">5. Data Retention &amp; Account Deletion</h2>
           <p>
-            We retain your account data and game history for as long as your account is active. If you
-            wish to delete your account and associated data, contact us at the email below.
+            We retain your account data and game history for as long as your account is active. You can
+            delete your account at any time from the <strong>Agent Profile</strong> page (the
+            &ldquo;Delete Account&rdquo; button). This permanently removes your profile, game history,
+            badges, and progress. Alternatively, contact us at the email below and we will delete your
+            data on request.
           </p>
 
           <h2 className="text-lg font-semibold text-white pt-4">6. Your Rights</h2>
@@ -66,9 +69,9 @@ export default function PrivacyPage() {
 
           <h2 className="text-lg font-semibold text-white pt-4">7. Contact</h2>
           <p>
-            For privacy-related inquiries, open an issue at{' '}
-            <a href="https://github.com/RusticAngel/Whereabouts/issues" className="text-yellow-400 hover:underline">
-              github.com/RusticAngel/Whereabouts
+            For privacy-related inquiries or account-deletion requests, contact us at{' '}
+            <a href="mailto:rustic.angel79@gmail.com" className="text-yellow-400 hover:underline">
+              rustic.angel79@gmail.com
             </a>.
           </p>
         </section>

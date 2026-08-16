@@ -404,6 +404,16 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Sweep workflow (find8-panos.mjs + verify8.ps1)**: launched find8 as a detached background process (token injected via launch8.mjs reading `.env.local`); results in `candidates8.json`. Verification: Node `execFile` batch hung on a never-resolving image → rewrote as `verify8.ps1` with `Start-Process` + 60s `WaitForExit` + force-kill, dumping `<title>` per candidate to `verified8.json`. Note: previous `--virtual-time-budget` single-shot works fine via PowerShell; the batch needed per-run timeouts. All 36 candidates loaded (2/city chosen as backups).
 - **Next Moves note**: Play-test levels 29-119 on device; swap any that look wrong (incl. 100-119 new cities).
 
+## 2026-08-16 (Play Launch Prep — Option A: ship 119, park 120-139)
+- **Decision**: Ship the campaign at **119 levels** (content is launch-critical). Levels 120-129 (verified, briefings+evidence written) **parked** — backed up to `scripts/insert-levels-120-129-backup.mjs` (reusable insert script with skip-if-exists guard). `seed.ts` reverted to 119. Levels 130-139 not yet sourced.
+- **Vector-tile sweep breakthrough** (fixed the API throttle problem): the bbox `graph.mapillary.com/images` endpoint hard-throttles (~24h) under heavy use. **Mapillary vector tiles** (`tiles.mapillary.com/maps/vtp/mly1_public/2/{z}/{x}/{y}?access_token=...`) are a DIFFERENT endpoint with NO throttle — one tile request returns 26k image features with `id`, `is_pano`, `quality_score`, `captured_at`, exact coords. Decode with `@mapbox/vector-tile` + `pbf@3` (v4 has a different API). `find11-tiles.mjs` swept 30 cities in ~20 min (9 tiles/city, 4s pacing, incremental `candidates11.json`); 27/30 cities got 15 high-Q candidates (only busan, kolkata, belfast genuinely empty; leeds sparse). **Future city-finding should use vector tiles, not bbox.**
+- **In-app account deletion** (Play policy): `deleteMyAccount()` server action in `actions.ts` — deletes challenge results of user's challenges → challenges → challenge_results → rounds → daily_scores → profile (cascades badges/friends/friend_requests) → `auth.deleteUser()`. UI: `DeleteAccountButton.tsx` on `/profile` (two-tap confirm, redirects home). Privacy page updated: in-app deletion + contact `rustic.angel79@gmail.com`, last-updated 2026-08-16.
+- **Challenges gated via env flag**: `NEXT_PUBLIC_CHALLENGES_ENABLED` (`src/lib/challenges.ts` — `challengesEnabled` + `CHALLENGES_HINT`). Server: `createChallenge`/`createRematchChallenge` return null when disabled. UI: buttons show disabled + "Challenges closed during testing — coming soon" hint in ResultsScreen, DailyGame, FriendActions, ChallengeScreen. **Set `NEXT_PUBLIC_CHALLENGES_ENABLED=false` in Vercel.** Unset = enabled (safe default).
+- **Landing footer**: removed "Built for the OpenAI Build Week · 2026" line.
+- **Release signing**: upload keystore generated at `android/keystore/findme-upload.jks` (PKCS12, alias `findme`, 2048-bit RSA, 10000-day validity, fingerprint `42:D6:24:01:...`). Passwords in gitignored `android/keystore/keystore.properties` (created by keytool, backed up by user). `build.gradle` reads `keystore.properties`, wires `signingConfigs.release` + `buildTypes.release.signingConfig`, version bumped to **versionCode 2 / versionName "1.1"**. `android/.gitignore` ignores `/keystore/`. **SIGNED RELEASE AAB BUILT**: `android/app/build/outputs/bundle/release/app-release.aab` (4 MB, BUILD SUCCESSFUL). Remote-loading kept (Vercel URL) for closed test. `tsc --noEmit` clean.
+- **Neon Auth deleteUser**: available as server method `auth.deleteUser()` (Better Auth `delete-user` endpoint, POST, uses session). Confirmed in `@neondatabase/auth/dist/next/server/index.d.mts`.
+- **GitHub app signing note**: Play App Signing = Google holds the real signing key; the local keystore is only the UPLOAD key used to sign the AAB you submit. Keep the local `.jks` + `keystore.properties` backed up safely — losing them loses the ability to update the app.
+
 ## 2026-08-08 (Growth & Monetization Plan Decided)
 - **Verdict session**: User asked for an honest assessment (app is well-engineered, commercially uncertain — GeoGuessr competition, distribution, monetization placeholder). Response prioritized: auth friction, first-run funnel, retention loops, and narrative differentiation over more content.
 - **Pricing decided (ZAR)**: R37/mo subscription + one-off passes Day R3 / Week R15 / Month R45. R45 month pass kept deliberately as the no-commitment option.
@@ -441,18 +451,25 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 
 ## Next Moves
 ### Phase 1 — pre-test feature builds (safe for closed testing)
-- [ ] **Google Sign-In**: Enable Google provider in Neon dashboard (GOOGLE_CLIENT_ID/SECRET + redirect URIs). Add "Continue with Google" button to `/auth` via `authClient.signIn.social({ provider: 'google', callbackURL })`. Verify Neon Auth `signIn.social` works with current `createAuthClient()` (default BetterAuth vanilla adapter). Proxy/cookie wrapper is provider-agnostic. **Android WebView needs app SHA-1 in Google Cloud console.**
+- [ ] **Google Sign-In**: Enable Google provider in Neon dashboard (GOOGLE_CLIENT_ID/SECRET + redirect URIs). Add "Continue with Google" button to `/auth` via `authClient.signIn.social({ provider: 'google', callbackURL })`. Verify Neon Auth `signIn.social` works with current `createAuthClient()` (default BetterAuth vanilla adapter). Proxy/cookie wrapper is provider-agnostic. **Android WebView needs app SHA-1 in Google Cloud console.** (Decided: deferred — email/password only for closed test.)
 - [ ] **First-run funnel**: `DemoGame` results → primary "Start Tracking" → `/auth` then `/game`. Tutorial final step routes to `/game`.
 - [ ] **PWA install prompt**: `app/manifest.ts` + icons in `public/`, `beforeinstallprompt` handler, prompt after first game completion.
 - [ ] **Streak grace**: 24–48h window in `upsertDailyScore` so one missed day doesn't reset the chain; update `StreakPopup` copy.
 - [ ] **Weekly challenge**: `/weekly` route mirroring `/daily` — deterministic 3-location case from a week seed, new `weeklyChallengeResults` table (or reuse challenge shape), summed score + inline leaderboard. Free (not part of 5-play pool).
 - [ ] **Referral system**: schema + code-gen + fulfillment ready (grants +N days Pro — meaningful only after Phase 3). Deferred to Phase 3 unless user says otherwise.
-- [ ] **Small polish**: landing footer "Built for the OpenAI Build Week · 2026" — remove or replace.
+- [x] **Small polish**: landing footer "Built for the OpenAI Build Week · 2026" — removed (2026-08-16).
 
 ### Phase 2 — closed test (Google Play)
 - [ ] Play Console: create app `com.findme.app`, closed track, 12 testers, 14-day clock
-- [ ] Rebuild APK: `npx cap sync android && gradlew assembleDebug`; apply Google Sign-In SHA-1
+- [x] Signed release AAB built: `android/app/build/outputs/bundle/release/app-release.aab` (versionCode 2 / 1.1, upload keystore `android/keystore/findme-upload.jks`, gitignored) — 2026-08-16
+- [ ] **Upload AAB to Play Console closed track** (Play App Signing: upload `.pepk` public cert, Google holds real key)
+- [ ] **Store listing**: short/full description, category, 512×512 icon (have `Assets/FindMeNew.png`), feature graphic 1024×500, screenshots
+- [ ] **Data Safety form** (Play): email (auth), gameplay stats; no ads, no tracking, no sales
+- [ ] **Content rating questionnaire**
+- [ ] **Privacy policy URL**: `https://whereabouts-navy.vercel.app/privacy` (exists; in-app account deletion + contact `rustic.angel79@gmail.com`)
+- [ ] **In-app account deletion** — DONE (2026-08-16): `deleteMyAccount()` action + `DeleteAccountButton.tsx` on `/profile`
 - [ ] Confirm `findme://` deep-links work in packaged build
+- [ ] Enroll 12 testers (emails), 14-day testing period, share opt-in link
 
 ### Phase 3 — monetization (ONLY after closed test)
 - [ ] Play Billing: `com.android.billingclient:billing` + `PurchasesUpdatedListener` + Capacitor bridge (or JS bridge); R37 sub + R3/R15/R45 IAP products
@@ -464,7 +481,7 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [ ] Wire referral: `fulfillReferral` grants +N days Pro (real PRO now exists)
 
 ### Carry-over from prior planning (still valid)
-- [ ] Rebuild APK (needs `@capacitor/app` + deep-link handling; `com.findme.app`)
+- [x] Rebuild APK/AAB (`@capacitor/app` + deep-link handling + release signing; `com.findme.app`) — done 2026-08-16
 - [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md` — superseded by plan above)
 - [ ] Set up Lemon Squeezy properly for subscriptions
-- [ ] **Disable challenges for closed testing**: Add `NEXT_PUBLIC_CHALLENGES_ENABLED=false` env var. Gate `createChallenge()`/`createRematchChallenge()` to return null. Hide challenge buttons in UI. Set after hackathon deadline, re-enable on Play Store launch.
+- [x] **Disable challenges for closed testing** — DONE (2026-08-16): `NEXT_PUBLIC_CHALLENGES_ENABLED=false` gates `createChallenge`/`createRematchChallenge` + disabled buttons with hint. **Set env var in Vercel.** Re-enable on Play Store launch.

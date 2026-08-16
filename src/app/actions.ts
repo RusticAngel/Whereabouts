@@ -9,6 +9,7 @@ import { getMaxLevel } from '@/lib/game/progression';
 import { generateCaseSeed, getImageIndexFromSeed } from '@/lib/game/caseGenerator';
 import { getCluesForImage, DynamicClue } from '@/lib/game/dynamicClues';
 import { computeLevel, titleForLevel, levelProgress, badgeById, STREAK_REWARDS, XP, BadgeDef } from '@/lib/game/progressionRewards';
+import { challengesEnabled } from '@/lib/challenges';
 
 export async function getDynamicClues(imageId: string): Promise<DynamicClue[]> {
   try {
@@ -261,6 +262,7 @@ export async function updateNickname(userId: string, nickname: string) {
 }
 
 export async function createChallenge(): Promise<string | null> {
+  if (!challengesEnabled) return null;
   const { data: session } = await auth.getSession();
   if (!session?.user) return null;
 
@@ -474,6 +476,7 @@ export async function getTodayChallengeResult(challengeId: string, userId: strin
 }
 
 export async function createRematchChallenge(originalChallengeId: string, userId: string): Promise<string | null> {
+  if (!challengesEnabled) return null;
   const { data: session } = await auth.getSession();
   if (!session?.user) return null;
 
@@ -1038,4 +1041,36 @@ export async function getPendingRequestsCount(userId: string): Promise<{ count: 
     .where(eq(friendRequests.toUserId, userId));
 
   return { count: row?.count ?? 0 };
+}
+
+export async function deleteMyAccount(): Promise<{ success: boolean }> {
+  const { data: session } = await auth.getSession();
+  if (!session?.user) return { success: false };
+
+  const userId = session.user.id;
+
+  try {
+    await db.transaction(async (tx) => {
+      const userChallenges = await tx
+        .select({ id: challenges.id })
+        .from(challenges)
+        .where(eq(challenges.createdBy, userId));
+
+      for (const c of userChallenges) {
+        await tx.delete(challengeResults).where(eq(challengeResults.challengeId, c.id));
+      }
+
+      await tx.delete(challenges).where(eq(challenges.createdBy, userId));
+      await tx.delete(challengeResults).where(eq(challengeResults.userId, userId));
+      await tx.delete(rounds).where(eq(rounds.userId, userId));
+      await tx.delete(dailyScores).where(eq(dailyScores.userId, userId));
+      await tx.delete(profiles).where(eq(profiles.id, userId));
+    });
+
+    await auth.deleteUser();
+    return { success: true };
+  } catch (e) {
+    console.error('deleteMyAccount failed', e);
+    return { success: false };
+  }
 }

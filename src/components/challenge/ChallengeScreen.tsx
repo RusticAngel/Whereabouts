@@ -15,6 +15,7 @@ import { ResultCard } from '@/components/results/ResultCard';
 import { ShareButton } from '@/components/results/ShareButton';
 import { saveChallengeResult, getChallenge, createChallenge, createRematchChallenge, getFocusedLeaderboard } from '@/app/actions';
 import { shareChallenge } from '@/lib/share';
+import { challengesEnabled, CHALLENGES_HINT } from '@/lib/challenges';
 
 const StreetView = dynamic(() => import('@/components/game/StreetView'), {
   ssr: false,
@@ -283,12 +284,18 @@ export function ChallengeScreen({ challengeId, location, userId }: ChallengeScre
           )}
 
           <div className="flex flex-col gap-3">
-            <Button fullWidth variant="primary" onClick={handleChallengeFriends}>
+            <Button fullWidth variant="primary" onClick={handleChallengeFriends} disabled={!challengesEnabled}>
               {copied ? 'Copied!' : 'Challenge Friends'}
             </Button>
-            <Button fullWidth variant="secondary" onClick={handleRematch} disabled={rematching}>
+            {!challengesEnabled && (
+              <p className="text-center text-xs text-gray-500 -mt-1">{CHALLENGES_HINT}</p>
+            )}
+            <Button fullWidth variant="secondary" onClick={handleRematch} disabled={rematching || !challengesEnabled}>
               {rematching ? 'Creating rematch…' : '🔥 New Round (Can you beat them?)'}
             </Button>
+            {!challengesEnabled && (
+              <p className="text-center text-xs text-gray-500 -mt-1">{CHALLENGES_HINT}</p>
+            )}
             <Button fullWidth variant="secondary" onClick={() => window.location.reload()}>
               Run it again
             </Button>
