@@ -1,4 +1,4 @@
-package com.findme.app;
+package com.rusticangel.findme;
 
 import android.os.Bundle;
 import android.webkit.WebResourceError;

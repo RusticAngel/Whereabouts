@@ -7,10 +7,10 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.findme.app"
+    namespace = "com.rusticangel.findme"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.findme.app"
+        applicationId "com.rusticangel.findme"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 2

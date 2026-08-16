@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.findme.app',
+  appId: 'com.rusticangel.findme',
   appName: 'FindMe',
   webDir: 'native',
   server: {

@@ -413,6 +413,7 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Release signing**: upload keystore generated at `android/keystore/findme-upload.jks` (PKCS12, alias `findme`, 2048-bit RSA, 10000-day validity, fingerprint `42:D6:24:01:...`). Passwords in gitignored `android/keystore/keystore.properties` (created by keytool, backed up by user). `build.gradle` reads `keystore.properties`, wires `signingConfigs.release` + `buildTypes.release.signingConfig`, version bumped to **versionCode 2 / versionName "1.1"**. `android/.gitignore` ignores `/keystore/`. **SIGNED RELEASE AAB BUILT**: `android/app/build/outputs/bundle/release/app-release.aab` (4 MB, BUILD SUCCESSFUL). Remote-loading kept (Vercel URL) for closed test. `tsc --noEmit` clean.
 - **Neon Auth deleteUser**: available as server method `auth.deleteUser()` (Better Auth `delete-user` endpoint, POST, uses session). Confirmed in `@neondatabase/auth/dist/next/server/index.d.mts`.
 - **GitHub app signing note**: Play App Signing = Google holds the real signing key; the local keystore is only the UPLOAD key used to sign the AAB you submit. Keep the local `.jks` + `keystore.properties` backed up safely — losing them loses the ability to update the app.
+- **Package rename to `com.rusticangel.findme`**: Play Console requires the AAB package to match the app's immutable package name. Renamed from `com.findme.app` across `capacitor.config.ts` (appId), `android/app/build.gradle` (namespace + applicationId), `strings.xml` (package_name + custom_url_scheme), and moved `MainActivity.java` to `java/com/rusticangel/findme/`. Rebuilt signed release AAB (BUILD SUCCESSFUL, verified manifest contains new package, no trace of old). Deep link scheme `findme` unchanged.
 
 ## 2026-08-08 (Growth & Monetization Plan Decided)
 - **Verdict session**: User asked for an honest assessment (app is well-engineered, commercially uncertain — GeoGuessr competition, distribution, monetization placeholder). Response prioritized: auth friction, first-run funnel, retention loops, and narrative differentiation over more content.
@@ -460,7 +461,7 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [x] **Small polish**: landing footer "Built for the OpenAI Build Week · 2026" — removed (2026-08-16).
 
 ### Phase 2 — closed test (Google Play)
-- [ ] Play Console: create app `com.findme.app`, closed track, 12 testers, 14-day clock
+- [ ] Play Console: create app `com.rusticangel.findme` (package name immutable in Play — matches Android appId), closed track, 12 testers, 14-day clock
 - [x] Signed release AAB built: `android/app/build/outputs/bundle/release/app-release.aab` (versionCode 2 / 1.1, upload keystore `android/keystore/findme-upload.jks`, gitignored) — 2026-08-16
 - [ ] **Upload AAB to Play Console closed track** (Play App Signing: upload `.pepk` public cert, Google holds real key)
 - [ ] **Store listing**: short/full description, category, 512×512 icon (have `Assets/FindMeNew.png`), feature graphic 1024×500, screenshots
@@ -481,7 +482,7 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [ ] Wire referral: `fulfillReferral` grants +N days Pro (real PRO now exists)
 
 ### Carry-over from prior planning (still valid)
-- [x] Rebuild APK/AAB (`@capacitor/app` + deep-link handling + release signing; `com.findme.app`) — done 2026-08-16
+- [x] Rebuild APK/AAB (`@capacitor/app` + deep-link handling + release signing; **package renamed to `com.rusticangel.findme`** to match Play Console) — done 2026-08-16
 - [ ] Build Pro & referral system after closed testing (see `.opencode/plans/pro-referral.md` — superseded by plan above)
 - [ ] Set up Lemon Squeezy properly for subscriptions
 - [x] **Disable challenges for closed testing** — DONE (2026-08-16): `NEXT_PUBLIC_CHALLENGES_ENABLED=false` gates `createChallenge`/`createRematchChallenge` + disabled buttons with hint. **Set env var in Vercel.** Re-enable on Play Store launch.
