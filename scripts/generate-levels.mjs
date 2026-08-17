@@ -9,7 +9,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const CAND = 'C:/Users/willi/AppData/Local/Temp/opencode/mvtest/candidates13.json';
-const OUT = 'scripts/generated-160-179.json';
+const OUT = process.env.GENERATE_OUT || 'scripts/generated-160-179.json';
 const ABOUT = 'scripts/generated-ab.json';
 
 const candidates = JSON.parse(readFileSync(CAND, 'utf8'));
@@ -490,10 +490,51 @@ const TIMES = ['dawn', 'mid-morning', 'noon', 'the golden hour', 'dusk', 'first 
 function cap(s) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
+// ---- hand-written per-city hooks (optional, layered on region vocab) ----
+// Each entry: { sentence, visual? } where `sentence` is a hand-written descriptive line
+// (no proper nouns, anti-google) that replaces the generic feature fragment, and `visual`
+// is an optional bespoke visual clue [key, label]. Cities without a hook fall back to
+// pure procedural generation.
+const HOOKS = {
+  newyork: {
+    sentence: 'An island of numbered avenues where the towers block out the sky and a great green park splits the grid in two',
+    visual: ['island_grid', 'A tight grid of numbered avenues on an island, sheer towers rising from the sidewalks and a vast green park cutting through the middle of the city.'],
+  },
+  philadelphia: {
+    sentence: 'A brick-and-stone city of wide straight streets where a long green avenue runs the length of the old town',
+    visual: ['brick_avenue', 'Brick and brownstone facades line long straight streets; a generous tree-lined avenue runs the whole length of the old centre.'],
+  },
+  mexicocity: {
+    sentence: 'A vast valley capital where the streets are a web of avenues around an immense central square',
+    visual: ['valley_zocalo', 'An immense central square ringed by colonial arcades in the middle of a dense valley city, mountains hazy on the horizon.'],
+  },
+  nice: {
+    sentence: 'A bright seafront city of pastel facades and a long palm-lined promenade hugging the bay',
+    visual: ['promenade_bay', 'A long promenade of palms and pastel facades along a pebbled bay, the water glittering under a strong southern sun.'],
+  },
+  split: {
+    sentence: 'A walled old town of pale stone squeezed against the harbour, its palace ruins woven into the lanes',
+    visual: ['pale_stone_oldtown', 'A fortress of pale stone crowded around a small harbour, narrow passages and old palace arches woven through the old town.'],
+  },
+  bruges: {
+    sentence: 'A canalside town of stepped gables and slender spires, where arched bridges cross the green water every few paces',
+    visual: ['canal_gables', 'A town of stepped gabled houses and slender bell towers laced with canals; arched stone bridges cross the green water at every turn.'],
+  },
+  beijing: {
+    sentence: 'A vast flat capital of broad avenues and monumental gates, where hutong lanes hide behind the wide boulevards',
+    visual: ['monumental_avenues', 'Enormously wide avenues and monumental red-and-gold gates on a flat plain, with low grey courtyard lanes tucked behind the boulevards.'],
+  },
+  shanghai: {
+    sentence: 'A river-bend metropolis where art deco stone fronts line the old promenade beneath a wall of new towers',
+    visual: ['deco_riverfront', 'A sweeping river bend with old art deco stone facades on one side and a dense wall of modern towers rising behind.'],
+  },
+};
+
 function genLevel(cityKey, img, level) {
   const rng = mulberry32(hashSeed(img.id));
   const region = regionFor(img.lat, img.lon ?? img.lng);
   const v = VOCAB[region] || VOCAB.americas;
+  const hook = HOOKS[cityKey] || null;
 
   const adj = pick(rng, v.adjectives);
   let cityType = pick(rng, v.cityTypes);
@@ -516,25 +557,30 @@ function genLevel(cityKey, img, level) {
   while (guard++ < 8 && overlaps(escape, location)) escape = pick(rng, v.escapes);
 
   const day = 2 * level + 4;
-  const art = /^[aeiou]/.test(adj) ? 'an' : 'a';
-  let briefing = pick(rng, BRIEF_TEMPLATES)
-    .replace('{move}', move)
-    .replace('{moveCap}', moveCap)
-    .replace('{adj}', adj)
-    .replace('{art}', art)
-    .replace('{artCap}', cap(art))
-    .replace('{cityType}', cityType)
-    .replace('{matA}', matA)
-    .replace('{matB}', matB)
-    .replace('{feature}', feature)
-    .replace('{featureCap}', cap(feature) + '. ')
-    .replace('{location}', location)
-    .replace('{time}', time)
-    .replace('{mid}', mid)
-    .replace('{escape}', escape);
-  briefing = 'Day ' + day + ': ' + briefing.replace(/\.\s+/g, '. ').replace(/\s{2,}/g, ' ');
+  let briefing;
+  if (hook) {
+    briefing = `Day ${day}: ${hook.sentence}. Cipher was seen ${location} at ${time}, ${mid}, then ${escape}.`;
+  } else {
+    const art = /^[aeiou]/.test(adj) ? 'an' : 'a';
+    briefing = pick(rng, BRIEF_TEMPLATES)
+      .replace('{move}', move)
+      .replace('{moveCap}', moveCap)
+      .replace('{adj}', adj)
+      .replace('{art}', art)
+      .replace('{artCap}', cap(art))
+      .replace('{cityType}', cityType)
+      .replace('{matA}', matA)
+      .replace('{matB}', matB)
+      .replace('{feature}', feature)
+      .replace('{featureCap}', cap(feature) + '. ')
+      .replace('{location}', location)
+      .replace('{time}', time)
+      .replace('{mid}', mid)
+      .replace('{escape}', escape);
+    briefing = 'Day ' + day + ': ' + briefing.replace(/\.\s+/g, '. ').replace(/\s{2,}/g, ' ');
+  }
 
-  const [vis] = pickN(rng, v.visual, 1);
+  const [vis] = hook?.visual ? [hook.visual] : pickN(rng, v.visual, 1);
   const [aud] = pickN(rng, v.auditory, 1);
   const [sen] = pickN(rng, v.sensory, 1);
   const evidence = [
@@ -612,6 +658,17 @@ if (cmd === 'generate') {
   writeFileSync(OUT, JSON.stringify(levels, null, 2));
   console.log('Wrote', OUT, '—', levels.length, 'levels');
   for (const l of levels) console.log('  L' + l.level_order, l.city.padEnd(12), l.region, 'q=' + candidates[l.city][0].quality_score);
+  const noHook = chosen.filter((c) => !HOOKS[c.city]);
+  console.log(noHook.length ? 'Cities without hand-written hook: ' + noHook.map((c) => c.city).join(', ') : 'All cities have hand-written hooks.');
+  process.exit(0);
+}
+
+if (cmd === 'hooks') {
+  const covered = Object.keys(HOOKS);
+  const missing = Object.keys(candidates).filter((c) => candidates[c].length && !HOOKS[c]);
+  console.log('Cities with hand-written hook (' + covered.length + '):', covered.join(', ') || 'none');
+  console.log('Cities available but WITHOUT hook (' + missing.length + '):');
+  for (const c of missing) console.log('  ' + c);
   process.exit(0);
 }
 
@@ -654,4 +711,4 @@ if (cmd === 'ab') {
   process.exit(0);
 }
 
-console.log('usage: generate-levels.mjs <pick|generate|ab>');
+console.log('usage: generate-levels.mjs <pick|generate|ab|hooks>');

@@ -173,7 +173,7 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 # Session History
 
 ## 2026-08-17 (Procedural Generator Pilot + 20 Levels 160-179 + Campaign at 179 Levels)
-- **Procedural generator**: `scripts/generate-levels.mjs` — deterministic seeded generator (image-id seed) that produces briefings + evidence from 13 region vocabularies ported from `dynamicClues.ts` grammar (no proper nouns). Commands: `pick`, `generate --start 160 [--cities c1,c2,...]`, `ab <levels>`. Built for the ~500 stages/month scale-up (user directive: pilot first, then decide).
+- **Procedural generator**: `scripts/generate-levels.mjs` — deterministic seeded generator (image-id seed) that produces briefings + evidence from 13 region vocabularies ported from `dynamicClues.ts` grammar (no proper nouns). Commands: `pick`, `generate --start 160 [--cities c1,c2,...]`, `ab <levels>`. Built for the ~500 stages/month scale-up (user directive: pilot first, then decide — **DECIDED 2026-08-17: commit to daily 500/month production**, see STANDING DECISION in Next Moves).
 - **Sweep**: `find13-tiles.mjs` (mvtest) swept 60 cities via vector tiles → `candidates13.json` (45 cities × top-15). 15 genuinely empty at z14: dubrovnik, guangzhou, shenzhen, xian, hangzhou, nanjing, perth, adelaide, phuket, cairo, alexandria, tunis, lagos, accra, durban.
 - **A/B validation**: generated batch compared vs hand-written L158/159/154/150/140 (voice consistent; region-vocab is the known limitation vs hand-written variety).
 - **Added 20 procedurally generated levels (160-179)**, all viewer-verified `LOADED` (headless Edge `load` event + coords from `viewer.getPosition()`). Campaign now **179 levels / 31 arcs**, finale shifts to **level 180 sentinel**. Prod DB inserted via `scripts/insert-levels-160-179.mjs` (guard: skip if level_order exists). Verified prod: 179 pano images, levels 1-179. `seed.ts` updated to mirror. `tsc --noEmit` clean.
@@ -461,6 +461,13 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [x] Add 20 procedurally generated levels (160-179) — 4 new arcs, campaign now 179 levels/31 arcs, finale sentinel 180
 - [ ] Play-test levels 29-179 on device; swap any that look wrong (incl. 60-179 new cities)
 - [ ] User to supply URLs for dense-metro range later; swaps = UPDATE rows in prod DB
+
+### STANDING DECISION (2026-08-17): Daily Production Cadence — 500 stages/month
+- User **committed to the daily 500/month production** using the procedural generator. Target: **one 20-level batch (~1.2 batches/day)** — i.e. 20 new locations daily.
+- **First batch (160-179) took ~2h total** — but that included one-time infra (sweep script, generator build, A/B, verify harness wiring). **Marginal cost of a future 20-level batch ≈ 45-60 min active time**: dominated by viewer verification (~20 min) + prod wiring/copy/commit (~10 min); sweeps are unattended (~47 min for 60 cities, no active time), generator runs in seconds.
+- **Hand-written per-city hooks are REQUIRED for every level** (user directive 2026-08-17): each city gets a small hand-written distinct hook (descriptive sentence + optional bespoke visual clue, no proper nouns, anti-google) layered on the region vocab, so same-region cities don't read identically. Built into `scripts/generate-levels.mjs` as the `HOOKS` map; `generate` reports "Cities without hand-written hook"; `hooks` command lists coverage. A/B vs 160-179 showed pure region-vocab briefings are less varied than hand-written — hooks are the fix. **Timing for hook authoring to be measured on the next batch (2026-08-18).**
+- **Cadence workflow per batch**: (1) `find13-tiles.mjs` sweep new cities if pool is thin → candidatesN.json; (2) author per-city hooks in the `HOOKS` map (`node scripts/generate-levels.mjs hooks` to list gaps); (3) `node scripts/generate-levels.mjs generate` (or `--cities` override); (4) verify all in headless Edge harness (viewer `load` event = ground truth; ~1-2 min/img); (5) `scripts/build-insert` → insert via `scripts/insert-levels-NNN-MMM.mjs` (skip-if-exists guard); (6) update seed.ts, TOTAL_LEVELS, arcs, copy, README; (7) `tsc --noEmit`; (8) commit + push (Vercel auto-deploys).
+- **Candidate pool as of 2026-08-17**: candidates13.json has 25 fresh cities (45 total × 15 cands each); 15 z14-empty cities may be re-sweepable at other zooms or are genuinely sparse. Sweeps keep sourcing ahead of generation.
 
 ## Growth & Monetization Plan (decided 2026-08-08) — see Next Moves below
 
