@@ -38,6 +38,10 @@ const ARCS = [
   { label: 'The Western Reaches', levels: '145–149', start: 145, end: 149 },
   { label: 'The Southern Sun', levels: '150–154', start: 150, end: 154 },
   { label: 'The Last Light', levels: '155–159', start: 155, end: 159 },
+  { label: 'The Open Road', levels: '160–164', start: 160, end: 164 },
+  { label: 'The Deep Current', levels: '165–169', start: 165, end: 169 },
+  { label: 'The Hidden Hand', levels: '170–174', start: 170, end: 174 },
+  { label: 'The Final Dawn', levels: '175–179', start: 175, end: 179 },
 ];
 
 export function CaseFile({ entries, currentLevel }: CaseFileProps) {

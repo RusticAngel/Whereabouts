@@ -1,0 +1,162 @@
+[
+  {
+    "level": 158,
+    "original": "Day 320: The trail sinks into a hot pastel city of palms and art deco towers, where the ocean glitters at the end of every street. Cipher was seen on the grand boulevard of palms at noon, past the candy-coloured facades, then walked toward the gleaming waterfront.",
+    "generated": {
+      "mapillary_id": "308972747285483",
+      "lat": "25.796200",
+      "lng": "-80.188980",
+      "provider": "mapillary",
+      "is_pano": true,
+      "level_order": 158,
+      "region": "americas",
+      "city": "ab-158",
+      "briefing": "Day 320: The hunt arrives at a grid-planned sprawling hub of steel and concrete. Towering mirrored facades line every canyon of the downtown. Cipher was seen below the mouth of a subway entrance at evening, studying a map of the grid, then disappeared behind a wall of traffic.",
+      "evidence": [
+        {
+          "type": "visual",
+          "value": "monumental",
+          "label": "Monumental stone buildings and broad paved plazas anchor the centre. Wide boulevards fan out from the civic heart, lined with trees and long blocks of offices."
+        },
+        {
+          "type": "auditory",
+          "value": "avenue_roar",
+          "label": "The constant roar of traffic on the avenues, the hiss of bus brakes, and the low rumble of the trains beneath the pavement."
+        },
+        {
+          "type": "sensory",
+          "value": "street_heat",
+          "label": "Hot air rising off the black pavement, the smell of exhaust and roasting nuts, and the deep shade between the towers."
+        }
+      ]
+    }
+  },
+  {
+    "level": 159,
+    "original": "Day 322: The final signal rests in a stylish river city of glass towers and an old town of crooked houses, where the great river carries barges past the new skyscrapers. Cipher was seen on the riverbank promenade at dusk, past the modern towers, then walked into the crowded lanes of the old quarter.",
+    "generated": {
+      "mapillary_id": "887761869908346",
+      "lat": "51.228394",
+      "lng": "6.790972",
+      "provider": "mapillary",
+      "is_pano": true,
+      "level_order": 159,
+      "region": "westeurope",
+      "city": "ab-159",
+      "briefing": "Day 322: The signal appears in a riverside grand old city of slate and sandstone, where narrow lanes of half-timbered houses lean over the streets. Cipher was last seen at the mouth of a narrow lane at mid-morning, studying the stone facades, then vanished into the arcades.",
+      "evidence": [
+        {
+          "type": "visual",
+          "value": "gothic_oldtown",
+          "label": "A compact old town of gothic spires, half-timbered houses and stone squares. A great cathedral rises over the rooftops, and a wide river curves beneath long bridges."
+        },
+        {
+          "type": "auditory",
+          "value": "river_city",
+          "label": "The ripple of the river against the stone, the bells of the great church, the murmur of the arcade cafés, and the gulls over the water."
+        },
+        {
+          "type": "sensory",
+          "value": "river_air",
+          "label": "A mild air off the broad river, the smell of bread and coffee from the old lanes, and the cool of the cathedral shadow."
+        }
+      ]
+    }
+  },
+  {
+    "level": 154,
+    "original": "Day 312: The final turn leads to a city where streets are water and the traffic glides silently past marble palaces. Cipher was seen on the stone landing at evening, beneath the gilded domes, then took a gondola into the narrow canals.",
+    "generated": {
+      "mapillary_id": "2071424753296148",
+      "lat": "45.434002",
+      "lng": "12.343712",
+      "provider": "mapillary",
+      "is_pano": true,
+      "level_order": 154,
+      "region": "westeurope",
+      "city": "ab-154",
+      "briefing": "Day 312: A riverside canal city of sandstone and stone holds the next turn, where a broad river splits the city beneath long stone bridges. Cipher was seen near the foot of the great cathedral at evening, watching the river traffic, then disappeared into the old quarter.",
+      "evidence": [
+        {
+          "type": "visual",
+          "value": "gothic_oldtown",
+          "label": "A compact old town of gothic spires, half-timbered houses and stone squares. A great cathedral rises over the rooftops, and a wide river curves beneath long bridges."
+        },
+        {
+          "type": "auditory",
+          "value": "barge_horn",
+          "label": "The low horn of a barge on the river, the clatter of the market, and the chime of the carillon carried on the wind."
+        },
+        {
+          "type": "sensory",
+          "value": "old_stone",
+          "label": "The cool of the ancient stone, warm sunlight in the squares, and the faint scent of woodsmoke and wet cobbles."
+        }
+      ]
+    }
+  },
+  {
+    "level": 150,
+    "original": "Day 304: The signal rises to a dark city of black volcanic stone, where a towering gothic cathedral of basalt looms over the square. Cipher was seen at the base of the black towers at dusk, then crossed the wide avenue toward the old quarter.",
+    "generated": {
+      "mapillary_id": "887632005121560",
+      "lat": "45.775436",
+      "lng": "3.082110",
+      "provider": "mapillary",
+      "is_pano": true,
+      "level_order": 150,
+      "region": "westeurope",
+      "city": "ab-150",
+      "briefing": "Day 304: The hunt crosses to a gothic-spired river capital of slate and brick. Narrow lanes of half-timbered houses lean over the streets. Cipher was seen beside the middle of the stone bridge at dawn, watching the river traffic, then disappeared into the old quarter.",
+      "evidence": [
+        {
+          "type": "visual",
+          "value": "canal_gables",
+          "label": "Canals cut through the old town, lined with tall thin gabled houses that lean toward each other. Stone bridges arch over the green water at every turn."
+        },
+        {
+          "type": "auditory",
+          "value": "river_city",
+          "label": "The ripple of the river against the stone, the bells of the great church, the murmur of the arcade cafés, and the gulls over the water."
+        },
+        {
+          "type": "sensory",
+          "value": "old_stone",
+          "label": "The cool of the ancient stone, warm sunlight in the squares, and the faint scent of woodsmoke and wet cobbles."
+        }
+      ]
+    }
+  },
+  {
+    "level": 140,
+    "original": "Day 284: The trail lands in a proud northern port of red brick and echoing docks, where two great cathedrals stare across the rooftops. Cipher was seen by the old waterfront at dusk, past the iron warehouses and the masts, then vanished up the hill of the shopping streets.",
+    "generated": {
+      "mapillary_id": "1877156642435876",
+      "lat": "53.406511",
+      "lng": "-2.988735",
+      "provider": "mapillary",
+      "is_pano": true,
+      "level_order": 140,
+      "region": "westeurope",
+      "city": "ab-140",
+      "briefing": "Day 284: The signal appears in a canal-cut canal city of timber and sandstone, where a broad river splits the city beneath long stone bridges. Cipher was last seen on the middle of the stone bridge at mid-morning, moving with the slow crowd, then disappeared into the old quarter.",
+      "evidence": [
+        {
+          "type": "visual",
+          "value": "arcade_square",
+          "label": "Grand arcaded squares of pale stone, ringed by guild halls and a towering cathedral. Narrow lanes of timbered houses radiate away into the old quarter."
+        },
+        {
+          "type": "auditory",
+          "value": "river_city",
+          "label": "The ripple of the river against the stone, the bells of the great church, the murmur of the arcade cafés, and the gulls over the water."
+        },
+        {
+          "type": "sensory",
+          "value": "evening_bells",
+          "label": "Long golden light on the old stone, the chime of the bells at dusk, and the damp breath of the river rising."
+        }
+      ]
+    }
+  }
+]

@@ -1,7 +1,7 @@
 # Trace — Session Memory
 
 ## Project
-Detective-style location deduction game. Players track a missing character (Cipher) across 159 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
+Detective-style location deduction game. Players track a missing character (Cipher) across 179 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
 
 ## Stack
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind v4)
@@ -118,11 +118,11 @@ Total max deduction: 1200
 | `src/proxy.ts` | Route guard + cookie prefix middleware |
 | `src/app/api/auth/[...path]/route.ts` | Auth handler wrapper (cookie Secure stripping over HTTP) |
 | `capacitor.config.ts` | Capacitor config (server URL, Android settings) |
-| `seed.ts` | DB seed — 159 Mapillary 360° images (all real locations) |
+| `seed.ts` | DB seed — 179 Mapillary 360° images (all real locations) |
 | `drizzle.config.ts` | Drizzle Kit config for `db:push` |
 
 ## Seed Data
-- **159 real images** (all Mapillary 360° panoramas, no Unsplash)
+- **179 real images** (all Mapillary 360° panoramas, no Unsplash)
 - Each has `mapillary_id`, `lat`/`lng` (real-world coordinates), `briefing`, `evidence[]`, `is_pano: true`, `level_order`
 - Some images are `is_pano: false` at the Mapillary API level but still load in mapillary-js (flat images). Levels needing replacement marked in session history.
 - Run with: `node --experimental-strip-types --env-file .env.local seed.ts`
@@ -171,6 +171,16 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 ```
 
 # Session History
+
+## 2026-08-17 (Procedural Generator Pilot + 20 Levels 160-179 + Campaign at 179 Levels)
+- **Procedural generator**: `scripts/generate-levels.mjs` — deterministic seeded generator (image-id seed) that produces briefings + evidence from 13 region vocabularies ported from `dynamicClues.ts` grammar (no proper nouns). Commands: `pick`, `generate --start 160 [--cities c1,c2,...]`, `ab <levels>`. Built for the ~500 stages/month scale-up (user directive: pilot first, then decide).
+- **Sweep**: `find13-tiles.mjs` (mvtest) swept 60 cities via vector tiles → `candidates13.json` (45 cities × top-15). 15 genuinely empty at z14: dubrovnik, guangzhou, shenzhen, xian, hangzhou, nanjing, perth, adelaide, phuket, cairo, alexandria, tunis, lagos, accra, durban.
+- **A/B validation**: generated batch compared vs hand-written L158/159/154/150/140 (voice consistent; region-vocab is the known limitation vs hand-written variety).
+- **Added 20 procedurally generated levels (160-179)**, all viewer-verified `LOADED` (headless Edge `load` event + coords from `viewer.getPosition()`). Campaign now **179 levels / 31 arcs**, finale shifts to **level 180 sentinel**. Prod DB inserted via `scripts/insert-levels-160-179.mjs` (guard: skip if level_order exists). Verified prod: 179 pano images, levels 1-179. `seed.ts` updated to mirror. `tsc --noEmit` clean.
+- **Cities/panos** (level → id, φ, λ): 160 Denver `733453199686399` (39.7564, -104.9899) · 161 Montevideo `1321694069936667` (-34.9125, -56.1824) · 162 Bergen `326925692503772` (60.3715, 5.3459) · 163 Innsbruck `1441871710583067` (47.2691, 11.3982) · 164 Catania `1258709269068052` (37.5031, 15.0877) · 165 Abu Dhabi `1137743968532326` (24.4860, 54.4007) · 166 Addis Ababa `1292429583028689` (9.0134, 38.7741) · 167 Da Nang `2150809869012057` (16.0738, 108.1856) · 168 Kobe `289502936156992` (34.6870, 135.1935) · 169 Christchurch `349830057844467` (-43.5214, 172.6415) · 170 Washington `1465435038109335` (38.8961, -77.0279) · 171 Graz `2328911373918971` (47.0722, 15.4479) · 172 Palermo `797283712989660` (38.1047, 13.3494) · 173 Doha `449977169399400` (25.3104, 51.5047) · 174 Kyoto `1016830984314386` (35.0086, 135.7571) · 175 Basel `1480386146770293` (47.5522, 7.5999) · 176 Boston `266194186017828` (42.3613, -71.0627) · 177 Trieste `885837091245109` (45.6577, 13.7737) · 178 Sapporo `648307327682803` (43.0692, 141.3497) · 179 Phoenix `1368912771489118` (33.4587, -112.0681).
+- **New arcs**: "The Open Road" 160-164, "The Deep Current" 165-169, "The Hidden Hand" 170-174, "The Final Dawn" 175-179. Copy updated everywhere (landing 179 locations / 179 levels / 31 arcs, leaderboard max 179, README 179 locations). Narrative Day 324→362 (level 180 sentinel).
+- **Wellington swap**: Wellington top candidate `505344970655080` + all 4 backups TIMEOUT in viewer (cluster unrenderable) → replaced with Basel `1480386146770293` (q 0.955, LOADED) at L175 via `--cities` override.
+- **Remaining candidate pool**: candidates13.json 45 cities; candidates11 leftovers birmingham/reims usable. Generator `generate` (no override) picks top-q city per region round-robin — rerun without override for future batches.
 
 ## 2026-08-17 (20 New Levels 140-159 + Campaign at 159 Levels)
 - **Added 20 Mapillary 360° levels (140-159)**, all viewer-verified `LOADED` (headless Edge `load` event + coords from `viewer.getPosition()`). Campaign now **159 levels / 27 arcs**, finale shifts to **level 160 sentinel**. Prod DB inserted via `scripts/insert-levels-140-159.mjs` (guard: skip if level_order exists). Verified prod: 159 pano images, levels 1-159. `seed.ts` updated to mirror. `tsc --noEmit` clean.
@@ -448,7 +458,8 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [x] Add 20 new levels (100-119) — 4 new arcs, campaign now 119 levels/21 arcs
 - [x] Add 20 new levels (120-139) — 2 new arcs, campaign now 139 levels/23 arcs, finale sentinel 140
 - [x] Add 20 new levels (140-159) — 4 new arcs, campaign now 159 levels/27 arcs, finale sentinel 160
-- [ ] Play-test levels 29-159 on device; swap any that look wrong (incl. 60-159 new cities)
+- [x] Add 20 procedurally generated levels (160-179) — 4 new arcs, campaign now 179 levels/31 arcs, finale sentinel 180
+- [ ] Play-test levels 29-179 on device; swap any that look wrong (incl. 60-179 new cities)
 - [ ] User to supply URLs for dense-metro range later; swaps = UPDATE rows in prod DB
 
 ## Growth & Monetization Plan (decided 2026-08-08) — see Next Moves below
