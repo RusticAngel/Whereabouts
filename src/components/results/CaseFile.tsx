@@ -32,6 +32,8 @@ const ARCS = [
   { label: 'The Southern Cross', levels: '106–108', start: 106, end: 108 },
   { label: 'The Northern Return', levels: '109–113', start: 109, end: 113 },
   { label: 'The Final Chase', levels: '114–119', start: 114, end: 119 },
+  { label: 'The Wide World', levels: '120–129', start: 120, end: 129 },
+  { label: 'The Final Map', levels: '130–139', start: 130, end: 139 },
 ];
 
 export function CaseFile({ entries, currentLevel }: CaseFileProps) {

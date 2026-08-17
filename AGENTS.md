@@ -1,7 +1,7 @@
 # Trace — Session Memory
 
 ## Project
-Detective-style location deduction game. Players track a missing character (Cipher) across 59 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
+Detective-style location deduction game. Players track a missing character (Cipher) across 139 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
 
 ## Stack
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind v4)
@@ -118,17 +118,17 @@ Total max deduction: 1200
 | `src/proxy.ts` | Route guard + cookie prefix middleware |
 | `src/app/api/auth/[...path]/route.ts` | Auth handler wrapper (cookie Secure stripping over HTTP) |
 | `capacitor.config.ts` | Capacitor config (server URL, Android settings) |
-| `seed.ts` | DB seed — 59 Mapillary 360° images (all real locations) |
+| `seed.ts` | DB seed — 139 Mapillary 360° images (all real locations) |
 | `drizzle.config.ts` | Drizzle Kit config for `db:push` |
 
 ## Seed Data
-- **59 real images** (all Mapillary 360° panoramas, no Unsplash)
+- **139 real images** (all Mapillary 360° panoramas, no Unsplash)
 - Each has `mapillary_id`, `lat`/`lng` (real-world coordinates), `briefing`, `evidence[]`, `is_pano: true`, `level_order`
 - Some images are `is_pano: false` at the Mapillary API level but still load in mapillary-js (flat images). Levels needing replacement marked in session history.
 - Run with: `node --experimental-strip-types --env-file .env.local seed.ts`
 - Seed truncates old data first: `DELETE FROM rounds`, `DELETE FROM daily_scores`, `DELETE FROM images`
 - **Verifying a new image ID**: metadata API (is_pano, quality_score, thumbnail) is NOT sufficient. Verify with the real viewer: serve `node_modules/mapillary-js/dist/mapillary.js` + a test page that constructs `mapillary.Viewer({ imageId })` and waits for the `load` event (20s timeout), run in headless Edge/Chrome, read the `load`/timeout result from the dumped DOM title. Use `moveTo` rejection as the failure indicator — it rejects for ALL non-navigable viewers regardless of image validity.
-- **Finding new images**: v3 API (`api.mapillary.com`) is dead. Use v4 `graph.mapillary.com/images` — bbox must be `[west,south,east,north]` (lon,lat order), max area 0.010 sq deg, `limit=40` (200 fails), paginate with `after` cursor. API aggressively rate-limits ("reduce the amount of data" 500s) — pace 20-30s+ between requests. `quality_score` is 0-1 (not 0-5). Pedestrian plazas often have NO car-captured panos; target car-accessible streets near landmarks.
+- **Finding new images (preferred)**: vector tiles — `tiles.mapillary.com/maps/vtp/mly1_public/2/{z}/{x}/{y}?access_token=...` (NO throttle; one tile = 26k features with `id`, `is_pano`, `quality_score`, `captured_at`, exact coords). Decode with `@mapbox/vector-tile` + `pbf@3` (v4 has a different API). See `find11-tiles.mjs`. The v4 bbox `graph.mapillary.com/images` endpoint is hard-throttled ("reduce the amount of data" 500s, ~24h cooldown) — avoid unless the tile layer can't provide a location. bbox must be `[west,south,east,north]` (lon,lat order), max area 0.010 sq deg, `limit=40` (200 fails). `quality_score` is 0-1 (not 0-5). Pedestrian plazas often have NO car-captured panos; target car-accessible streets near landmarks.
 
 ## Mobile Responsiveness
 - Viewport meta tag + `suppressHydrationWarning` on `<html>`
@@ -171,6 +171,14 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 ```
 
 # Session History
+
+## 2026-08-17 (20 New Levels 120-139 + Campaign at 139 Levels)
+- **Throttle check**: Mapillary bbox Graph API STILL throttled (status 500 "reduce the amount of data") — but irrelevant; sourcing uses vector tiles (unthrottled) and verification uses the viewer. Also added the `verify12.ps1` harness run to the mvtest dir.
+- **Added 20 Mapillary 360° levels (120-139)**, all viewer-verified `LOADED` (headless Edge `load` event + coords from `viewer.getPosition()`). Campaign now **139 levels / 23 arcs**, finale shifts to **level 140 sentinel**. Prod DB inserted via `scripts/insert-levels-120-129-backup.mjs` (restored from 2026-08-16 park) + new `scripts/insert-levels-130-139.mjs` (guard: skip if level_order exists). Verified prod: 139 pano images, levels 1-139. `seed.ts` updated to mirror. `tsc --noEmit` clean.
+- **Cities/panos** (level → id, φ, λ): 120 Tokyo `790746434961237` (35.6658, 139.6395) · 121 Tel Aviv `877089670203575` (32.0750, 34.7710) · 122 Frankfurt `365730965510025` (50.1005, 8.6686) · 123 Oslo `1002263417874603` (59.9140, 10.7475) · 124 Los Angeles `1437723248166306` (34.0452, -118.2434) · 125 Johannesburg `1064922338838430` (-26.2120, 28.0338) · 126 Hamburg `1106593844619549` (53.5413, 9.9936) · 127 Calgary `1495603730778093` (51.0408, -114.0841) · 128 Rotterdam `1223982413120956` (51.9170, 4.4777) · 129 Ottawa `4308118522833927` (45.4173, -75.7022) · 130 Valencia `854278233147067` (39.4631, -0.3522) · 131 Bilbao `2748324645367350` (43.2612, -2.9300) · 132 Ljubljana `4513210758694944` (46.0588, 14.5023) · 133 Bratislava `808083831412437` (48.1556, 17.1247) · 134 Thessaloniki `976304155306301` (40.6586, 22.9428) · 135 New Orleans `286736073508380` (29.9482, -90.0756) · 136 Singapore `730831466357468` (1.3197, 103.8171) · 137 Delhi `1124964618610305` (28.6456, 77.1701) · 138 Bristol `1354301232877436` (51.4580, -2.5659) · 139 Avignon `685326988848028` (43.9479, 4.8033).
+- **New arcs**: "The Wide World" 120-129, "The Final Map" 130-139. Copy updated: landing (139 locations / 139 levels / 23 arcs), leaderboard max 139, README (139 locations, 139 seed rows). Narrative Day 242→282 (level 140 sentinel).
+- **Fix**: seed.ts briefing line for level 134 contained an unescaped apostrophe (`water's edge`) that broke `tsc` — replaced with "water edge".
+- **Sourcing note**: candidates11.json 28-city sweep already had top-quality candidates for all 10 new cities (thessaloniki q0.954, avignon q0.967 tops). All 20 verification attempts LOADED on first pass — no retries needed.
 
 ## 2026-07-15
 - Created GitHub repo: `https://github.com/RusticAngel/Whereabouts.git`
@@ -430,7 +438,8 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [x] Add 20 new levels (60-79) — 15 arcs, campaign now 79 levels. Committed in 4031eea.
 - [x] Add 20 new levels (80-99) — 2 new arcs, campaign now 99 levels/17 arcs. Committed in bc230e6.
 - [x] Add 20 new levels (100-119) — 4 new arcs, campaign now 119 levels/21 arcs
-- [ ] Play-test levels 29-119 on device; swap any that look wrong (incl. 60-119 new cities)
+- [x] Add 20 new levels (120-139) — 2 new arcs, campaign now 139 levels/23 arcs, finale sentinel 140
+- [ ] Play-test levels 29-139 on device; swap any that look wrong (incl. 60-139 new cities)
 - [ ] User to supply URLs for dense-metro range later; swaps = UPDATE rows in prod DB
 
 ## Growth & Monetization Plan (decided 2026-08-08) — see Next Moves below
