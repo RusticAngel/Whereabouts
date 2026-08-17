@@ -141,7 +141,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
   }, [pinLat, pinLng, evidenceRevealed, confidence, location.lat, location.lng, location.id, level, userId, router, hasCoords, isReplay]);
 
   if (phase === 'onboarding') {
-    return <OnboardingModal onDismiss={() => setPhase('briefing')} />;
+    return <OnboardingModal onDismiss={() => setPhase('briefing')} onSkip={() => setPhase('exploring')} />;
   }
 
   if (phase === 'briefing') {

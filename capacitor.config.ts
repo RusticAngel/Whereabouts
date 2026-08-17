@@ -8,6 +8,13 @@ const config: CapacitorConfig = {
     url: 'https://whereabouts-navy.vercel.app',
   },
   plugins: {
+    SplashScreen: {
+      launchShowDuration: 0,
+      launchAutoHide: false,
+      backgroundColor: '#000000',
+      androidScaleType: 'CENTER_CROP',
+      showSpinner: false,
+    },
     DeepLinks: {
       schemes: ['findme'],
     },

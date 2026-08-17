@@ -5,30 +5,48 @@ import Link from 'next/link';
 import { authClient } from '@/lib/auth/client';
 import { NotificationBadge } from '@/components/notifications/NotificationBadge';
 
+const CACHE_KEY = 'findme_session_cache';
+
 interface SessionActionsProps {
   section: 'hero' | 'cta';
 }
 
 export function SessionActions({ section }: SessionActionsProps) {
   const [userId, setUserId] = useState<string | null>(null);
+  const [cachedSignedIn, setCachedSignedIn] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let active = true;
+
+    if (localStorage.getItem(CACHE_KEY) === 'logged-in') {
+      setCachedSignedIn(true);
+      setLoaded(true);
+    }
+
     (async () => {
       try {
         const { data } = await authClient.getSession();
-        if (active) setUserId(data?.user?.id ?? null);
+        if (!active) return;
+        const id = data?.user?.id ?? null;
+        setUserId(id);
+        setLoaded(true);
+        setCachedSignedIn(false);
+        if (id) localStorage.setItem(CACHE_KEY, 'logged-in');
+        else localStorage.removeItem(CACHE_KEY);
       } catch {
-        if (active) setUserId(null);
-      } finally {
-        if (active) setLoaded(true);
+        if (!active) return;
+        if (localStorage.getItem(CACHE_KEY) !== 'logged-in') setUserId(null);
+        setCachedSignedIn(false);
+        setLoaded(true);
       }
     })();
     return () => {
       active = false;
     };
   }, []);
+
+  const signedIn = Boolean(userId) || cachedSignedIn;
 
   const primary = section === 'hero'
     ? 'w-full sm:w-auto px-8 py-3 rounded-lg bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors'
@@ -41,7 +59,7 @@ export function SessionActions({ section }: SessionActionsProps) {
     );
   }
 
-  if (userId) {
+  if (signedIn) {
     return section === 'hero' ? (
       <>
         <Link href="/game" className={primary}>Continue Investigation</Link>
@@ -49,7 +67,7 @@ export function SessionActions({ section }: SessionActionsProps) {
         <Link href="/case-file" className={secondary}>Case File</Link>
         <Link href="/leaderboard" className={secondary}>Leaderboard</Link>
         <Link href="/profile" className={secondary}>Profile</Link>
-        <NotificationBadge userId={userId} />
+        {userId && <NotificationBadge userId={userId} />}
       </>
     ) : (
       <>

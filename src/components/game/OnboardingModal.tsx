@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/Button';
 
 interface OnboardingModalProps {
   onDismiss: () => void;
+  onSkip: () => void;
 }
 
-export function OnboardingModal({ onDismiss }: OnboardingModalProps) {
+export function OnboardingModal({ onDismiss, onSkip }: OnboardingModalProps) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -18,6 +19,11 @@ export function OnboardingModal({ onDismiss }: OnboardingModalProps) {
   const handleDismiss = () => {
     localStorage.setItem('trace_onboarding_seen', 'true');
     onDismiss();
+  };
+
+  const handleSkip = () => {
+    localStorage.setItem('trace_onboarding_seen', 'true');
+    onSkip();
   };
 
   return (
@@ -39,20 +45,28 @@ export function OnboardingModal({ onDismiss }: OnboardingModalProps) {
             Cipher has gone underground
           </h1>
           <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
-            We&apos;ve lost Cipher&apos;s trail. Your mission: track them across 119 global locations.
+            We&apos;ve lost Cipher&apos;s trail. Your mission: track them across the globe.
             <br /><br />
-            Search every 360&deg; scene for clues. Place your pin where you think they&apos;re hiding.
-            <br /><br />
-            Intel is available &mdash; but every piece costs points. Use strategy, not brute force.
+            Study each scene for clues, place your pin, and set your confidence. Intel costs points &mdash; use it wisely.
           </p>
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            onClick={handleDismiss}
-          >
-            Accept the mission
-          </Button>
+          <div className="space-y-2">
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={handleDismiss}
+            >
+              Accept the mission
+            </Button>
+            <Button
+              variant="ghost"
+              size="md"
+              fullWidth
+              onClick={handleSkip}
+            >
+              Skip
+            </Button>
+          </div>
         </div>
       </div>
     </div>
