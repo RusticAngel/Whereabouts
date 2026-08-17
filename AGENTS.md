@@ -1,7 +1,7 @@
 # Trace — Session Memory
 
 ## Project
-Detective-style location deduction game. Players track a missing character (Cipher) across 139 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
+Detective-style location deduction game. Players track a missing character (Cipher) across 159 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
 
 ## Stack
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind v4)
@@ -118,11 +118,11 @@ Total max deduction: 1200
 | `src/proxy.ts` | Route guard + cookie prefix middleware |
 | `src/app/api/auth/[...path]/route.ts` | Auth handler wrapper (cookie Secure stripping over HTTP) |
 | `capacitor.config.ts` | Capacitor config (server URL, Android settings) |
-| `seed.ts` | DB seed — 139 Mapillary 360° images (all real locations) |
+| `seed.ts` | DB seed — 159 Mapillary 360° images (all real locations) |
 | `drizzle.config.ts` | Drizzle Kit config for `db:push` |
 
 ## Seed Data
-- **139 real images** (all Mapillary 360° panoramas, no Unsplash)
+- **159 real images** (all Mapillary 360° panoramas, no Unsplash)
 - Each has `mapillary_id`, `lat`/`lng` (real-world coordinates), `briefing`, `evidence[]`, `is_pano: true`, `level_order`
 - Some images are `is_pano: false` at the Mapillary API level but still load in mapillary-js (flat images). Levels needing replacement marked in session history.
 - Run with: `node --experimental-strip-types --env-file .env.local seed.ts`
@@ -171,6 +171,14 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 ```
 
 # Session History
+
+## 2026-08-17 (20 New Levels 140-159 + Campaign at 159 Levels)
+- **Added 20 Mapillary 360° levels (140-159)**, all viewer-verified `LOADED` (headless Edge `load` event + coords from `viewer.getPosition()`). Campaign now **159 levels / 27 arcs**, finale shifts to **level 160 sentinel**. Prod DB inserted via `scripts/insert-levels-140-159.mjs` (guard: skip if level_order exists). Verified prod: 159 pano images, levels 1-159. `seed.ts` updated to mirror. `tsc --noEmit` clean.
+- **Cities/panos** (level → id, φ, λ): 140 Liverpool `1877156642435876` (53.4065, -2.9887) · 141 Cardiff `1784567688800646` (51.4847, -3.1728) · 142 Sheffield `944789361991006` (53.3897, -1.4778) · 143 Coimbra `466086536513636` (40.1855, -8.4164) · 144 Strasbourg `903722160193191` (48.5716, 7.7507) · 145 Grenoble `1407996343475389` (45.1850, 5.7501) · 146 Rennes `822942878643735` (48.1073, -1.6719) · 147 Tours `945063026310730` (47.3844, 0.6610) · 148 Nancy `747245919283859` (48.6940, 6.1829) · 149 Dijon `714753883722235` (47.3337, 5.0677) · 150 Clermont `887632005121560` (45.7754, 3.0821) · 151 Aix `1180088955786558` (43.5274, 5.4520) · 152 Aarhus `466096021125317` (56.1540, 10.2074) · 153 Malmö `294038342368827` (55.6025, 13.0183) · 154 Venice `2071424753296148` (45.4340, 12.3437) · 155 Melbourne `629674212537925` (-37.8179, 144.9678) · 156 San Francisco `1322502839289166` (37.7920, -122.4176) · 157 Seattle `1123523314826717` (47.5988, -122.3196) · 158 Miami `308972747285483` (25.7962, -80.1890) · 159 Düsseldorf `887761869908346` (51.2284, 6.7910).
+- **New arcs**: "The Home Islands" 140-144, "The Western Reaches" 145-149, "The Southern Sun" 150-154, "The Last Light" 155-159. Copy updated everywhere (landing 159 locations / 159 levels / 27 arcs, leaderboard max 159, README 159 locations). Narrative Day 282→322 (level 160 sentinel).
+- **New-city sweep** (`find12-tiles.mjs`): 8 cities swept via vector tiles — venice, melbourne, sanfrancisco, seattle, miami, dusseldorf all produced 15 high-Q candidates (seattle 722k total panos in 9 tiles!). granada/perth interrupted by timeout but not needed (20 cities came from 6 new + 14 remaining candidates11).
+- **Sourcing note**: Tours primary `296179542007050` TIMEOUT twice in viewer (not renderable despite metadata) — used backup `945063026310730` (LOADED). Confirms again: only the viewer `load` event is ground truth.
+- **Remaining candidate pool**: candidates11 leftover cities still unused: leeds(2, low q), birmingham, reims, belfast/busan/kolkata(empty). candidates12.json has 6 swept cities.
 
 ## 2026-08-17 (20 New Levels 120-139 + Campaign at 139 Levels)
 - **Throttle check**: Mapillary bbox Graph API STILL throttled (status 500 "reduce the amount of data") — but irrelevant; sourcing uses vector tiles (unthrottled) and verification uses the viewer. Also added the `verify12.ps1` harness run to the mvtest dir.
@@ -439,7 +447,8 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [x] Add 20 new levels (80-99) — 2 new arcs, campaign now 99 levels/17 arcs. Committed in bc230e6.
 - [x] Add 20 new levels (100-119) — 4 new arcs, campaign now 119 levels/21 arcs
 - [x] Add 20 new levels (120-139) — 2 new arcs, campaign now 139 levels/23 arcs, finale sentinel 140
-- [ ] Play-test levels 29-139 on device; swap any that look wrong (incl. 60-139 new cities)
+- [x] Add 20 new levels (140-159) — 4 new arcs, campaign now 159 levels/27 arcs, finale sentinel 160
+- [ ] Play-test levels 29-159 on device; swap any that look wrong (incl. 60-159 new cities)
 - [ ] User to supply URLs for dense-metro range later; swaps = UPDATE rows in prod DB
 
 ## Growth & Monetization Plan (decided 2026-08-08) — see Next Moves below

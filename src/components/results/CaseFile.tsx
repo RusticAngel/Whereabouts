@@ -34,6 +34,10 @@ const ARCS = [
   { label: 'The Final Chase', levels: '114–119', start: 114, end: 119 },
   { label: 'The Wide World', levels: '120–129', start: 120, end: 129 },
   { label: 'The Final Map', levels: '130–139', start: 130, end: 139 },
+  { label: 'The Home Islands', levels: '140–144', start: 140, end: 144 },
+  { label: 'The Western Reaches', levels: '145–149', start: 145, end: 149 },
+  { label: 'The Southern Sun', levels: '150–154', start: 150, end: 154 },
+  { label: 'The Last Light', levels: '155–159', start: 155, end: 159 },
 ];
 
 export function CaseFile({ entries, currentLevel }: CaseFileProps) {
