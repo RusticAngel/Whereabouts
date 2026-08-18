@@ -471,6 +471,13 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [ ] Play-test levels 29-199 on device; swap any that look wrong (incl. 60-199 new cities)
 - [ ] User to supply URLs for dense-metro range later; swaps = UPDATE rows in prod DB
 
+### PRIORITY SHIFT (2026-08-18): Google Play AAB releases — 2 in the next 2 weeks
+- **User directive (2026-08-18)**: shift focus away from the daily level cadence toward **Google Play updates**. Target: **at least 2 AAB releases in the next 2 weeks**.
+- Current AAB baseline: signed release v1.2 (`versionCode 3` / `versionName "1.2"`) built 2026-08-16 at `android/app/build/outputs/bundle/release/app-release.aab`. Upload keystore `android/keystore/findme-upload.jks` + `keystore.properties` (gitignored, backed up).
+- **Release process** (from AGENTS.md Dev Workflow): switch `capacitor.config.ts` `server.url` to prod / clear cleartext for release if remote-loading is no longer desired; `npx cap sync android`; bump `versionCode`/`versionName` in `android/app/build.gradle`; `cd android && gradlew bundleRelease`; upload AAB to Play Console (closed track for testing).
+- **AAB candidates for the 2 releases** (decide with user): (1) content release — latest campaign state (199 levels) baked in if changing to local asset loading, or just the closed-test build; (2) Phase-1 feature release — first-run funnel, PWA prompt, streak grace, weekly challenge, Google Sign-In, and/or `NEXT_PUBLIC_CHALLENGES_ENABLED=false`. Play closed-test setup (group `rusticsfindme-testers@googlegroups.com`, 12 testers, 14-day clock) is also pending.
+- Level-cadence work is **paused until the Play releases are handled**; pool (`candidates-all.json`, 32 fresh cities) stays banked for when cadence resumes.
+
 ### STANDING DECISION (2026-08-17): Daily Production Cadence — 500 stages/month
 - User **committed to the daily 500/month production** using the procedural generator. Target: **one 20-level batch (~1.2 batches/day)** — i.e. 20 new locations daily.
 - **First batch (160-179) took ~2h total** — but that included one-time infra (sweep script, generator build, A/B, verify harness wiring). **Marginal cost of a future 20-level batch ≈ 45-60 min active time**: dominated by viewer verification (~20 min) + prod wiring/copy/commit (~10 min); sweeps are unattended (~47 min for 60 cities, no active time), generator runs in seconds.
