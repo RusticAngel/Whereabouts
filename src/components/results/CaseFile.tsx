@@ -42,6 +42,10 @@ const ARCS = [
   { label: 'The Deep Current', levels: '165–169', start: 165, end: 169 },
   { label: 'The Hidden Hand', levels: '170–174', start: 170, end: 174 },
   { label: 'The Final Dawn', levels: '175–179', start: 175, end: 179 },
+  { label: 'The New World', levels: '180–184', start: 180, end: 184 },
+  { label: 'The Northern Thread', levels: '185–189', start: 185, end: 189 },
+  { label: 'The Far Horizon', levels: '190–194', start: 190, end: 194 },
+  { label: 'The Final Meridian', levels: '195–199', start: 195, end: 199 },
 ];
 
 export function CaseFile({ entries, currentLevel }: CaseFileProps) {

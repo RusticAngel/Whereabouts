@@ -1,7 +1,7 @@
 # Trace — Session Memory
 
 ## Project
-Detective-style location deduction game. Players track a missing character (Cipher) across 179 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
+Detective-style location deduction game. Players track a missing character (Cipher) across 199 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
 
 ## Stack
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind v4)
@@ -118,11 +118,11 @@ Total max deduction: 1200
 | `src/proxy.ts` | Route guard + cookie prefix middleware |
 | `src/app/api/auth/[...path]/route.ts` | Auth handler wrapper (cookie Secure stripping over HTTP) |
 | `capacitor.config.ts` | Capacitor config (server URL, Android settings) |
-| `seed.ts` | DB seed — 179 Mapillary 360° images (all real locations) |
+| `seed.ts` | DB seed — 199 Mapillary 360° images (all real locations) |
 | `drizzle.config.ts` | Drizzle Kit config for `db:push` |
 
 ## Seed Data
-- **179 real images** (all Mapillary 360° panoramas, no Unsplash)
+- **199 real images** (all Mapillary 360° panoramas, no Unsplash)
 - Each has `mapillary_id`, `lat`/`lng` (real-world coordinates), `briefing`, `evidence[]`, `is_pano: true`, `level_order`
 - Some images are `is_pano: false` at the Mapillary API level but still load in mapillary-js (flat images). Levels needing replacement marked in session history.
 - Run with: `node --experimental-strip-types --env-file .env.local seed.ts`
@@ -171,6 +171,14 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 ```
 
 # Session History
+
+## 2026-08-18 (20 New Levels 180-199 + Campaign at 199 Levels — First Hooked Batch)
+- **Added 20 procedurally generated + hand-written-hook levels (180-199)**, all viewer-verified `LOADED` (headless Edge `load` event + coords from `viewer.getPosition()`). Campaign now **199 levels / 35 arcs**, finale shifts to **level 200 sentinel**. Prod DB inserted via `scripts/insert-levels-180-199.mjs` (guard: skip if level_order exists). Verified prod: 199 pano images, levels 1-199. `seed.ts` updated to mirror. `tsc --noEmit` clean.
+- **Cities/panos** (level → id, φ, λ): 180 New York `353106217241146` (40.7154, -74.0034) · 181 Philadelphia `652666732945319` (39.9520, -75.1718) · 182 San Diego `213623847851087` (32.7157, -117.1581) · 183 Nice `925437316017526` (43.7005, 7.2772) · 184 Bruges `1593344001382089` (51.2134, 3.2287) · 185 Bern `1281075563870018` (46.9532, 7.4268) · 186 Izmir `1645410453238807` (38.4092, 27.1148) · 187 Corfu `175485627839003` (39.6256, 19.9244) · 188 Trondheim `447375781406073` (63.4306, 10.3925) · 189 Tampere `812603563016896` (61.4951, 23.7580) · 190 Chengdu `123156100423679` (30.5982, 104.1062) · 191 Nagoya `1702090690332542` (35.1676, 136.9086) · 192 Hobart `285936163263017` (-42.8812, 147.3300) · 193 Canberra `4136028786435749` (-35.2716, 149.1301) · 194 Phnom Penh `1708676847164126` (11.5692, 104.9177) · 195 Surabaya `611007810373549` (-7.2634, 112.7483) · 196 Mombasa `1633120114533236` (-4.0515, 39.6882) · 197 Dar es Salaam `739880188233013` (-6.8162, 39.2752) · 198 Amman `1054163875170572` (31.9546, 35.9178) · 199 Muscat `958098755836416` (23.5968, 58.4237).
+- **New arcs**: "The New World" 180-184, "The Northern Thread" 185-189, "The Far Horizon" 190-194, "The Final Meridian" 195-199. Copy updated everywhere (landing 199 locations / 199 levels / 35 arcs, leaderboard max 199, README 199 locations). Narrative Day 364→402 (level 200 sentinel).
+- **First hooked batch**: all 20 cities have hand-written HOOKS (descriptive sentence + bespoke visual clue, no proper nouns). Hooks authored for 13 new cities this session (asuncion, izmir, corfu, trondheim, tampere, hobart, canberra, phnompenh, surabaya, mombasa, dartesalaam, amman, muscat) + 8 pre-existing → 37 total hooked in `generate-levels.mjs`.
+- **Replenish sweep (find14-tiles.mjs)**: swept 32 cities across exhausted regions (latam, mediterranean, nordic, oceania, southeastasia, southernafrica, middleeast) → candidates14.json. Empty at z14: alicante, goldcoast, harare, windhoek, manama. Merged with candidates13 → `candidates-all.json` (92 cities). Generator CAND path updated.
+- **Verification**: 10/20 LOADED first pass, 7 HANG + 3 TIMEOUT. Retries with longer budget (90s wait, 40s virtual time) recovered all — HANGs were transient Edge slowness, not unrenderable images. Lesson: HANG ≠ bad image; always retry before swapping.
 
 ## 2026-08-17 (Procedural Generator Pilot + 20 Levels 160-179 + Campaign at 179 Levels)
 - **Procedural generator**: `scripts/generate-levels.mjs` — deterministic seeded generator (image-id seed) that produces briefings + evidence from 13 region vocabularies ported from `dynamicClues.ts` grammar (no proper nouns). Commands: `pick`, `generate --start 160 [--cities c1,c2,...]`, `ab <levels>`. Built for the ~500 stages/month scale-up (user directive: pilot first, then decide — **DECIDED 2026-08-17: commit to daily 500/month production**, see STANDING DECISION in Next Moves).
@@ -459,15 +467,17 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [x] Add 20 new levels (120-139) — 2 new arcs, campaign now 139 levels/23 arcs, finale sentinel 140
 - [x] Add 20 new levels (140-159) — 4 new arcs, campaign now 159 levels/27 arcs, finale sentinel 160
 - [x] Add 20 procedurally generated levels (160-179) — 4 new arcs, campaign now 179 levels/31 arcs, finale sentinel 180
-- [ ] Play-test levels 29-179 on device; swap any that look wrong (incl. 60-179 new cities)
+- [x] Add 20 procedurally generated + hand-written-hook levels (180-199) — 4 new arcs, campaign now 199 levels/35 arcs, finale sentinel 200
+- [ ] Play-test levels 29-199 on device; swap any that look wrong (incl. 60-199 new cities)
 - [ ] User to supply URLs for dense-metro range later; swaps = UPDATE rows in prod DB
 
 ### STANDING DECISION (2026-08-17): Daily Production Cadence — 500 stages/month
 - User **committed to the daily 500/month production** using the procedural generator. Target: **one 20-level batch (~1.2 batches/day)** — i.e. 20 new locations daily.
 - **First batch (160-179) took ~2h total** — but that included one-time infra (sweep script, generator build, A/B, verify harness wiring). **Marginal cost of a future 20-level batch ≈ 45-60 min active time**: dominated by viewer verification (~20 min) + prod wiring/copy/commit (~10 min); sweeps are unattended (~47 min for 60 cities, no active time), generator runs in seconds.
-- **Hand-written per-city hooks are REQUIRED for every level** (user directive 2026-08-17): each city gets a small hand-written distinct hook (descriptive sentence + optional bespoke visual clue, no proper nouns, anti-google) layered on the region vocab, so same-region cities don't read identically. Built into `scripts/generate-levels.mjs` as the `HOOKS` map; `generate` reports "Cities without hand-written hook"; `hooks` command lists coverage. A/B vs 160-179 showed pure region-vocab briefings are less varied than hand-written — hooks are the fix. **Timing for hook authoring to be measured on the next batch (2026-08-18).**
-- **Cadence workflow per batch**: (1) `find13-tiles.mjs` sweep new cities if pool is thin → candidatesN.json; (2) author per-city hooks in the `HOOKS` map (`node scripts/generate-levels.mjs hooks` to list gaps); (3) `node scripts/generate-levels.mjs generate` (or `--cities` override); (4) verify all in headless Edge harness (viewer `load` event = ground truth; ~1-2 min/img); (5) `scripts/build-insert` → insert via `scripts/insert-levels-NNN-MMM.mjs` (skip-if-exists guard); (6) update seed.ts, TOTAL_LEVELS, arcs, copy, README; (7) `tsc --noEmit`; (8) commit + push (Vercel auto-deploys).
-- **Candidate pool as of 2026-08-17**: candidates13.json has 25 fresh cities (45 total × 15 cands each); 15 z14-empty cities may be re-sweepable at other zooms or are genuinely sparse. Sweeps keep sourcing ahead of generation.
+- **Hand-written per-city hooks are REQUIRED for every level** (user directive 2026-08-17): each city gets a small hand-written distinct hook (descriptive sentence + optional bespoke visual clue, no proper nouns, anti-google) layered on the region vocab, so same-region cities don't read identically. Built into `scripts/generate-levels.mjs` as the `HOOKS` map; `generate` reports "Cities without hand-written hook"; `hooks` command lists coverage. A/B vs 160-179 showed pure region-vocab briefings are less varied than hand-written — hooks are the fix.
+- **Measured batch timing (2026-08-18, batch 180-199)**: sweep (find14, 32 cities, unattended ~35 min) + hook authoring for 13 new cities (~20 min) + generate (seconds) + viewer verification 20/20 (~30 min incl. HANG retries) + prod insert + copy wiring + commit (~15 min) ≈ **65-70 min active time** for a 20-level batch. Verification is the floor (~1.5-2 min/img worst case, HANG retries add time).
+- **Cadence workflow per batch**: (1) sweep new cities if pool is thin → candidatesN.json; (2) author per-city hooks in the `HOOKS` map (`node scripts/generate-levels.mjs hooks` to list gaps); (3) `node scripts/generate-levels.mjs generate` (or `--cities` override; set `GENERATE_OUT` for test runs); (4) verify all in headless Edge harness (viewer `load` event = ground truth; ~1-2 min/img, HANGs need retry with longer budget); (5) build + insert via `scripts/insert-levels-NNN-MMM.mjs` (skip-if-exists guard); (6) update seed.ts, TOTAL_LEVELS, arcs, copy, README; (7) `tsc --noEmit`; (8) commit + push (Vercel auto-deploys).
+- **Candidate pool as of 2026-08-18**: `candidates-all.json` = candidates13 + candidates14 merged (92 cities). Fresh for next batch: 45+ unhooked cities, many with 15 cands each. find14 swept 32 cities across exhausted regions (latam, mediterranean, nordic, oceania, southeastasia, southernafrica, middleeast); empty at z14: alicante, goldcoast, harare, windhoek, manama. Sweeps keep sourcing ahead of generation.
 
 ## Growth & Monetization Plan (decided 2026-08-08) — see Next Moves below
 
