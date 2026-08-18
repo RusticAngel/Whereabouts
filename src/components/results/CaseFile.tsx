@@ -46,6 +46,10 @@ const ARCS = [
   { label: 'The Northern Thread', levels: '185–189', start: 185, end: 189 },
   { label: 'The Far Horizon', levels: '190–194', start: 190, end: 194 },
   { label: 'The Final Meridian', levels: '195–199', start: 195, end: 199 },
+  { label: 'The New Frontier', levels: '200–204', start: 200, end: 204 },
+  { label: 'The Gulf Stream', levels: '205–209', start: 205, end: 209 },
+  { label: 'The Silk Road', levels: '210–214', start: 210, end: 214 },
+  { label: 'The Final Compass', levels: '215–219', start: 215, end: 219 },
 ];
 
 export function CaseFile({ entries, currentLevel }: CaseFileProps) {

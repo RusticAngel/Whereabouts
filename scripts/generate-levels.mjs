@@ -581,7 +581,7 @@ const HOOKS = {
     visual: ['palace_boulevards', 'Grand pale-brick palaces and civic buildings around a spacious central square, wide tree-lined avenues running between manicured parks.'],
   },
   wroclaw: {
-    sentence: 'A bridges-and-pantries river city of pastel houses and market stalls on a hundred islands',
+    sentence: 'A many-bridged river city of pastel houses and market stalls on a hundred islands',
     visual: ['island_market', 'Pastel townhouses and ornate facades crowd a network of river islands linked by many bridges, with bustling market squares at the centre.'],
   },
   chengdu: {
@@ -643,6 +643,42 @@ const HOOKS = {
   muscat: {
     sentence: 'A low white capital tucked between bare brown mountains and a glassy bay, its old gates glowing at dusk',
     visual: ['white_mountains', 'Low gleaming white buildings and a clean waterfront bay hemmed in by bare brown mountains, rounded towers and grand gates along the corniche.'],
+  },
+  portoalegre: {
+    sentence: 'A lakeside southern metropolis of wide avenues and jacaranda trees, wrapped around a vast shimmering lake',
+    visual: ['lake_avenues', 'A flat southern city of wide avenues lined with blossoming trees, its centre pressed against the shore of a huge open lake crossed by a long bridge.'],
+  },
+  sanjuan: {
+    sentence: 'A seaside colonial capital of pastel walls and iron balconies, where an old fortress stands guard over the bay',
+    visual: ['pastel_fortress', 'A warm city of pastel facades and wrought-iron balconies beside the blue sea, an old stone fortress on a headland watching over the harbour mouth.'],
+  },
+  cali: {
+    sentence: 'A steamy valley city of low white blocks and palm trees, ringed by green mountains on every side',
+    visual: ['valley_palms', 'A hot low city of white and cream buildings and rows of palms spreading across a wide green valley, mountains closing in around the skyline.'],
+  },
+  barranquilla: {
+    sentence: 'A flat river-port metropolis of wide avenues and heavy trees, where the great river meets the warm sea breeze',
+    visual: ['riverport_trees', 'A sprawling flat city of wide boulevards and dense shade trees beside a vast brown river, low buildings and warehouse cranes stretching toward the coast.'],
+  },
+  turku: {
+    sentence: 'A riverside town of red brick and wooden houses where the cathedral rises above the old harbour',
+    visual: ['river_redbrick', 'A calm riverside town of red-brick civic buildings and white wooden houses, a great stone cathedral and castle towers visible along the water.'],
+  },
+  aalborg: {
+    sentence: 'A flat harbour city of brick warehouses and a wide pedestrian boulevard, where the fjord narrows at the town',
+    visual: ['harbour_boulevard', 'A low brick city where a broad fjord narrows into a river; old brick warehouses line the quay and a wide open pedestrian street runs through the centre.'],
+  },
+  yangon: {
+    sentence: 'A sweltering riverside capital of low shophouses and grand colonial stone, crowned by a gilded golden pagoda',
+    visual: ['gilded_pagoda', 'A hot low-rise city of weathered shophouses and grand colonial buildings beside a wide river, with a great gilded golden pagoda rising above the tree line.'],
+  },
+  chiangmai: {
+    sentence: 'A low temple town of white walls and red-tiled roofs inside an old moat, ringed by blue mountains',
+    visual: ['moat_temples', 'A flat old town enclosed by a square moat and ancient walls, low white-and-gold temple roofs everywhere, and blue mountains ringing the horizon.'],
+  },
+  kuwait: {
+    sentence: 'A flat desert capital of gleaming towers and wide sand-blown avenues, hugging a shallow turquoise bay',
+    visual: ['desert_towers', 'A low desert city of white towers and broad avenues on a flat coast, a shallow turquoise bay curving past the waterfront and sand stretching inland.'],
   },
 };
 

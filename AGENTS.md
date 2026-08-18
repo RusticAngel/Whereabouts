@@ -1,7 +1,7 @@
 # Trace — Session Memory
 
 ## Project
-Detective-style location deduction game. Players track a missing character (Cipher) across 199 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
+Detective-style location deduction game. Players track a missing character (Cipher) across 219 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
 
 ## Stack
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind v4)
@@ -118,11 +118,11 @@ Total max deduction: 1200
 | `src/proxy.ts` | Route guard + cookie prefix middleware |
 | `src/app/api/auth/[...path]/route.ts` | Auth handler wrapper (cookie Secure stripping over HTTP) |
 | `capacitor.config.ts` | Capacitor config (server URL, Android settings) |
-| `seed.ts` | DB seed — 199 Mapillary 360° images (all real locations) |
+| `seed.ts` | DB seed — 219 Mapillary 360° images (all real locations) |
 | `drizzle.config.ts` | Drizzle Kit config for `db:push` |
 
 ## Seed Data
-- **199 real images** (all Mapillary 360° panoramas, no Unsplash)
+- **219 real images** (all Mapillary 360° panoramas, no Unsplash)
 - Each has `mapillary_id`, `lat`/`lng` (real-world coordinates), `briefing`, `evidence[]`, `is_pano: true`, `level_order`
 - Some images are `is_pano: false` at the Mapillary API level but still load in mapillary-js (flat images). Levels needing replacement marked in session history.
 - Run with: `node --experimental-strip-types --env-file .env.local seed.ts`
@@ -171,6 +171,14 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 ```
 
 # Session History
+
+## 2026-08-19 (20 New Levels 200-219 + Campaign at 219 Levels — Timed Batch)
+- **Timed batch under good connection** (user: "time the next 20 locations" — 6-8h window). Added 20 procedurally generated + hand-written-hook levels (200-219), all viewer-verified `LOADED` **on first pass, 0 retries** (best run yet). Campaign now **219 levels / 39 arcs**, finale shifts to **level 220 sentinel**. Prod DB inserted via `scripts/insert-levels-200-219.mjs` (guard: skip if level_order exists). Verified prod: 219 pano images, levels 1-219. `seed.ts` updated to mirror. `tsc --noEmit` clean.
+- **Timing for this batch** (10:45 start → shipped same day): sweep not needed (pool banked) + 9 new hooks (~15 min incl. 1 wroclaw rewrite) + generate (seconds) + **verification 20/20 LOADED first pass (~25 min)** + prod insert + copy wiring (~15 min) ≈ **~55-60 min active**. Lesson: first-pass LOADED rate varies batch-to-batch (180-199 needed HANG/TIMEOUT retries; 200-219 was clean) — always retry HANGs before swapping.
+- **Cities/panos** (level → id, φ, λ): 200 Houston `172343378112685` (29.7623, -95.3608) · 201 Atlanta `313275686909218` (33.7515, -84.3910) · 202 Mexico City `908764216336509` (19.4245, -99.1316) · 203 Asunción `175829994334466` (-25.2789, -57.6364) · 204 Porto Alegre `553557380690859` (-30.0322, -51.2206) · 205 San Juan `1382359789087430` (18.4678, -66.1123) · 206 Cali `781255774579345` (3.4519, -76.5223) · 207 Barranquilla `869902112222412` (11.0000, -74.8047) · 208 Geneva `1174337856724919` (46.1900, 6.1191) · 209 Ghent `612996994665841` (51.0486, 3.7429) · 210 The Hague `1060583753109643` (52.0898, 4.3192) · 211 Parma `2063046724525089` (44.8036, 10.3284) · 212 Wrocław `573182221707127` (51.1058, 17.0711) · 213 Beijing `924330114993624` (39.9155, 116.3907) · 214 Shanghai `235163315067546` (31.2217, 121.5015) · 215 Turku `1062610573373959` (60.4414, 22.2474) · 216 Aalborg `922764001832937` (57.0436, 9.9475) · 217 Yangon `185058416820884` (16.8502, 96.1578) · 218 Chiang Mai `314880750266760` (18.7583, 99.0003) · 219 Kuwait City `176393734248843` (29.3761, 47.9774).
+- **New arcs**: "The New Frontier" 200-204, "The Gulf Stream" 205-209, "The Silk Road" 210-214, "The Final Compass" 215-219. Copy updated everywhere (landing 219 locations / 219 levels / 39 arcs, leaderboard max 219, README 219 locations). Narrative Day 404→442 (level 220 sentinel). CaseFile arcs extended to 39.
+- **9 new hooks authored** this batch (portoalegre, sanjuan, cali, barranquilla, turku, aalborg, yangon, chiangmai, kuwait) → **46 total hooked** in `generate-levels.mjs` HOOKS map. Also rewrote wroclaw hook (was "bridges-and-pantries" — awkward; now "many-bridged river city of pastel houses"). `generate` confirmed: all 20 cities hand-written hooks.
+- **Candidate pool after this batch**: candidates-all.json 92 cities → 12 fresh unused remain (wellington, havana, ancona, bari, palma, luxembourg, split, lasvegas, cartagena, panamacity, portland, wroclaw... exact list varies). **Pool is nearly exhausted** — next batch needs a new sweep (find17-tiles) before generation.
 
 ## 2026-08-18 (20 New Levels 180-199 + Campaign at 199 Levels — First Hooked Batch)
 - **Added 20 procedurally generated + hand-written-hook levels (180-199)**, all viewer-verified `LOADED` (headless Edge `load` event + coords from `viewer.getPosition()`). Campaign now **199 levels / 35 arcs**, finale shifts to **level 200 sentinel**. Prod DB inserted via `scripts/insert-levels-180-199.mjs` (guard: skip if level_order exists). Verified prod: 199 pano images, levels 1-199. `seed.ts` updated to mirror. `tsc --noEmit` clean.
@@ -468,15 +476,16 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [x] Add 20 new levels (140-159) — 4 new arcs, campaign now 159 levels/27 arcs, finale sentinel 160
 - [x] Add 20 procedurally generated levels (160-179) — 4 new arcs, campaign now 179 levels/31 arcs, finale sentinel 180
 - [x] Add 20 procedurally generated + hand-written-hook levels (180-199) — 4 new arcs, campaign now 199 levels/35 arcs, finale sentinel 200
-- [ ] Play-test levels 29-199 on device; swap any that look wrong (incl. 60-199 new cities)
+- [x] Add 20 procedurally generated + hand-written-hook levels (200-219) — 4 new arcs, campaign now 219 levels/39 arcs, finale sentinel 220
+- [ ] Play-test levels 29-219 on device; swap any that look wrong (incl. 60-219 new cities)
 - [ ] User to supply URLs for dense-metro range later; swaps = UPDATE rows in prod DB
 
 ### PRIORITY SHIFT (2026-08-18): Google Play AAB releases — 2 in the next 2 weeks
 - **User directive (2026-08-18)**: shift focus away from the daily level cadence toward **Google Play updates**. Target: **at least 2 AAB releases in the next 2 weeks**.
 - Current AAB baseline: signed release v1.2 (`versionCode 3` / `versionName "1.2"`) built 2026-08-16 at `android/app/build/outputs/bundle/release/app-release.aab`. Upload keystore `android/keystore/findme-upload.jks` + `keystore.properties` (gitignored, backed up).
 - **Release process** (from AGENTS.md Dev Workflow): switch `capacitor.config.ts` `server.url` to prod / clear cleartext for release if remote-loading is no longer desired; `npx cap sync android`; bump `versionCode`/`versionName` in `android/app/build.gradle`; `cd android && gradlew bundleRelease`; upload AAB to Play Console (closed track for testing).
-- **AAB candidates for the 2 releases** (decide with user): (1) content release — latest campaign state (199 levels) baked in if changing to local asset loading, or just the closed-test build; (2) Phase-1 feature release — first-run funnel, PWA prompt, streak grace, weekly challenge, Google Sign-In, and/or `NEXT_PUBLIC_CHALLENGES_ENABLED=false`. Play closed-test setup (group `rusticsfindme-testers@googlegroups.com`, 12 testers, 14-day clock) is also pending.
-- Level-cadence work is **paused until the Play releases are handled**; pool (`candidates-all.json`, 32 fresh cities) stays banked for when cadence resumes.
+- **AAB candidates for the 2 releases** (decide with user): (1) content release — latest campaign state (219 levels) baked in if changing to local asset loading, or just the closed-test build; (2) Phase-1 feature release — first-run funnel, PWA prompt, streak grace, weekly challenge, Google Sign-In, and/or `NEXT_PUBLIC_CHALLENGES_ENABLED=false`. Play closed-test setup (group `rusticsfindme-testers@googlegroups.com`, 12 testers, 14-day clock) is also pending.
+- Level-cadence work is **paused until the Play releases are handled**; pool (`candidates-all.json`, ~12 fresh cities) is nearly exhausted — next batch needs a fresh sweep (find17-tiles) before generation.
 
 ### STANDING DECISION (2026-08-17): Daily Production Cadence — 500 stages/month
 - User **committed to the daily 500/month production** using the procedural generator. Target: **one 20-level batch (~1.2 batches/day)** — i.e. 20 new locations daily.
