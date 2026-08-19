@@ -4,6 +4,7 @@ import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { DeepLinkRouter } from "@/components/challenge/DeepLinkRouter";
 import { SplashManager } from "@/components/startup/SplashManager";
+import { BackButtonExit } from "@/components/startup/BackButtonExit";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,6 +56,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-black text-white">
         <DeepLinkRouter />
         <SplashManager />
+        <BackButtonExit />
         {children}
       </body>
     </html>

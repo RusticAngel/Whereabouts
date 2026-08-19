@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SessionActions } from '@/components/home/SessionActions';
+import { ExitAppButton } from '@/components/home/ExitAppButton';
 
 export default function Home() {
   return (
@@ -128,13 +129,16 @@ export default function Home() {
 
       {/* ── Footer ── */}
       <footer className="px-6 py-8 border-t border-gray-800 text-center text-sm text-gray-600 space-y-2">
-        <Link href="/privacy" className="text-gray-600 hover:text-gray-400 transition-colors">
-          Privacy Policy
-        </Link>
-        <span className="mx-2">·</span>
-        <Link href="/delete-account" className="text-gray-600 hover:text-gray-400 transition-colors">
-          Delete Account
-        </Link>
+        <ExitAppButton />
+        <div>
+          <Link href="/privacy" className="text-gray-600 hover:text-gray-400 transition-colors">
+            Privacy Policy
+          </Link>
+          <span className="mx-2">·</span>
+          <Link href="/delete-account" className="text-gray-600 hover:text-gray-400 transition-colors">
+            Delete Account
+          </Link>
+        </div>
       </footer>
     </main>
   );
