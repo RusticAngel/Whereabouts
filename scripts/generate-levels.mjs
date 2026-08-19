@@ -680,6 +680,234 @@ const HOOKS = {
     sentence: 'A flat desert capital of gleaming towers and wide sand-blown avenues, hugging a shallow turquoise bay',
     visual: ['desert_towers', 'A low desert city of white towers and broad avenues on a flat coast, a shallow turquoise bay curving past the waterfront and sand stretching inland.'],
   },
+  detroit: {
+    sentence: 'A motor metropolis of broad avenues and art deco towers, where old factories line the river',
+    visual: ['deco_river', 'Grand art deco office towers and a riverfront of old warehouses and industrial bridges; wide boulevards radiate from a towering central square.'],
+  },
+  stlouis: {
+    sentence: 'A river-gateway city of red brick and a great silver arch, where the broad river bends past downtown',
+    visual: ['brick_arch', 'A low red-brick city pressed against a wide muddy river, a gleaming silver arch rising beside the downtown towers and old warehouse lofts.'],
+  },
+  orlando: {
+    sentence: 'A flat sunbelt city of lakes and palm-lined boulevards, with theme-park spires on the skyline',
+    visual: ['lake_palms', 'A low flat city of lakes and palms where wide boulevards run between strip malls and modern office blocks, with distant theme-park peaks on the horizon.'],
+  },
+  indianapolis: {
+    sentence: 'A flat midwestern city with a towering white monument at the crossroads of its grand avenues',
+    visual: ['monument_crossroads', 'A wide flat grid of avenues centred on an immense white stone monument; broad streets lined with brick civic buildings radiate outward.'],
+  },
+  saltlakecity: {
+    sentence: 'A wide grid of a city set against a towering wall of snow-capped mountains',
+    visual: ['grid_mountains', 'A broad flat grid of wide streets and low buildings with a dramatic wall of jagged snow-capped mountains rising directly to the east.'],
+  },
+  minneapolis: {
+    sentence: 'A skyway city of glass towers and bridges over wide green lakes and a river of falls',
+    visual: ['skyway_lakes', 'Glass towers linked by enclosed skyways beside wide lakes and a river with visible falls; neat green streets and bridges fan out from the centre.'],
+  },
+  cleveland: {
+    sentence: 'A lakeside industrial city of stone civic buildings and a broad green mall sloping to the water',
+    visual: ['lakeside_mall', 'A stone civic centre with grand libraries and museums around a long green mall that slopes down toward a huge flat lake.'],
+  },
+  cincinnati: {
+    sentence: 'A hillside river city of ornate brick and a sinuous cable-bridge over the Ohio',
+    visual: ['hillside_brick', 'Ornate brick and stone buildings climbing steep hills above a wide river, with a distinctive suspension bridge spanning the water below.'],
+  },
+  dallas: {
+    sentence: 'A flat Texas city of sleek glass towers on a wide-open grid, where the highway loops around downtown',
+    visual: ['glass_texas', 'Sleek modern glass towers on a flat grid, wide open avenues, and a raised highway loop ringing the downtown core.'],
+  },
+  nashville: {
+    sentence: 'A river-bend city of neon honky-tonk rows and a tall tower shaped like a pencil',
+    visual: ['neon_rows', 'A downtown of bright neon storefront rows along a river bend, an iconic tall thin tower rising above the low skyline, and honky-tonk lights everywhere.'],
+  },
+  charlotte: {
+    sentence: 'A fast-growing southern city of sleek towers and brick warehouses turned to nightlife',
+    visual: ['sleek_brick', 'A cluster of sleek modern towers beside a belt of restored red-brick warehouses; broad tree-lined avenues radiate from the core.'],
+  },
+  pittsburgh: {
+    sentence: 'A steel city of pointed towers where three rivers meet in a golden triangle',
+    visual: ['triangle_rivers', 'Dense modern towers on a triangular point where three rivers join, steep wooded hills rising on every side with bridges spanning the water.'],
+  },
+  winnipeg: {
+    sentence: 'A flat prairie capital of red-brick streets and grand stone landmarks on a wide open grid',
+    visual: ['prairie_brick', 'A flat, wind-swept prairie city of red-brick commercial streets and grand stone civic buildings, wide avenues running to a hazy horizon.'],
+  },
+  edmonton: {
+    sentence: 'A northern river-valley city of wide avenues and a great skywalk-covered core above the North Saskatchewan',
+    visual: ['river_valley', 'A wide modern city straddling a deep green river valley, with enclosed skywalk bridges threading between the downtown towers.'],
+  },
+  quebec: {
+    sentence: 'A walled old capital of stone ramparts and copper roofs perched high above a great river',
+    visual: ['walled_ramparts', 'A walled old town of stone fortifications and copper-roofed civic buildings on a high bluff, steep laneways falling toward a vast river.'],
+  },
+  cusco: {
+    sentence: 'A high Andean city of Inca stone walls and red-tiled roofs wedged into a mountain valley',
+    visual: ['inca_stone', 'Ancient massive Inca stonework built into streets of red-tiled colonial houses, all enclosed by steep green mountains at high altitude.'],
+  },
+  lapaz: {
+    sentence: 'A dizzying high-altitude capital spilling down a deep canyon bowl, crowned by snow peaks',
+    visual: ['canyon_spill', 'Terraces of brick and concrete houses spilling down the steep sides of a deep canyon bowl, with snow-capped peaks rising beyond the rim.'],
+  },
+  merida: {
+    sentence: 'A flat colonial city of pastel facades and white church towers on a wide tropical grid',
+    visual: ['pastel_colonial', 'A hot flat city of pastel single-storey houses and white church towers on a broad grid, with palms and flowering trees in the plazas.'],
+  },
+  queretaro: {
+    sentence: 'A colonial city of ochre stone and grand aqueduct arches on a wide highland plain',
+    visual: ['ochre_aqueduct', 'A city of ochre-stone churches and colonial facades on a flat highland, with a long elevated aqueduct of stone arches on the approach.'],
+  },
+  curitiba: {
+    sentence: 'A green southern city of modern bus-boulevards and rows of pine trees on a rolling plateau',
+    visual: ['green_boulevards', 'A tidy modern city of glass towers and wide bus boulevards lined with pines, parkland and green wedges cutting through a rolling plateau.'],
+  },
+  havana: {
+    sentence: 'A crumbling colonial port of pastel palaces and grand arcades along a broad sea drive',
+    visual: ['pastel_arcades', 'Faded pastel palaces and long arcaded colonnades along a wide seaside boulevard, classic cars and warm ochre walls everywhere.'],
+  },
+  hanover: {
+    sentence: 'A low northern city of a massive gothic tower and green garden quarters beside a calm river',
+    visual: ['gothic_green', 'A low city of red-brick and stone buildings around a great gothic church tower, with manicured green park quarters and a calm river.'],
+  },
+  bremen: {
+    sentence: 'A brick hanseatic city of steep stepped-gable houses around a cobbled market square',
+    visual: ['brick_gables', 'A compact old city of dark-red brick houses with steep stepped gables around a cobbled square, a proud stone knight on the cathedral porch.'],
+  },
+  katowice: {
+    sentence: 'A coal-city of squat modern towers and broad grey avenues on a flat industrial plain',
+    visual: ['squat_towers', 'Squat modern towers and wide grey boulevards on a flat industrial plain, with dark brick former-mine buildings between the new blocks.'],
+  },
+  lodz: {
+    sentence: 'A flat textile city of red-brick factory palaces and a long straight avenue of ornate facades',
+    visual: ['factory_palaces', 'A flat city of restored red-brick factory palaces and grand ornate tenement facades along a long dead-straight avenue.'],
+  },
+  heidelberg: {
+    sentence: 'A riverside town of red-roofed lanes and a vast hilltop ruin of ochre stone above the river',
+    visual: ['red_ruins', 'A warm riverside town of red roofs and sandstone lanes dominated by a vast ochre castle ruin on the wooded hill above.'],
+  },
+  leiden: {
+    sentence: 'A canal-woven university town of stepped-gable brick houses and windmills on the waterways',
+    visual: ['canal_windmills', 'A dense old town of brick stepped-gable houses laced with narrow canals, small stone bridges everywhere and a windmill rising above the rooftops.'],
+  },
+  cagliari: {
+    sentence: 'A Mediterranean port of white limestone bastions and golden domes climbing a rocky hill',
+    visual: ['bastion_domes', 'White limestone fortifications and golden church domes climbing a rocky hill above a wide blue harbour.'],
+  },
+  freiburg: {
+    sentence: 'A green university town of burgher facades and a lacework gothic spire, with mountain forest on the horizon',
+    visual: ['gothic_lace', 'Pastel burgher houses and a towering gothic spire of lacy stonework, with deep green mountain forest rising just beyond the town.'],
+  },
+  lund: {
+    sentence: 'A low university town of stone quadrangles and a great twin-towered gothic cathedral',
+    visual: ['stone_quadrangles', 'A flat town of stone university quadrangles and low brick houses around a massive twin-towered gothic cathedral.'],
+  },
+  kyiv: {
+    sentence: 'A hilly eastern capital of golden domes and broad chestnut avenues above a great river',
+    visual: ['golden_domes', 'Golden-domed churches and broad chestnut-lined avenues on rolling hills above a wide river, with monumental stone buildings along the boulevards.'],
+  },
+  bergamo: {
+    sentence: 'A walled hilltop old town of stone arcades and a grand civic tower above the lower plains',
+    visual: ['walled_hilltown', 'A walled hilltop old town of stone arcades and cobbled squares, a great civic tower and cathedral rising above the flat plains below.'],
+  },
+  maastricht: {
+    sentence: 'A border river city of pale stone houses and a grand square tucked between two bridges',
+    visual: ['pale_border', 'Pale-stone merchants houses and a wide central square near a river crossing, with church towers and fortified gates from the old border town.'],
+  },
+  delft: {
+    sentence: 'A porcelain town of canals, gabled brick houses and the famous blue-tiled facades around a tall gothic tower',
+    visual: ['porcelain_canals', 'A tidy town of gabled brick houses along narrow canals, a tall gothic tower at the market square, and blue-decorated craft shops.'],
+  },
+  murcia: {
+    sentence: 'A flat orchard city of a baroque cathedral tower and palm-lined avenues under a dry blue sky',
+    visual: ['baroque_tower', 'A flat city of white buildings and palms beneath a dry blue sky, a grand baroque cathedral tower and ornate stone arcades at its heart.'],
+  },
+  ulm: {
+    sentence: 'A river city crowned by the tallest gothic steeple in the world, rising over half-timbered lanes',
+    visual: ['tallest_steeple', 'Half-timbered and red-roofed lanes on a river island, dominated by an impossibly tall lacework gothic steeple above the old town.'],
+  },
+  rouen: {
+    sentence: 'A half-timbered medieval city of soaring gothic spires and a great clock tower on the old streets',
+    visual: ['medieval_spires', 'Dense half-timbered medieval houses with a great gothic cathedral and ornate clock tower rising over the old market streets.'],
+  },
+  regensburg: {
+    sentence: 'A stone river city of steep-roofed towers and a great stone bridge, the old town on a river island',
+    visual: ['stone_rooftops', 'Tall steep-roofed stone merchant houses on a river island, a long medieval stone bridge and rugged towers lining the waterfront.'],
+  },
+  granada: {
+    sentence: 'A city beneath a vast red fortress on a hill, with a Moorish old quarter of whitewashed lanes',
+    visual: ['red_fortress', 'A grand red stone fortress-palace crowning a hill above the city, with a whitewashed Moorish quarter of narrow lanes at its foot.'],
+  },
+  caen: {
+    sentence: 'A limestone city of twin-abbey towers and pale stone townhouses on a flat Norman plain',
+    visual: ['twin_abbeys', 'Pale limestone townhouses and a broad square ringed by grand twin-towered abbeys, set on a flat open plain.'],
+  },
+  bonn: {
+    sentence: 'A riverside former capital of leafy boulevards and a baroque palace row on the Rhine',
+    visual: ['baroque_palace', 'A leafy riverside city of wide boulevards and a long baroque palace fronting a green square, the broad river running past the old town.'],
+  },
+  istanbul: {
+    sentence: 'A strait-crossing city of domes and minarets where two continents meet at the water',
+    visual: ['domes_strait', 'A great skyline of domes and slender minarets on the shores of a wide strait, ferries crossing the water between the old and new cities.'],
+  },
+  yokohama: {
+    sentence: 'A busy port metropolis of a red-brick waterfront district and a soaring landmark tower',
+    visual: ['port_redbrick', 'A busy port of restored red-brick warehouses on the waterfront beneath a tall lattice landmark tower, a huge ferris wheel by the sea.'],
+  },
+  hiroshima: {
+    sentence: 'A river-delta city of wide boulevards and a skeletal dome kept by the water',
+    visual: ['river_delta', 'A flat city of wide boulevards spanning a river delta, a famous skeletal domed ruin preserved by the riverbank among the modern buildings.'],
+  },
+  sendai: {
+    sentence: 'A northern Japanese city of tree-lined streets and a low hilltop castle site above the plains',
+    visual: ['treeline_castle', 'A tidy city of broad tree-lined avenues on a flat plain, a green hilltop castle ruin and a tall city tower rising above the centre.'],
+  },
+  nagasaki: {
+    sentence: 'A harbour city of steep terraced lanes rising from a deep blue bay ringed by mountains',
+    visual: ['terraced_bay', 'Terraced streets and red-roofed houses climbing steep hillsides above a deep blue harbour, a great cable span and a cathedral dome visible.'],
+  },
+  kumamoto: {
+    sentence: 'A castle city of dark stone walls and wide modern avenues on the green island plain',
+    visual: ['castle_walls', 'A massive black-stone castle on a rise above wide modern avenues, its grey keep and sweeping stone walls overlooking the flat green city.'],
+  },
+  kanazawa: {
+    sentence: 'A garden city of gold-leaf craft shops and a great landscaped park beside the castle moat',
+    visual: ['garden_moat', 'A low city of tiled rooftops around a moated castle park of vast landscaped gardens, with fine craft lanes and a modern glass dome nearby.'],
+  },
+  nara: {
+    sentence: 'A temple town of vast wooden halls and tame deer wandering the great park lanes',
+    visual: ['wooden_halls', 'A quiet town of huge ancient wooden temple halls and lantern-lined lanes around a great deer-filled park.'],
+  },
+  jerusalem: {
+    sentence: 'A holy hill-city of golden stone ramparts and ancient domes inside high walls',
+    visual: ['golden_walls', 'Golden-stone ramparts and ancient domes enclosed by high walls on a hill, narrow stone alleys and stepped lanes within.'],
+  },
+  beirut: {
+    sentence: 'A seaside capital of pale towers and old Ottoman facades on a wedge of land by the blue sea',
+    visual: ['pale_towers', 'A mix of pale modern towers and old Ottoman facades on a narrow wedge of land between the blue sea and the mountains.'],
+  },
+  riyadh: {
+    sentence: 'A desert capital of gleaming white towers rising from a wide flat plain of sand',
+    visual: ['desert_glass', 'Gleaming white glass towers rising abruptly from a flat sandy plain, broad empty highways and palms in the watered gaps between.'],
+  },
+  jeddah: {
+    sentence: 'A Red Sea port of whitewashed coral houses with carved balconies beside a broad corniche',
+    visual: ['coral_balconies', 'Whitewashed coral-stone houses with carved wooden balconies on one side, a broad modern corniche and harbour on the other.'],
+  },
+  rabat: {
+    sentence: 'A riverside capital of whitewashed walls and a great minaret at the mouth of the river',
+    visual: ['white_minaret', 'Whitewashed districts and a great stone minaret rising above the river mouth, with a walled old quarter and a broad modern avenue at the coast.'],
+  },
+  kampala: {
+    sentence: 'A seven-hilled capital of green slopes and red-roofed buildings scattered across the high ground',
+    visual: ['seven_hills', 'Red-roofed buildings and green gardens scattered across rolling hills, with a pale mosque tower and a hilltop cathedral visible above the trees.'],
+  },
+  kigali: {
+    sentence: 'A clean hillside capital of red-roofed houses and green valleys on every side',
+    visual: ['hillside_clean', 'Neat red-roofed houses and tidy streets climbing gentle green hills, with valleys and ridges extending in every direction.'],
+  },
+  dakar: {
+    sentence: 'A windswept Atlantic capital of low ochre blocks and a great tower on a broad peninsula',
+    visual: ['ochre_peninsula', 'A low ochre and white city on a broad sandy peninsula at the edge of the Atlantic, a tall conical monument tower rising above the rooftops.'],
+  },
 };
 
 function genLevel(cityKey, img, level) {

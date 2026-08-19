@@ -1,6 +1,6 @@
 # Find Me
 
-A detective-style location deduction game. Track a shadow operative named Cipher across 219 global locations using 360° Street View, environmental evidence, and your geographical intuition. Compete with friends via shareable challenges and climb the daily leaderboard.
+A detective-style location deduction game. Track a shadow operative named Cipher across 279 global locations using 360° Street View, environmental evidence, and your geographical intuition. Compete with friends via shareable challenges and climb the daily leaderboard.
 
 ## How it works
 
@@ -52,7 +52,7 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 node --experimental-strip-types --env-file .env.local seed.ts
 ```
 
-Creates 219 real Mapillary 360° locations with briefings and evidence.
+Creates 279 real Mapillary 360° locations with briefings and evidence.
 
 ## Tech Stack
 

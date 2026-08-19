@@ -50,6 +50,18 @@ const ARCS = [
   { label: 'The Gulf Stream', levels: '205–209', start: 205, end: 209 },
   { label: 'The Silk Road', levels: '210–214', start: 210, end: 214 },
   { label: 'The Final Compass', levels: '215–219', start: 215, end: 219 },
+  { label: 'The Rust Heart', levels: '220–224', start: 220, end: 224 },
+  { label: 'The River Roads', levels: '225–229', start: 225, end: 229 },
+  { label: 'The Northern Reach', levels: '230–234', start: 230, end: 234 },
+  { label: 'The Southern Tier', levels: '235–239', start: 235, end: 239 },
+  { label: 'The Old Ways', levels: '240–244', start: 240, end: 244 },
+  { label: 'The Small Lights', levels: '245–249', start: 245, end: 249 },
+  { label: 'The Coastal Ring', levels: '250–254', start: 250, end: 254 },
+  { label: 'The Stone Heart', levels: '255–259', start: 255, end: 259 },
+  { label: 'The Eastern Gate', levels: '260–264', start: 260, end: 264 },
+  { label: 'The Old Compass', levels: '265–269', start: 265, end: 269 },
+  { label: 'The Sand Line', levels: '270–274', start: 270, end: 274 },
+  { label: 'The Last Thread', levels: '275–279', start: 275, end: 279 },
 ];
 
 export function CaseFile({ entries, currentLevel }: CaseFileProps) {

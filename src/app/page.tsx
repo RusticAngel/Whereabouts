@@ -75,7 +75,7 @@ export default function Home() {
             {[
               {
                 title: '360&deg; Street View',
-                desc: 'Real Mapillary panoramas from 219 global locations. Look around every angle.',
+                desc: 'Real Mapillary panoramas from 279 global locations. Look around every angle.',
               },
               {
                 title: 'Sensory Evidence',
@@ -87,7 +87,7 @@ export default function Home() {
               },
               {
                 title: 'Campaign Progression',
-                desc: '219 levels across 39 narrative arcs. Each location brings you closer to Cipher.',
+                desc: '279 levels across 51 narrative arcs. Each location brings you closer to Cipher.',
               },
               {
                 title: 'Daily Challenge',
