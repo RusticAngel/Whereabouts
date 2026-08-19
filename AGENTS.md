@@ -175,6 +175,13 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 
 # Session History
 
+## 2026-08-19 (Exit App Feature — button + back-button-to-exit)
+- **Feedback**: testers unable to exit the app (Android WebView back button just navigates remote-loaded web history). Added two exit paths, both native-only (gated on `Capacitor.isNativePlatform()`, render `null` on web):
+  - **`ExitAppButton`** (`src/components/home/ExitAppButton.tsx`): "Exit App" link in the home footer → `App.exitApp()`.
+  - **`BackButtonExit`** (`src/components/startup/BackButtonExit.tsx`, mounted in root layout): Android hardware-back handler. `canGoBack` → `window.history.back()`; at root with no history → themed confirm dialog ("Leave the hunt? / Stay on the trail") before `App.exitApp()`; deep-linked page with no history → `router.replace('/')`.
+- **No native rebuild needed**: `@capacitor/app@8.1.1` is already bundled in AAB v1.3, so both work in the current build once Vercel deploys. Committed `6b18480`, pushed.
+- `tsc --noEmit` clean; dev smoke test `/` 200 (components correctly hidden in browser context).
+
 ## 2026-08-19 (AAB v1.3 Built — versionCode 4 / versionName "1.3")
 - **User chose version-bump thin AAB for Play** (app remote-loads from Vercel so content changes need no rebuild — only native/version changes do).
 - Bumped `android/app/build.gradle` `versionCode 3→4`, `versionName "1.2"→"1.3"`. `npx cap sync android` (3 plugins synced, no web bundle — `native/` webDir empty by design). `gradlew bundleRelease` → BUILD SUCCESSFUL in 1m25s.
@@ -521,6 +528,7 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - Current AAB baseline: signed release v1.3 (`versionCode 4` / `versionName "1.3"`) built 2026-08-19 at `android/app/build/outputs/bundle/release/app-release.aab`. Upload keystore `android/keystore/findme-upload.jks` + `keystore.properties` (gitignored, backed up). Release notes in `RELEASE_NOTES.md`.
 - **Release process** (from AGENTS.md Dev Workflow): switch `capacitor.config.ts` `server.url` to prod / clear cleartext for release if remote-loading is no longer desired; `npx cap sync android`; bump `versionCode`/`versionName` in `android/app/build.gradle`; `cd android && gradlew bundleRelease`; upload AAB to Play Console (closed track for testing).
 - **AAB candidates for the 2 releases** (decide with user): (1) content release — latest campaign state (310 levels) baked in if changing to local asset loading, or just the closed-test build; (2) Phase-1 feature release — first-run funnel, PWA prompt, streak grace, weekly challenge, Google Sign-In, and/or `NEXT_PUBLIC_CHALLENGES_ENABLED=false`. Play closed-test setup (group `rusticsfindme-testers@googlegroups.com`, 12 testers, 14-day clock) is also pending.
+- **Exit app feature (2026-08-19)**: `ExitAppButton` (home footer) + `BackButtonExit` (root-layout hardware-back → confirm dialog) are **web-side changes already live in AAB v1.3** via Vercel (no native rebuild needed — `@capacitor/app@8.1.1` bundled). Next AAB build should just **verify** both still work in the packaged shell (footer exit link + hardware-back dialog at `/`), not reimplement.
 - Level-cadence work is **paused until the Play releases are handled**; one last 60-level batch (220-279) shipped 2026-08-19 as a pool-creation timing test, and the final pool batch (280-310, 31 levels) shipped same day — campaign now 310 levels. Pool (`candidates-all.json`) is now **depleted** of fresh usable cities — next batch needs a new vector-tile sweep (find19+) before generation.
 
 ### STANDING DECISION (2026-08-17): Daily Production Cadence — 500 stages/month
