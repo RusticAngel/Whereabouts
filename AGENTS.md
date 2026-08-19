@@ -175,6 +175,13 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 
 # Session History
 
+## 2026-08-19 (AAB v1.3 Built — versionCode 4 / versionName "1.3")
+- **User chose version-bump thin AAB for Play** (app remote-loads from Vercel so content changes need no rebuild — only native/version changes do).
+- Bumped `android/app/build.gradle` `versionCode 3→4`, `versionName "1.2"→"1.3"`. `npx cap sync android` (3 plugins synced, no web bundle — `native/` webDir empty by design). `gradlew bundleRelease` → BUILD SUCCESSFUL in 1m25s.
+- **Verified** via merged manifest: `package="com.rusticangel.findme"`, `android:versionCode="4"`, `android:versionName="1.3"`. AAB at `android/app/build/outputs/bundle/release/app-release.aab` (~4 MB). Signed with `findme-upload.jks` via `keystore.properties`.
+- **Release notes**: `RELEASE_NOTES.md` (new file) — 310 levels, 6 new arcs, 8 missions, badge detail.
+- AGENTS.md AAB baseline updated. Not yet committed/pushed. Play Console closed-track upload still pending (tester group, store listing, data safety, content rating, screenshots).
+
 ## 2026-08-19 (Narrative Missions + Badge Detail Modals — Tester Feedback)
 - **Feedback**: "Street View feels first-person like you're tracking yourself", "flesh out a story around groups of cases", "tap badges for a description". Implemented narrative missions + badge detail modals.
 - **`src/lib/game/arcs.ts`** (new): ARCS (57 arcs, moved from CaseFile.tsx → single source of truth) + MISSIONS (8 coarse missions covering levels 1-310) + `missionForLevel`/`arcForLevel` helpers. Missions derived from level — **no DB column, no migration** (decision: avoid ALTER on 310 prod rows). `CaseFile.tsx` now imports ARCS from the module.
@@ -511,7 +518,7 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 
 ### PRIORITY SHIFT (2026-08-18): Google Play AAB releases — 2 in the next 2 weeks
 - **User directive (2026-08-18)**: shift focus away from the daily level cadence toward **Google Play updates**. Target: **at least 2 AAB releases in the next 2 weeks**.
-- Current AAB baseline: signed release v1.2 (`versionCode 3` / `versionName "1.2"`) built 2026-08-16 at `android/app/build/outputs/bundle/release/app-release.aab`. Upload keystore `android/keystore/findme-upload.jks` + `keystore.properties` (gitignored, backed up).
+- Current AAB baseline: signed release v1.3 (`versionCode 4` / `versionName "1.3"`) built 2026-08-19 at `android/app/build/outputs/bundle/release/app-release.aab`. Upload keystore `android/keystore/findme-upload.jks` + `keystore.properties` (gitignored, backed up). Release notes in `RELEASE_NOTES.md`.
 - **Release process** (from AGENTS.md Dev Workflow): switch `capacitor.config.ts` `server.url` to prod / clear cleartext for release if remote-loading is no longer desired; `npx cap sync android`; bump `versionCode`/`versionName` in `android/app/build.gradle`; `cd android && gradlew bundleRelease`; upload AAB to Play Console (closed track for testing).
 - **AAB candidates for the 2 releases** (decide with user): (1) content release — latest campaign state (310 levels) baked in if changing to local asset loading, or just the closed-test build; (2) Phase-1 feature release — first-run funnel, PWA prompt, streak grace, weekly challenge, Google Sign-In, and/or `NEXT_PUBLIC_CHALLENGES_ENABLED=false`. Play closed-test setup (group `rusticsfindme-testers@googlegroups.com`, 12 testers, 14-day clock) is also pending.
 - Level-cadence work is **paused until the Play releases are handled**; one last 60-level batch (220-279) shipped 2026-08-19 as a pool-creation timing test, and the final pool batch (280-310, 31 levels) shipped same day — campaign now 310 levels. Pool (`candidates-all.json`) is now **depleted** of fresh usable cities — next batch needs a new vector-tile sweep (find19+) before generation.
@@ -555,7 +562,7 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 
 ### Phase 2 — closed test (Google Play)
 - [ ] Play Console: create app `com.rusticangel.findme` (package name immutable in Play — matches Android appId), closed track, 12 testers, 14-day clock
-- [x] Signed release AAB built: `android/app/build/outputs/bundle/release/app-release.aab` (versionCode 2 / 1.1, upload keystore `android/keystore/findme-upload.jks`, gitignored) — 2026-08-16
+- [x] Signed release AAB built: `android/app/build/outputs/bundle/release/app-release.aab` (versionCode 4 / 1.3, upload keystore `android/keystore/findme-upload.jks`, gitignored) — 2026-08-19
 - [ ] **Upload AAB to Play Console closed track** (Play App Signing: upload `.pepk` public cert, Google holds real key)
 - [ ] **Store listing**: short/full description, category, 512×512 icon (have `Assets/FindMeNew.png`), feature graphic 1024×500, screenshots
 - [ ] **Data Safety form** (Play): email (auth), gameplay stats; no ads, no tracking, no sales
