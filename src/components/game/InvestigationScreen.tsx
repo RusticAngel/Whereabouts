@@ -16,6 +16,7 @@ import { HintPanel } from './HintPanel';
 import { CluesPanel } from './CluesPanel';
 import { OnboardingModal } from './OnboardingModal';
 import { Button } from '@/components/ui/Button';
+import { missionForLevel } from '@/lib/game/arcs';
 
 const StreetView = dynamic(() => import('./StreetView'), {
   ssr: false,
@@ -58,6 +59,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
 
   const hasCoords = location.lat && location.lng;
   const timeUp = timeLeft <= 0;
+  const mission = missionForLevel(level);
 
   useEffect(() => {
     if (phase === 'exploring' && !startedRef.current) {
@@ -203,6 +205,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
             </button>
             <div className="text-xs text-yellow-400 font-mono uppercase tracking-widest">
               Case #{level} — Cipher is near
+              {mission && <span className="ml-2 text-gray-400 normal-case">Mission: {mission.name}</span>}
               {isReplay && <span className="ml-2 text-gray-500">(Replay)</span>}
             </div>
             <div className={`text-xs font-mono tabular-nums ${timeUp ? 'text-red-400' : timeLeft <= 60 ? 'text-yellow-400' : 'text-gray-500'}`}>

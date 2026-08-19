@@ -96,7 +96,8 @@ Total max deduction: 1200
 | `src/lib/game/scoring.ts` | calculatePinScore (tiered), calculateFinalScore (pin - evidence + confidence multiplier) |
 | `src/lib/game/evidence.ts` | evidenceCost (scaled: 200/400/600), revealEvidence, getRevealedEvidence |
 | `src/lib/game/narrative.ts` | getNarrativeFeedback (4 tiers, 3 variants each, random) |
-| `src/lib/game/progression.ts` | getCurrentLevel, advanceLevel, getMaxLevel (TOTAL_LEVELS = 59) |
+| `src/lib/game/progression.ts` | getCurrentLevel, advanceLevel, getMaxLevel (TOTAL_LEVELS = 310) |
+| `src/lib/game/arcs.ts` | ARCS (57 narrative arcs, single source of truth) + MISSIONS (8 coarse missions) + missionForLevel/arcForLevel helpers (derived from level, no DB column) |
 | `src/lib/game/pin.ts` | calculateDistance (Haversine) |
 | `src/lib/game/analytics.ts` | trackEvent(name, payload) — console-only, 5 event types + evidenceCount |
 | `src/components/game/InvestigationScreen.tsx` | Core game loop — briefing → onboarding → investigation → submit → results redirect |
@@ -109,8 +110,10 @@ Total max deduction: 1200
 | `src/components/results/ResultsScreen.tsx` | End-of-round results with WOW distance line, score breakdown, share (native/clipboard), replay, results map |
 | `src/components/results/ResultsMap.tsx` | Read-only Leaflet map with staged fade-in (player pin → actual pin → connecting line) |
 | `src/components/results/NarrativeFeedback.tsx` | Distance-based narrative card |
-| `src/components/results/CaseFile.tsx` | Campaign progress overview |
+| `src/components/results/CaseFile.tsx` | Campaign progress overview (ARCS imported from `lib/game/arcs.ts`) |
 | `src/components/results/FinaleScreen.tsx` | End-of-campaign finale with 3-tier epilogue (campaign total based) |
+| `src/components/profile/BadgeGrid.tsx` | Client badge grid on profile — tappable tiles open detail modal |
+| `src/components/profile/BadgeDetailModal.tsx` | Badge detail modal — icon, name, desc, howToEarn, unlocked date |
 | `src/app/game/[imageId]/page.tsx` | Active game route (supports ?replay=1) |
 | `src/app/game/page.tsx` | New game route — auto-advances to current level, finale screen when level > TOTAL_LEVELS |
 | `src/app/daily/DailyGame.tsx` | Daily challenge (self-contained game + inline results + daily score) |
@@ -171,6 +174,14 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 ```
 
 # Session History
+
+## 2026-08-19 (Narrative Missions + Badge Detail Modals — Tester Feedback)
+- **Feedback**: "Street View feels first-person like you're tracking yourself", "flesh out a story around groups of cases", "tap badges for a description". Implemented narrative missions + badge detail modals.
+- **`src/lib/game/arcs.ts`** (new): ARCS (57 arcs, moved from CaseFile.tsx → single source of truth) + MISSIONS (8 coarse missions covering levels 1-310) + `missionForLevel`/`arcForLevel` helpers. Missions derived from level — **no DB column, no migration** (decision: avoid ALTER on 310 prod rows). `CaseFile.tsx` now imports ARCS from the module.
+- **Mission banner**: `BriefingPanel.tsx` shows "Mission: {name}" + description above the case number; `InvestigationScreen.tsx` explore HUD shows "Mission: {name}" next to "Case #{level}" (so returning players who skip briefing still see mission context).
+- **Badges**: `BadgeDef` gained `howToEarn` (all 16 badges written; `referral_king` = "coming soon"). `getProfileProgress` now returns `unlockedAt` per badge. New client `BadgeGrid.tsx` (tappable tiles) + `BadgeDetailModal.tsx` (icon/name/desc/howToEarn/unlocked date, OnboardingModal-style overlay). Profile page badge grid replaced with `<BadgeGrid/>`.
+- `tsc --noEmit` clean. Committed + pushed (Vercel auto-deploys). No prod DB changes.
+- **Missions mapping**: The First Trail 1-28 · The Continental Net 29-59 · The Old World 60-89 · The Eastern Net 90-119 · The Far Horizon 120-159 · The New World 160-199 · The Deep Current 200-249 · The Final Circle 250-310.
 
 ## 2026-08-19 (31 New Levels 280-310 + Campaign at 310 Levels — Pool Exhaustion Batch)
 - **User asked to use the remaining pool cities** ("use the remaining pool cities and push the new locations") right after shipping 220-279. Pool audit: candidates-all.json had 32 fresh usable cities (≥5 cands, not in campaign), 29 needing hooks. Generated 31 levels (280-310), authoring 29 new hooks (wellington, ancona, kansascity, milwaukee, victoria, tijuana, birmingham, oxford, nottingham, reims, nimes, toulon, kiel, bangalore, hyderabad, austin, sanantonio, memphis, raleigh, cordoba, sarajevo, tirana, patras, heraklion, mainz, munster, metz, amiens, minsk, bari) → **132 total hooked** in `generate-levels.mjs`.

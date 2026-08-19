@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getProfileProgress } from '@/app/actions';
 import { DeleteAccountButton } from '@/components/profile/DeleteAccountButton';
+import { BadgeGrid } from '@/components/profile/BadgeGrid';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,22 +64,7 @@ export default async function ProfilePage() {
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
             Badges ({progress.badges.length})
           </h2>
-          {progress.badges.length === 0 ? (
-            <p className="text-gray-500 text-sm">No badges earned yet. Keep investigating!</p>
-          ) : (
-            <div className="grid grid-cols-3 gap-3">
-              {progress.badges.map((badge) => (
-                <div
-                  key={badge.id}
-                  className="rounded-xl bg-gray-900 border border-gray-800 p-3 text-center"
-                  title={badge.desc}
-                >
-                  <div className="text-3xl">{badge.icon}</div>
-                  <div className="text-xs text-white mt-1 font-medium leading-tight">{badge.name}</div>
-                </div>
-              ))}
-            </div>
-          )}
+          <BadgeGrid badges={progress.badges} />
         </div>
 
         <DeleteAccountButton />

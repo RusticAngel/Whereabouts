@@ -26,25 +26,26 @@ export interface BadgeDef {
   name: string;
   icon: string;
   desc: string;
+  howToEarn: string;
 }
 
 export const BADGES: BadgeDef[] = [
-  { id: 'first_steps', name: 'First Steps', icon: '👣', desc: 'Play 1 game' },
-  { id: 'explorer', name: 'Explorer', icon: '🧭', desc: 'Play 10 games' },
-  { id: 'adventurer', name: 'Adventurer', icon: '🧗', desc: 'Play 50 games' },
-  { id: 'cartographer', name: 'Cartographer', icon: '🗺️', desc: 'Play 100 games' },
-  { id: 'perfect_score', name: 'Perfect Score', icon: '🎯', desc: 'Score 5000 on any game' },
-  { id: 'sharpshooter', name: 'Sharpshooter', icon: '🏆', desc: 'Get 3 perfect scores' },
-  { id: 'close_call', name: 'Close Call', icon: '🎲', desc: 'Guess within 1 km' },
-  { id: 'streak_starter', name: 'Streak Starter', icon: '🔥', desc: '3-day streak' },
-  { id: 'streak_committed', name: 'Committed', icon: '📅', desc: '7-day streak' },
-  { id: 'streak_master', name: 'Streak Master', icon: '⚡', desc: '30-day streak' },
-  { id: 'streak_addict', name: 'Addict', icon: '💊', desc: '60-day streak' },
-  { id: 'streak_legend', name: 'Legend', icon: '👑', desc: '90-day streak' },
-  { id: 'streak_immortal', name: 'Immortal', icon: '♾️', desc: '365-day streak' },
-  { id: 'daily_dedication', name: 'Daily Dedication', icon: '🚩', desc: 'Complete 7 daily challenges' },
-  { id: 'social_butterfly', name: 'Social Butterfly', icon: '🦋', desc: 'Add 10 friends' },
-  { id: 'referral_king', name: 'Referral King', icon: '👑', desc: 'Refer 10 friends' },
+  { id: 'first_steps', name: 'First Steps', icon: '👣', desc: 'Play 1 game', howToEarn: 'Complete your first case in the campaign.' },
+  { id: 'explorer', name: 'Explorer', icon: '🧭', desc: 'Play 10 games', howToEarn: 'Complete 10 cases in the campaign.' },
+  { id: 'adventurer', name: 'Adventurer', icon: '🧗', desc: 'Play 50 games', howToEarn: 'Complete 50 cases in the campaign.' },
+  { id: 'cartographer', name: 'Cartographer', icon: '🗺️', desc: 'Play 100 games', howToEarn: 'Complete 100 cases in the campaign.' },
+  { id: 'perfect_score', name: 'Perfect Score', icon: '🎯', desc: 'Score 5000 on any game', howToEarn: 'Pin within 1 km of the target to earn the full 5000 points.' },
+  { id: 'sharpshooter', name: 'Sharpshooter', icon: '🏆', desc: 'Get 3 perfect scores', howToEarn: 'Earn a 5000-point score on 3 different cases.' },
+  { id: 'close_call', name: 'Close Call', icon: '🎲', desc: 'Guess within 1 km', howToEarn: 'Place your pin within 1 km of the exact location.' },
+  { id: 'streak_starter', name: 'Streak Starter', icon: '🔥', desc: '3-day streak', howToEarn: 'Complete the daily challenge 3 days in a row.' },
+  { id: 'streak_committed', name: 'Committed', icon: '📅', desc: '7-day streak', howToEarn: 'Complete the daily challenge 7 days in a row.' },
+  { id: 'streak_master', name: 'Streak Master', icon: '⚡', desc: '30-day streak', howToEarn: 'Complete the daily challenge 30 days in a row.' },
+  { id: 'streak_addict', name: 'Addict', icon: '💊', desc: '60-day streak', howToEarn: 'Complete the daily challenge 60 days in a row.' },
+  { id: 'streak_legend', name: 'Legend', icon: '👑', desc: '90-day streak', howToEarn: 'Complete the daily challenge 90 days in a row.' },
+  { id: 'streak_immortal', name: 'Immortal', icon: '♾️', desc: '365-day streak', howToEarn: 'Complete the daily challenge 365 days in a row.' },
+  { id: 'daily_dedication', name: 'Daily Dedication', icon: '🚩', desc: 'Complete 7 daily challenges', howToEarn: 'Finish 7 daily challenges in total.' },
+  { id: 'social_butterfly', name: 'Social Butterfly', icon: '🦋', desc: 'Add 10 friends', howToEarn: 'Connect with 10 friends on the friends list.' },
+  { id: 'referral_king', name: 'Referral King', icon: '👑', desc: 'Refer 10 friends', howToEarn: 'Refer 10 friends to the hunt — coming soon.' },
 ];
 
 const TITLES: { max: number; title: string }[] = [

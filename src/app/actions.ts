@@ -755,13 +755,17 @@ export async function getProfileProgress(userId: string) {
   const progress = levelProgress(xp);
 
   const badgeRows = await db
-    .select({ badgeId: badges.badgeId })
+    .select({ badgeId: badges.badgeId, unlockedAt: badges.unlockedAt })
     .from(badges)
     .where(eq(badges.userId, userId));
 
   const badgeList = badgeRows
-    .map((r) => badgeById(r.badgeId))
-    .filter((b): b is BadgeDef => Boolean(b));
+    .map((r) => {
+      const def = badgeById(r.badgeId);
+      if (!def) return null;
+      return { ...def, unlockedAt: r.unlockedAt ? r.unlockedAt.toISOString() : null };
+    })
+    .filter((b): b is BadgeDef & { unlockedAt: string | null } => Boolean(b));
 
   return {
     username: profile.username,
