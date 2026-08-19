@@ -908,6 +908,126 @@ const HOOKS = {
     sentence: 'A windswept Atlantic capital of low ochre blocks and a great tower on a broad peninsula',
     visual: ['ochre_peninsula', 'A low ochre and white city on a broad sandy peninsula at the edge of the Atlantic, a tall conical monument tower rising above the rooftops.'],
   },
+  wellington: {
+    sentence: 'A compact harbour capital of wooden houses climbing steep green hills, whipped by the constant wind of the strait',
+    visual: ['harbour_hills', 'A snug city wrapped around a deep harbour, wooden cottages and cable cars climbing the surrounding green hills, white clouds streaming overhead in the wind.'],
+  },
+  bari: {
+    sentence: 'An Adriatic port of pale stone where an old basilica and long seafront promenade face the wide blue water',
+    visual: ['seafront_basilica', 'A low white-and-ochre port city along a curving seafront, a grand pale basilica beside the promenade and old stone lanes behind the harbour.'],
+  },
+  ancona: {
+    sentence: 'An Adriatic port city stepping down a steep hillside to a busy ferry harbour on a crescent bay',
+    visual: ['adriatic_port', 'A port city cascading down a steep ridge to a wide working harbour, stone arcades and a long quay wrapping around the deep blue crescent bay.'],
+  },
+  kansascity: {
+    sentence: 'A sprawling midwest metropolis of wide boulevards and brick warehouse blocks spread over rolling river bluffs',
+    visual: ['brick_bluffs', 'A wide low city of red-brick warehouses and stately stone buildings on rolling bluffs above the broad river, with grand boulevards running between.'],
+  },
+  milwaukee: {
+    sentence: 'A lakeside midwest city of brick brewing halls and low church spires rising beside a great inland sea',
+    visual: ['lake_brick', 'A flat city of red-brick industrial halls and modest church towers standing along the shore of an immense inland lake, wide calm streets running inland.'],
+  },
+  victoria: {
+    sentence: 'A tidy island capital of brick and stone where manicured gardens and a domed civic hall face a calm inner harbour',
+    visual: ['inner_harbour', 'A neat low city of brick and pale stone around a calm inner harbour, flowerbeds, a domed legislature and totem poles along the waterfront promenade.'],
+  },
+  tijuana: {
+    sentence: 'A sprawling border metropolis of low hills packed with colourful storefronts and ceaseless traffic',
+    visual: ['border_storefronts', 'Dense hillsides covered in vivid painted shopfronts and wide commercial avenues, packed traffic and a tall border wall running across the near horizon.'],
+  },
+  birmingham: {
+    sentence: 'An inland English metropolis of red brick and steel where canals thread through a ring-road city centre',
+    visual: ['canal_brick', 'A city of red-brick Victorian mills and factories threaded by quiet brick-lined canals, modern towers and a sweeping ring road around the busy centre.'],
+  },
+  oxford: {
+    sentence: 'A low river city of honeyed stone spires and cloistered quads set among green lawns and slow waterways',
+    visual: ['stone_quads', 'Honey-coloured stone towers and spires rising among green lawns and riverside meadows, old walls and cloistered courtyards along the quiet lanes.'],
+  },
+  nottingham: {
+    sentence: 'A hilly English city of red sandstone where a castle outcrop looms above the old market streets',
+    visual: ['sandstone_castle', 'A city of red sandstone buildings climbing gentle hills, a rugged castle rock towering over the old town and its broad market square below.'],
+  },
+  reims: {
+    sentence: 'A broad northern French city of pale stone centred on a towering gothic cathedral amid champagne cellars',
+    visual: ['gothic_cathedral', 'Wide boulevards of pale stone buildings radiating from a soaring gothic cathedral with twin towers, grand facades and long straight avenues.'],
+  },
+  nimes: {
+    sentence: 'A sunlit southern French city of pale stone where a great roman arena still crowns the old town',
+    visual: ['roman_arena', 'A warm low city of pale limestone with an immense elliptical roman arena at its heart, tree-lined squares and stone arcades around it.'],
+  },
+  toulon: {
+    sentence: 'A steep Mediterranean naval port sheltered beneath a ring of bare limestone hills',
+    visual: ['naval_harbour', 'A terraced city spilling down to a wide naval harbour ringed by stark pale hills, quays of grey warships and a long waterfront esplanade.'],
+  },
+  kiel: {
+    sentence: 'A northern German port city of brick and steel stretched along a long narrow fjord inlet',
+    visual: ['fjord_port', 'A flat city of red-brick buildings and shipyard cranes along the shore of a long narrow inlet, ferries and sailing masts crowding the blue water.'],
+  },
+  bangalore: {
+    sentence: 'A sprawling highland metropolis of glass towers and leafy avenues on the cool southern plateau',
+    visual: ['highland_glass', 'Wide tree-lined avenues with modern glass towers rising among older stone buildings, lush gardens and a cool grey-green haze over the plateau.'],
+  },
+  hyderabad: {
+    sentence: 'A south Indian metropolis of minarets and arched gates spread around wide artificial lakes',
+    visual: ['minaret_gates', 'A sprawling city of slender minarets, grand arched gates and old bazaar lanes, broad mirror-smooth lakes and rocky hills on the outskirts.'],
+  },
+  austin: {
+    sentence: 'A growing hill-country capital of glass towers and a grand granite dome rising above the river',
+    visual: ['granite_dome', 'A modern skyline of glass towers beside a great pink-granite domed capitol, the river running through limestone hills with green parkland along its banks.'],
+  },
+  sanantonio: {
+    sentence: 'A low Texan city where a riverside promenade of bridges and cafés threads below the downtown streets',
+    visual: ['riverwalk_promenade', 'A compact downtown of modest towers with a shaded riverside walkway of arched bridges, cafés and stone paths running one level below the streets.'],
+  },
+  memphis: {
+    sentence: 'A flat river city of wide avenues and neon music halls standing on the bluffs above the great brown river',
+    visual: ['neon_river', 'A low city of wide boulevards, brick clubs and old neon signs on the high bluffs above an immense slow brown river, bridges spanning the water.'],
+  },
+  raleigh: {
+    sentence: 'A leafy southern capital of brick and oaks clustered around a modest domed civic square',
+    visual: ['oak_capitol', 'A green city of red-brick buildings and tall oak-lined streets around a small domed capitol, low modern towers rising among the old trees.'],
+  },
+  cordoba: {
+    sentence: 'An Argentine colonial metropolis of arched arcades and wide avenues in a green foothill valley',
+    visual: ['colonial_arcades', 'A low city of colonial arcades, domed churches and wide tree-lined avenues, with soft green hills rising at the edge of the valley.'],
+  },
+  sarajevo: {
+    sentence: 'A mountain valley capital where minarets and austere stone facades line a swift river gorge',
+    visual: ['valley_minarets', 'A city squeezed into a steep valley along a fast river, minarets and copper-domed bazaars on one bank, austere stone apartment blocks climbing the slopes.'],
+  },
+  tirana: {
+    sentence: 'A Balkan capital of bold painted apartment blocks around a vast central plaza beneath the mountain',
+    visual: ['painted_plaza', 'A wide flat plaza surrounded by brightly painted apartment buildings, palm-lined avenues radiating out, and a tall mountain watching over the city.'],
+  },
+  patras: {
+    sentence: 'A western Greek port city cascading down the hillside to a long curving gulf waterfront',
+    visual: ['gulf_waterfront', 'A terraced city of white and pastel houses climbing from a long curved seafront promenade, the wide blue gulf stretching away with hills on the far shore.'],
+  },
+  heraklion: {
+    sentence: 'A sun-baked Cretan port ringed by stout stone ramparts and a great harbour fortress',
+    visual: ['harbour_fortress', 'A flat warm city enclosed by massive pale stone walls, a sturdy medieval fortress guarding the harbour, white and ochre blocks crowding behind the ramparts.'],
+  },
+  mainz: {
+    sentence: 'A broad Rhenish city of red sandstone and a great cathedral towering over the wide river',
+    visual: ['rhine_cathedral', 'A low city of red sandstone buildings dominated by a mighty cathedral with many towers, wide riverside promenades along the great grey-green river.'],
+  },
+  munster: {
+    sentence: 'A flat west German city of gabled lanes, green squares and an endless stream of bicycles',
+    visual: ['gable_bikes', 'A low city of steep gabled houses around green squares and a baroque palace park, with bicycles flowing along the stone lanes in every direction.'],
+  },
+  metz: {
+    sentence: 'A northeastern French city of pale stone where a lace-like gothic spire rises above the river islands',
+    visual: ['gothic_spire', 'A city of pale sandstone and green copper roofs on islands where two rivers meet, a vast cathedral with delicate openwork spire dominating the skyline.'],
+  },
+  amiens: {
+    sentence: 'A flat northern French city centred on a soaring gothic cathedral above the quiet canals',
+    visual: ['cathedral_canals', 'A low city of brick and stone around a towering gothic cathedral with twin spires, quiet green canals and garden allotments threading the outskirts.'],
+  },
+  minsk: {
+    sentence: 'A broad eastern capital of monumental stone avenues and vast squares on a flat green plain',
+    visual: ['monumental_avenues', 'Very wide avenues flanked by imposing pale stone civic blocks around vast open squares, with generous parks and tree lines running through the flat city.'],
+  },
 };
 
 function genLevel(cityKey, img, level) {

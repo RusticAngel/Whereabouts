@@ -1,7 +1,7 @@
 # Trace — Session Memory
 
 ## Project
-Detective-style location deduction game. Players track a missing character (Cipher) across 279 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
+Detective-style location deduction game. Players track a missing character (Cipher) across 310 global locations using Street View 360°, optional environmental evidence (scaled cost: 200/400/600), confidence-based multipliers, and pin-point map placement. Narrative-driven sequential campaign with competitive leaderboards. Onboarding modal, native share, analytics (console), replay, and staged map reveal animations.
 
 ## Stack
 - **Framework:** Next.js 16 (App Router, TypeScript, Tailwind v4)
@@ -118,11 +118,11 @@ Total max deduction: 1200
 | `src/proxy.ts` | Route guard + cookie prefix middleware |
 | `src/app/api/auth/[...path]/route.ts` | Auth handler wrapper (cookie Secure stripping over HTTP) |
 | `capacitor.config.ts` | Capacitor config (server URL, Android settings) |
-| `seed.ts` | DB seed — 279 Mapillary 360° images (all real locations) |
+| `seed.ts` | DB seed — 310 Mapillary 360° images (all real locations) |
 | `drizzle.config.ts` | Drizzle Kit config for `db:push` |
 
 ## Seed Data
-- **279 real images** (all Mapillary 360° panoramas, no Unsplash)
+- **310 real images** (all Mapillary 360° panoramas, no Unsplash)
 - Each has `mapillary_id`, `lat`/`lng` (real-world coordinates), `briefing`, `evidence[]`, `is_pano: true`, `level_order`
 - Some images are `is_pano: false` at the Mapillary API level but still load in mapillary-js (flat images). Levels needing replacement marked in session history.
 - Run with: `node --experimental-strip-types --env-file .env.local seed.ts`
@@ -171,6 +171,13 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 ```
 
 # Session History
+
+## 2026-08-19 (31 New Levels 280-310 + Campaign at 310 Levels — Pool Exhaustion Batch)
+- **User asked to use the remaining pool cities** ("use the remaining pool cities and push the new locations") right after shipping 220-279. Pool audit: candidates-all.json had 32 fresh usable cities (≥5 cands, not in campaign), 29 needing hooks. Generated 31 levels (280-310), authoring 29 new hooks (wellington, ancona, kansascity, milwaukee, victoria, tijuana, birmingham, oxford, nottingham, reims, nimes, toulon, kiel, bangalore, hyderabad, austin, sanantonio, memphis, raleigh, cordoba, sarajevo, tirana, patras, heraklion, mainz, munster, metz, amiens, minsk, bari) → **132 total hooked** in `generate-levels.mjs`.
+- **Verification**: 30/31 LOADED first pass. **1 swap**: wellington `505344970655080` TIMEOUT (known cluster failure from 160-179) → swapped city to bari `844759609440789` (LOADED). Confirmed again: if top-5 candidates fail, swap the CITY.
+- **Prod**: inserted via `scripts/insert-levels-280-310.mjs` (guard: skip if level_order exists). Verified: **310 pano images, levels 1-310**. `seed.ts` updated to mirror. `tsc --noEmit` clean.
+- **New arcs**: "The Quiet Shores" 280-284, "The Island Way" 285-289, "The Eastern Reach" 290-294, "The Crossroads" 295-299, "The Southern Gate" 300-304, "The Last Signal" 305-310. Copy updated everywhere (landing 310 locations / 310 levels / 57 arcs, leaderboard max 310, README 310 locations). Narrative Day 562→624 (level 311 sentinel). CaseFile arcs extended to 57.
+- **Pool state**: candidates-all.json now **depleted** — all usable fresh cities (≥5 cands) are in the campaign. Only sparse cities remain (bari 4→used, suzhou 4, palma 3, leeds 2, baku 2, columbus 2, gdansk 1, chongqing 1) plus the genuinely-empty list (0 cands). **Next batch REQUIRES a new vector-tile sweep** (find19+) before generation.
 
 ## 2026-08-19 (60 New Levels 220-279 + Campaign at 279 Levels — Pool Creation Timing Test)
 - **User asked to time pool creation** (2026-08-19, after shipping 200-219): "Would like to test the pool creation time. Will you just add another 60 locations starting now at 00:45". Ran two fresh sweeps: `find17-tiles.mjs` (58 cities, ~50 min unattended, 40 usable ≥15 cands) + `find18-tiles.mjs` (58 cities, ~50 min, 42 usable) → merged into `candidates-all.json` (206 entries, 92 fresh usable). **Measured: ~50 min per 58-city sweep, ~70% usable yield (82/116).** Pool is now large enough for several more 60-level batches.
@@ -487,15 +494,16 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - [x] Add 20 procedurally generated + hand-written-hook levels (180-199) — 4 new arcs, campaign now 199 levels/35 arcs, finale sentinel 200
 - [x] Add 20 procedurally generated + hand-written-hook levels (200-219) — 4 new arcs, campaign now 219 levels/39 arcs, finale sentinel 220
 - [x] Add 60 procedurally generated + hand-written-hook levels (220-279) — 12 new arcs, campaign now 279 levels/51 arcs, finale sentinel 280
-- [ ] Play-test levels 29-279 on device; swap any that look wrong (incl. 60-279 new cities)
+- [x] Add 31 procedurally generated + hand-written-hook levels (280-310) — 6 new arcs, campaign now 310 levels/57 arcs, finale sentinel 311
+- [ ] Play-test levels 29-310 on device; swap any that look wrong (incl. 60-310 new cities)
 - [ ] User to supply URLs for dense-metro range later; swaps = UPDATE rows in prod DB
 
 ### PRIORITY SHIFT (2026-08-18): Google Play AAB releases — 2 in the next 2 weeks
 - **User directive (2026-08-18)**: shift focus away from the daily level cadence toward **Google Play updates**. Target: **at least 2 AAB releases in the next 2 weeks**.
 - Current AAB baseline: signed release v1.2 (`versionCode 3` / `versionName "1.2"`) built 2026-08-16 at `android/app/build/outputs/bundle/release/app-release.aab`. Upload keystore `android/keystore/findme-upload.jks` + `keystore.properties` (gitignored, backed up).
 - **Release process** (from AGENTS.md Dev Workflow): switch `capacitor.config.ts` `server.url` to prod / clear cleartext for release if remote-loading is no longer desired; `npx cap sync android`; bump `versionCode`/`versionName` in `android/app/build.gradle`; `cd android && gradlew bundleRelease`; upload AAB to Play Console (closed track for testing).
-- **AAB candidates for the 2 releases** (decide with user): (1) content release — latest campaign state (279 levels) baked in if changing to local asset loading, or just the closed-test build; (2) Phase-1 feature release — first-run funnel, PWA prompt, streak grace, weekly challenge, Google Sign-In, and/or `NEXT_PUBLIC_CHALLENGES_ENABLED=false`. Play closed-test setup (group `rusticsfindme-testers@googlegroups.com`, 12 testers, 14-day clock) is also pending.
-- Level-cadence work is **paused until the Play releases are handled**; one last 60-level batch (220-279) shipped 2026-08-19 as a pool-creation timing test — campaign now 279 levels. Pool (`candidates-all.json`, ~82 fresh usable cities) can support several more 20-60 level batches without a new sweep.
+- **AAB candidates for the 2 releases** (decide with user): (1) content release — latest campaign state (310 levels) baked in if changing to local asset loading, or just the closed-test build; (2) Phase-1 feature release — first-run funnel, PWA prompt, streak grace, weekly challenge, Google Sign-In, and/or `NEXT_PUBLIC_CHALLENGES_ENABLED=false`. Play closed-test setup (group `rusticsfindme-testers@googlegroups.com`, 12 testers, 14-day clock) is also pending.
+- Level-cadence work is **paused until the Play releases are handled**; one last 60-level batch (220-279) shipped 2026-08-19 as a pool-creation timing test, and the final pool batch (280-310, 31 levels) shipped same day — campaign now 310 levels. Pool (`candidates-all.json`) is now **depleted** of fresh usable cities — next batch needs a new vector-tile sweep (find19+) before generation.
 
 ### STANDING DECISION (2026-08-17): Daily Production Cadence — 500 stages/month
 - User **committed to the daily 500/month production** using the procedural generator. Target: **one 20-level batch (~1.2 batches/day)** — i.e. 20 new locations daily.
@@ -503,8 +511,9 @@ node --experimental-strip-types --env-file .env.local -e "import {neon} from '@n
 - **Hand-written per-city hooks are REQUIRED for every level** (user directive 2026-08-17): each city gets a small hand-written distinct hook (descriptive sentence + optional bespoke visual clue, no proper nouns, anti-google) layered on the region vocab, so same-region cities don't read identically. Built into `scripts/generate-levels.mjs` as the `HOOKS` map; `generate` reports "Cities without hand-written hook"; `hooks` command lists coverage. A/B vs 160-179 showed pure region-vocab briefings are less varied than hand-written — hooks are the fix.
 - **Measured batch timing (2026-08-18, batch 180-199)**: sweep (find14, 32 cities, unattended ~35 min) + hook authoring for 13 new cities (~20 min) + generate (seconds) + viewer verification 20/20 (~30 min incl. HANG retries) + prod insert + copy wiring + commit (~15 min) ≈ **65-70 min active time** for a 20-level batch. Verification is the floor (~1.5-2 min/img worst case, HANG retries add time).
 - **Measured batch timing (2026-08-19, batch 220-279)**: two sweeps (find17 + find18, 58 cities each, unattended ~50 min each) + 56 new hooks (~45 min) + generate (seconds) + viewer verification 60/60 (~50 min, 58 first-pass + 2 swaps) + prod insert + copy wiring + commit ≈ **~2h active** for a 60-level batch. Pool creation measured: **two vector-tile sweeps of 58 cities each ≈ 50 min per sweep** (4s pacing, 9 tiles/city); usable yield ~70% (82 of 116 cities).
+- **Measured batch timing (2026-08-19, batch 280-310)**: no new sweep (pool had 32 fresh usable). 29 new hooks (~25 min) + generate (seconds) + viewer verification 31/30 LOADED (~25 min, 1 city swap) + prod insert + copy wiring + commit ≈ **~1h active** for a 31-level batch.
 - **Cadence workflow per batch**: (1) sweep new cities if pool is thin → candidatesN.json; (2) author per-city hooks in the `HOOKS` map (`node scripts/generate-levels.mjs hooks` to list gaps); (3) `node scripts/generate-levels.mjs generate` (or `--cities` override; set `GENERATE_OUT` for test runs); (4) verify all in headless Edge harness (viewer `load` event = ground truth; ~1-2 min/img, HANGs need retry with longer budget); (5) build + insert via `scripts/insert-levels-NNN-MMM.mjs` (skip-if-exists guard); (6) update seed.ts, TOTAL_LEVELS, arcs, copy, README; (7) `tsc --noEmit`; (8) commit + push (Vercel auto-deploys).
-- **Candidate pool as of 2026-08-19**: `candidates-all.json` now 206 entries — candidates13 + candidates14 + candidates17 + candidates18 merged. **114 new cities added from find17/find18 sweeps (58 cities each, 4s pacing, 9 tiles/city, ~50 min/sweep)**; ~82 usable fresh remain (not yet in campaign), many with 15 cands each. Sweep17 empties: halifax, puebla, caracas, brescia, wuhan, qingdao, perth, adelaide (and sparse: leeds, gdansk, baku, suzhou). Sweep18 empties: tampa, pamplona, salerno, lecce, skopje, augsburg, uppsala, tianjin, kunming, dhaka, karachi, tehran, luanda, kinshasa (and sparse: columbus, cordoba, minsk, munster, metz, amiens, dakar, kigali, kampala, istanbul).
+- **Candidate pool as of 2026-08-19**: `candidates-all.json` now 206 entries — candidates13 + candidates14 + candidates17 + candidates18 merged. **114 new cities added from find17/find18 sweeps (58 cities each, 4s pacing, 9 tiles/city, ~50 min/sweep)**; **all usable fresh cities (≥5 cands) are now consumed** by batches 220-279 and 280-310. Remaining: sparse cities only (suzhou 4, palma 3, leeds 2, baku 2, columbus 2, gdansk 1, chongqing 1) plus the genuinely-empty list (0 cands: halifax, puebla, caracas, brescia, wuhan, qingdao, perth, adelaide, tampa, pamplona, salerno, lecce, skopje, augsburg, uppsala, tianjin, kunming, dhaka, karachi, tehran, luanda, kinshasa, algiers, pretoria, abuja, incheon, daegu, chennai, alicante, goldcoast, harare, windhoek, manama, guangzhou, shenzhen, xian, hangzhou, nanjing, cairo, alexandria, tunis, lagos, accra, durban, phuket, dubrovnik). **Next batch requires a new vector-tile sweep (find19+).**
 
 ## Growth & Monetization Plan (decided 2026-08-08) — see Next Moves below
 

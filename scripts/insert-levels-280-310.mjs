@@ -1,0 +1,271 @@
+import { neon } from '@neondatabase/serverless';
+
+const sql = neon(process.env.DATABASE_URL);
+
+// Levels 280-310 (procedurally generated + hand-written hooks, viewer-verified 2026-08-19, all LOADED).
+const LEVELS = [
+  {
+    level_order: 280,
+    mapillary_id: '844759609440789',
+    lat: '41.118600',
+    lng: '16.850452',
+    briefing: "Day 564: An Adriatic port of pale stone where an old basilica and long seafront promenade face the wide blue water. Cipher was seen on the middle of the stone bridge at dawn, studying the stone facades, then disappeared into the old quarter.",
+    evidence: [{"type":"visual","value":"seafront_basilica","label":"A low white-and-ochre port city along a curving seafront, a grand pale basilica beside the promenade and old stone lanes behind the harbour."},{"type":"auditory","value":"river_city","label":"The ripple of the river against the stone, the bells of the great church, the murmur of the arcade cafés, and the gulls over the water."},{"type":"sensory","value":"evening_bells","label":"Long golden light on the old stone, the chime of the bells at dusk, and the damp breath of the river rising."}],
+  },
+  {
+    level_order: 281,
+    mapillary_id: '299358051786460',
+    lat: '43.624548',
+    lng: '13.508299',
+    briefing: "Day 566: An Adriatic port city stepping down a steep hillside to a busy ferry harbour on a crescent bay. Cipher was seen on the middle of the stone bridge at noon, scanning the old rooftops, then slipped down a half-timbered lane.",
+    evidence: [{"type":"visual","value":"adriatic_port","label":"A port city cascading down a steep ridge to a wide working harbour, stone arcades and a long quay wrapping around the deep blue crescent bay."},{"type":"auditory","value":"bells_lanes","label":"The toll of the cathedral bells, the quiet of the old lanes, the clink of the cafés, and the slow shuffle of the crowds."},{"type":"sensory","value":"river_air","label":"A mild air off the broad river, the smell of bread and coffee from the old lanes, and the cool of the cathedral shadow."}],
+  },
+  {
+    level_order: 282,
+    mapillary_id: '1292623699353057',
+    lat: '39.124302',
+    lng: '-94.549981',
+    briefing: "Day 568: A sprawling midwest metropolis of wide boulevards and brick warehouse blocks spread over rolling river bluffs. Cipher was seen in the shade of the avenue canyon at dusk, studying a map of the grid, then disappeared behind a wall of traffic.",
+    evidence: [{"type":"visual","value":"brick_bluffs","label":"A wide low city of red-brick warehouses and stately stone buildings on rolling bluffs above the broad river, with grand boulevards running between."},{"type":"auditory","value":"canyon_echo","label":"The echo of horns and sirens bouncing between the tall facades, the rattle of the crossing signals, and the shuffle of a thousand feet on the asphalt."},{"type":"sensory","value":"park_breeze","label":"A cool breeze from the great park, the smell of cut grass and pretzels, and the late light slanting down the avenue."}],
+  },
+  {
+    level_order: 283,
+    mapillary_id: '321097769624457',
+    lat: '43.037947',
+    lng: '-87.918886',
+    briefing: "Day 570: A lakeside midwest city of brick brewing halls and low church spires rising beside a great inland sea. Cipher was seen at the mouth of a subway entrance at first light, scanning the lit towers, then disappeared behind a wall of traffic.",
+    evidence: [{"type":"visual","value":"lake_brick","label":"A flat city of red-brick industrial halls and modest church towers standing along the shore of an immense inland lake, wide calm streets running inland."},{"type":"auditory","value":"canyon_echo","label":"The echo of horns and sirens bouncing between the tall facades, the rattle of the crossing signals, and the shuffle of a thousand feet on the asphalt."},{"type":"sensory","value":"city_dusk","label":"The electric glow of the billboards at dusk, warm windows lighting the canyons, and the rising chill of the evening air."}],
+  },
+  {
+    level_order: 284,
+    mapillary_id: '976641712098789',
+    lat: '48.427747',
+    lng: '-123.380477',
+    briefing: "Day 572: A tidy island capital of brick and stone where manicured gardens and a domed civic hall face a calm inner harbour. Cipher was seen in the shade of the avenue canyon at evening, scanning the lit towers, then disappeared behind a wall of traffic.",
+    evidence: [{"type":"visual","value":"inner_harbour","label":"A neat low city of brick and pale stone around a calm inner harbour, flowerbeds, a domed legislature and totem poles along the waterfront promenade."},{"type":"auditory","value":"canyon_echo","label":"The echo of horns and sirens bouncing between the tall facades, the rattle of the crossing signals, and the shuffle of a thousand feet on the asphalt."},{"type":"sensory","value":"park_breeze","label":"A cool breeze from the great park, the smell of cut grass and pretzels, and the late light slanting down the avenue."}],
+  },
+  {
+    level_order: 285,
+    mapillary_id: '763937789500906',
+    lat: '32.533008',
+    lng: '-117.022416',
+    briefing: "Day 574: A sprawling border metropolis of low hills packed with colourful storefronts and ceaseless traffic. Cipher was seen on the great stone steps of the plaza at dusk, moving with the tide of commuters, then stepped into the underground.",
+    evidence: [{"type":"visual","value":"border_storefronts","label":"Dense hillsides covered in vivid painted shopfronts and wide commercial avenues, packed traffic and a tall border wall running across the near horizon."},{"type":"auditory","value":"canyon_echo","label":"The echo of horns and sirens bouncing between the tall facades, the rattle of the crossing signals, and the shuffle of a thousand feet on the asphalt."},{"type":"sensory","value":"park_breeze","label":"A cool breeze from the great park, the smell of cut grass and pretzels, and the late light slanting down the avenue."}],
+  },
+  {
+    level_order: 286,
+    mapillary_id: '498803447941652',
+    lat: '52.479637',
+    lng: '-1.907016',
+    briefing: "Day 576: An inland English metropolis of red brick and steel where canals thread through a ring-road city centre. Cipher was seen at the edge of the arcaded square at dusk, scanning the old rooftops, then vanished into the arcades.",
+    evidence: [{"type":"visual","value":"canal_brick","label":"A city of red-brick Victorian mills and factories threaded by quiet brick-lined canals, modern towers and a sweeping ring road around the busy centre."},{"type":"auditory","value":"bells_lanes","label":"The toll of the cathedral bells, the quiet of the old lanes, the clink of the cafés, and the slow shuffle of the crowds."},{"type":"sensory","value":"old_stone","label":"The cool of the ancient stone, warm sunlight in the squares, and the faint scent of woodsmoke and wet cobbles."}],
+  },
+  {
+    level_order: 287,
+    mapillary_id: '735865555786836',
+    lat: '51.745941',
+    lng: '-1.255886',
+    briefing: "Day 578: A low river city of honeyed stone spires and cloistered quads set among green lawns and slow waterways. Cipher was seen at the edge of the arcaded square at dusk, scanning the old rooftops, then crossed the bridge and was gone.",
+    evidence: [{"type":"visual","value":"stone_quads","label":"Honey-coloured stone towers and spires rising among green lawns and riverside meadows, old walls and cloistered courtyards along the quiet lanes."},{"type":"auditory","value":"bells_lanes","label":"The toll of the cathedral bells, the quiet of the old lanes, the clink of the cafés, and the slow shuffle of the crowds."},{"type":"sensory","value":"old_stone","label":"The cool of the ancient stone, warm sunlight in the squares, and the faint scent of woodsmoke and wet cobbles."}],
+  },
+  {
+    level_order: 288,
+    mapillary_id: '784030565645043',
+    lat: '52.955914',
+    lng: '-1.148280',
+    briefing: "Day 580: A hilly English city of red sandstone where a castle outcrop looms above the old market streets. Cipher was seen at the foot of the great cathedral at mid-morning, scanning the old rooftops, then vanished into the arcades.",
+    evidence: [{"type":"visual","value":"sandstone_castle","label":"A city of red sandstone buildings climbing gentle hills, a rugged castle rock towering over the old town and its broad market square below."},{"type":"auditory","value":"bells_lanes","label":"The toll of the cathedral bells, the quiet of the old lanes, the clink of the cafés, and the slow shuffle of the crowds."},{"type":"sensory","value":"evening_bells","label":"Long golden light on the old stone, the chime of the bells at dusk, and the damp breath of the river rising."}],
+  },
+  {
+    level_order: 289,
+    mapillary_id: '653199315529953',
+    lat: '49.253143',
+    lng: '4.033668',
+    briefing: "Day 582: A broad northern French city of pale stone centred on a towering gothic cathedral amid champagne cellars. Cipher was seen on the middle of the stone bridge at mid-morning, scanning the old rooftops, then disappeared into the old quarter.",
+    evidence: [{"type":"visual","value":"gothic_cathedral","label":"Wide boulevards of pale stone buildings radiating from a soaring gothic cathedral with twin towers, grand facades and long straight avenues."},{"type":"auditory","value":"bells_lanes","label":"The toll of the cathedral bells, the quiet of the old lanes, the clink of the cafés, and the slow shuffle of the crowds."},{"type":"sensory","value":"old_stone","label":"The cool of the ancient stone, warm sunlight in the squares, and the faint scent of woodsmoke and wet cobbles."}],
+  },
+  {
+    level_order: 290,
+    mapillary_id: '390837168684511',
+    lat: '43.822270',
+    lng: '4.365257',
+    briefing: "Day 584: A sunlit southern French city of pale stone where a great roman arena still crowns the old town. Cipher was seen at the mouth of a narrow lane at dawn, studying the stone facades, then disappeared into the old quarter.",
+    evidence: [{"type":"visual","value":"roman_arena","label":"A warm low city of pale limestone with an immense elliptical roman arena at its heart, tree-lined squares and stone arcades around it."},{"type":"auditory","value":"bells_lanes","label":"The toll of the cathedral bells, the quiet of the old lanes, the clink of the cafés, and the slow shuffle of the crowds."},{"type":"sensory","value":"old_stone","label":"The cool of the ancient stone, warm sunlight in the squares, and the faint scent of woodsmoke and wet cobbles."}],
+  },
+  {
+    level_order: 291,
+    mapillary_id: '218831499592064',
+    lat: '43.126961',
+    lng: '5.925349',
+    briefing: "Day 586: A steep Mediterranean naval port sheltered beneath a ring of bare limestone hills. Cipher was seen at the edge of the arcaded square at dusk, studying the stone facades, then vanished into the arcades.",
+    evidence: [{"type":"visual","value":"naval_harbour","label":"A terraced city spilling down to a wide naval harbour ringed by stark pale hills, quays of grey warships and a long waterfront esplanade."},{"type":"auditory","value":"bells_lanes","label":"The toll of the cathedral bells, the quiet of the old lanes, the clink of the cafés, and the slow shuffle of the crowds."},{"type":"sensory","value":"evening_bells","label":"Long golden light on the old stone, the chime of the bells at dusk, and the damp breath of the river rising."}],
+  },
+  {
+    level_order: 292,
+    mapillary_id: '378879860789027',
+    lat: '54.304161',
+    lng: '10.123462',
+    briefing: "Day 588: A northern German port city of brick and steel stretched along a long narrow fjord inlet. Cipher was seen at the foot of the palace steps at dawn, watching the ferries cast off, then disappeared into the cold shadows.",
+    evidence: [{"type":"visual","value":"fjord_port","label":"A flat city of red-brick buildings and shipyard cranes along the shore of a long narrow inlet, ferries and sailing masts crowding the blue water."},{"type":"auditory","value":"ferry_loom","label":"The low loom of the ferries, the cry of gulls, the clang of the harbour, and the toll of the cathedral bells across the water."},{"type":"sensory","value":"grey_light","label":"A clear northern light that stays long into the evening, cool and grey, with the scent of the harbour and wet stone."}],
+  },
+  {
+    level_order: 293,
+    mapillary_id: '2197857291051035',
+    lat: '13.002318',
+    lng: '77.621809',
+    briefing: "Day 590: A sprawling highland metropolis of glass towers and leafy avenues on the cool southern plateau. Cipher was seen by the edge of the fort walls at noon, studying the carved archways, then vanished into the bazaar.",
+    evidence: [{"type":"visual","value":"highland_glass","label":"Wide tree-lined avenues with modern glass towers rising among older stone buildings, lush gardens and a cool grey-green haze over the plateau."},{"type":"auditory","value":"city_hum","label":"The unbroken hum of the megacity, the honk of a thousand horns, and the tinkle of the cycle rickshaws."},{"type":"sensory","value":"evening_clamour","label":"The clamour of evening, the warm smell of chai and frying, and the neon flickering to life over the bazaar."}],
+  },
+  {
+    level_order: 294,
+    mapillary_id: '1228350967847935',
+    lat: '17.372470',
+    lng: '78.482510',
+    briefing: "Day 592: A south Indian metropolis of minarets and arched gates spread around wide artificial lakes. Cipher was seen in the shaded bazaar lane at evening, studying the carved archways, then disappeared into the crowd.",
+    evidence: [{"type":"visual","value":"minaret_gates","label":"A sprawling city of slender minarets, grand arched gates and old bazaar lanes, broad mirror-smooth lakes and rocky hills on the outskirts."},{"type":"auditory","value":"river_bell","label":"The bells of the temples by the water, the splash of the steps, and the rumble of the traffic over the bridge."},{"type":"sensory","value":"spice_dust","label":"Dust and spice in the hot air, the smoke of the food stalls, the crush of the crowd, and the shade of the awnings."}],
+  },
+  {
+    level_order: 295,
+    mapillary_id: '1478245343150704',
+    lat: '30.254339',
+    lng: '-97.762962',
+    briefing: "Day 594: A growing hill-country capital of glass towers and a grand granite dome rising above the river. Cipher was seen at the mouth of a subway entrance at mid-morning, studying a map of the grid, then stepped into the underground.",
+    evidence: [{"type":"visual","value":"granite_dome","label":"A modern skyline of glass towers beside a great pink-granite domed capitol, the river running through limestone hills with green parkland along its banks."},{"type":"auditory","value":"avenue_roar","label":"The constant roar of traffic on the avenues, the hiss of bus brakes, and the low rumble of the trains beneath the pavement."},{"type":"sensory","value":"street_heat","label":"Hot air rising off the black pavement, the smell of exhaust and roasting nuts, and the deep shade between the towers."}],
+  },
+  {
+    level_order: 296,
+    mapillary_id: '1278015044535269',
+    lat: '29.440956',
+    lng: '-98.470640',
+    briefing: "Day 596: A low Texan city where a riverside promenade of bridges and cafés threads below the downtown streets. Cipher was seen on the great stone steps of the plaza at dusk, watching the taxis crawl, then stepped into the underground.",
+    evidence: [{"type":"visual","value":"riverwalk_promenade","label":"A compact downtown of modest towers with a shaded riverside walkway of arched bridges, cafés and stone paths running one level below the streets."},{"type":"auditory","value":"subway_hum","label":"The distant hum of the subway underfoot, the rumble of the elevated lines, and the chatter of the crowds at the intersections."},{"type":"sensory","value":"park_breeze","label":"A cool breeze from the great park, the smell of cut grass and pretzels, and the late light slanting down the avenue."}],
+  },
+  {
+    level_order: 297,
+    mapillary_id: '433025305803202',
+    lat: '35.125138',
+    lng: '-90.065907',
+    briefing: "Day 598: A flat river city of wide avenues and neon music halls standing on the bluffs above the great brown river. Cipher was seen at the crosswalk of the widest boulevard at first light, moving with the tide of commuters, then slipped into a side street.",
+    evidence: [{"type":"visual","value":"neon_river","label":"A low city of wide boulevards, brick clubs and old neon signs on the high bluffs above an immense slow brown river, bridges spanning the water."},{"type":"auditory","value":"canyon_echo","label":"The echo of horns and sirens bouncing between the tall facades, the rattle of the crossing signals, and the shuffle of a thousand feet on the asphalt."},{"type":"sensory","value":"city_dusk","label":"The electric glow of the billboards at dusk, warm windows lighting the canyons, and the rising chill of the evening air."}],
+  },
+  {
+    level_order: 298,
+    mapillary_id: '485298029369487',
+    lat: '35.775300',
+    lng: '-78.640372',
+    briefing: "Day 600: A leafy southern capital of brick and oaks clustered around a modest domed civic square. Cipher was seen in the shade of the avenue canyon at first light, moving with the tide of commuters, then slipped into a side street.",
+    evidence: [{"type":"visual","value":"oak_capitol","label":"A green city of red-brick buildings and tall oak-lined streets around a small domed capitol, low modern towers rising among the old trees."},{"type":"auditory","value":"canyon_echo","label":"The echo of horns and sirens bouncing between the tall facades, the rattle of the crossing signals, and the shuffle of a thousand feet on the asphalt."},{"type":"sensory","value":"city_dusk","label":"The electric glow of the billboards at dusk, warm windows lighting the canyons, and the rising chill of the evening air."}],
+  },
+  {
+    level_order: 299,
+    mapillary_id: '2847530492125637',
+    lat: '37.884874',
+    lng: '-4.775980',
+    briefing: "Day 602: An Argentine colonial metropolis of arched arcades and wide avenues in a green foothill valley. Cipher was seen in the broad tree-lined square at first light, scanning the white rooftops, then vanished into the old port.",
+    evidence: [{"type":"visual","value":"colonial_arcades","label":"A low city of colonial arcades, domed churches and wide tree-lined avenues, with soft green hills rising at the edge of the valley."},{"type":"auditory","value":"evening_stroll","label":"The murmur of the evening promenade, the gulls over the port, and the soft music drifting from the squares."},{"type":"sensory","value":"dusk_gold","label":"Golden dusk over the old port, the smell of grilled fish and thyme, and the lantern light flickering along the esplanade."}],
+  },
+  {
+    level_order: 300,
+    mapillary_id: '535159299282951',
+    lat: '43.858846',
+    lng: '18.420906',
+    briefing: "Day 604: A mountain valley capital where minarets and austere stone facades line a swift river gorge. Cipher was seen on the middle of the stone bridge at first light, studying the stone facades, then slipped down a half-timbered lane.",
+    evidence: [{"type":"visual","value":"valley_minarets","label":"A city squeezed into a steep valley along a fast river, minarets and copper-domed bazaars on one bank, austere stone apartment blocks climbing the slopes."},{"type":"auditory","value":"barge_horn","label":"The low horn of a barge on the river, the clatter of the market, and the chime of the carillon carried on the wind."},{"type":"sensory","value":"evening_bells","label":"Long golden light on the old stone, the chime of the bells at dusk, and the damp breath of the river rising."}],
+  },
+  {
+    level_order: 301,
+    mapillary_id: '1034717346168449',
+    lat: '41.325137',
+    lng: '19.830068',
+    briefing: "Day 606: A Balkan capital of bold painted apartment blocks around a vast central plaza beneath the mountain. Cipher was seen on the middle of the stone bridge at dawn, moving with the slow crowd, then disappeared into the old quarter.",
+    evidence: [{"type":"visual","value":"painted_plaza","label":"A wide flat plaza surrounded by brightly painted apartment buildings, palm-lined avenues radiating out, and a tall mountain watching over the city."},{"type":"auditory","value":"barge_horn","label":"The low horn of a barge on the river, the clatter of the market, and the chime of the carillon carried on the wind."},{"type":"sensory","value":"old_stone","label":"The cool of the ancient stone, warm sunlight in the squares, and the faint scent of woodsmoke and wet cobbles."}],
+  },
+  {
+    level_order: 302,
+    mapillary_id: '1299685668759253',
+    lat: '38.245106',
+    lng: '21.731671',
+    briefing: "Day 608: A western Greek port city cascading down the hillside to a long curving gulf waterfront. Cipher was seen on the harbour esplanade at evening, scanning the white rooftops, then slipped down a stucco lane.",
+    evidence: [{"type":"visual","value":"gulf_waterfront","label":"A terraced city of white and pastel houses climbing from a long curved seafront promenade, the wide blue gulf stretching away with hills on the far shore."},{"type":"auditory","value":"harbour_lap","label":"The lap of the water in the harbour, the creak of the moored boats, the chatter of the waterfront cafés, and the chime of the campanile."},{"type":"sensory","value":"dusk_gold","label":"Golden dusk over the old port, the smell of grilled fish and thyme, and the lantern light flickering along the esplanade."}],
+  },
+  {
+    level_order: 303,
+    mapillary_id: '1212783072811930',
+    lat: '35.340606',
+    lng: '25.129735',
+    briefing: "Day 610: A sun-baked Cretan port ringed by stout stone ramparts and a great harbour fortress. Cipher was seen at the foot of the marble cathedral at noon, lingering in the shade, then walked toward the sea and was gone.",
+    evidence: [{"type":"visual","value":"harbour_fortress","label":"A flat warm city enclosed by massive pale stone walls, a sturdy medieval fortress guarding the harbour, white and ochre blocks crowding behind the ramparts."},{"type":"auditory","value":"market_call","label":"The calls of the market, the clatter of the awnings, the scooters on the old streets, and the hum of the midday heat."},{"type":"sensory","value":"sea_air","label":"A warm sea air with the smell of salt, olive oil and drying nets, and the sharp Mediterranean light on the white walls."}],
+  },
+  {
+    level_order: 304,
+    mapillary_id: '643977137758413',
+    lat: '49.988716',
+    lng: '8.227475',
+    briefing: "Day 612: A broad Rhenish city of red sandstone and a great cathedral towering over the wide river. Cipher was seen on the middle of the stone bridge at noon, scanning the old rooftops, then disappeared into the old quarter.",
+    evidence: [{"type":"visual","value":"rhine_cathedral","label":"A low city of red sandstone buildings dominated by a mighty cathedral with many towers, wide riverside promenades along the great grey-green river."},{"type":"auditory","value":"bells_lanes","label":"The toll of the cathedral bells, the quiet of the old lanes, the clink of the cafés, and the slow shuffle of the crowds."},{"type":"sensory","value":"evening_bells","label":"Long golden light on the old stone, the chime of the bells at dusk, and the damp breath of the river rising."}],
+  },
+  {
+    level_order: 305,
+    mapillary_id: '374254720629333',
+    lat: '51.952210',
+    lng: '7.639354',
+    briefing: "Day 614: A flat west German city of gabled lanes, green squares and an endless stream of bicycles. Cipher was seen on the middle of the stone bridge at mid-morning, scanning the old rooftops, then disappeared into the old quarter.",
+    evidence: [{"type":"visual","value":"gable_bikes","label":"A low city of steep gabled houses around green squares and a baroque palace park, with bicycles flowing along the stone lanes in every direction."},{"type":"auditory","value":"barge_horn","label":"The low horn of a barge on the river, the clatter of the market, and the chime of the carillon carried on the wind."},{"type":"sensory","value":"river_air","label":"A mild air off the broad river, the smell of bread and coffee from the old lanes, and the cool of the cathedral shadow."}],
+  },
+  {
+    level_order: 306,
+    mapillary_id: '1085408501939857',
+    lat: '49.106988',
+    lng: '6.157323',
+    briefing: "Day 616: A northeastern French city of pale stone where a lace-like gothic spire rises above the river islands. Cipher was seen at the foot of the great cathedral at noon, scanning the old rooftops, then slipped down a half-timbered lane.",
+    evidence: [{"type":"visual","value":"gothic_spire","label":"A city of pale sandstone and green copper roofs on islands where two rivers meet, a vast cathedral with delicate openwork spire dominating the skyline."},{"type":"auditory","value":"river_city","label":"The ripple of the river against the stone, the bells of the great church, the murmur of the arcade cafés, and the gulls over the water."},{"type":"sensory","value":"evening_bells","label":"Long golden light on the old stone, the chime of the bells at dusk, and the damp breath of the river rising."}],
+  },
+  {
+    level_order: 307,
+    mapillary_id: '514418349716150',
+    lat: '49.891251',
+    lng: '2.304061',
+    briefing: "Day 618: A flat northern French city centred on a soaring gothic cathedral above the quiet canals. Cipher was seen at the edge of the arcaded square at dusk, moving with the slow crowd, then disappeared into the old quarter.",
+    evidence: [{"type":"visual","value":"cathedral_canals","label":"A low city of brick and stone around a towering gothic cathedral with twin spires, quiet green canals and garden allotments threading the outskirts."},{"type":"auditory","value":"bells_lanes","label":"The toll of the cathedral bells, the quiet of the old lanes, the clink of the cafés, and the slow shuffle of the crowds."},{"type":"sensory","value":"river_air","label":"A mild air off the broad river, the smell of bread and coffee from the old lanes, and the cool of the cathedral shadow."}],
+  },
+  {
+    level_order: 308,
+    mapillary_id: '1078374601849833',
+    lat: '53.897714',
+    lng: '27.550996',
+    briefing: "Day 620: A broad eastern capital of monumental stone avenues and vast squares on a flat green plain. Cipher was seen in the shade of the avenue canyon at dusk, moving with the tide of commuters, then stepped into the underground.",
+    evidence: [{"type":"visual","value":"monumental_avenues","label":"Very wide avenues flanked by imposing pale stone civic blocks around vast open squares, with generous parks and tree lines running through the flat city."},{"type":"auditory","value":"canyon_echo","label":"The echo of horns and sirens bouncing between the tall facades, the rattle of the crossing signals, and the shuffle of a thousand feet on the asphalt."},{"type":"sensory","value":"city_dusk","label":"The electric glow of the billboards at dusk, warm windows lighting the canyons, and the rising chill of the evening air."}],
+  },
+  {
+    level_order: 309,
+    mapillary_id: '840069040786964',
+    lat: '43.511078',
+    lng: '16.462240',
+    briefing: "Day 622: A walled old town of pale stone squeezed against the harbour, its palace ruins woven into the lanes. Cipher was seen at the foot of the great cathedral at dawn, scanning the old rooftops, then disappeared into the old quarter.",
+    evidence: [{"type":"visual","value":"pale_stone_oldtown","label":"A fortress of pale stone crowded around a small harbour, narrow passages and old palace arches woven through the old town."},{"type":"auditory","value":"barge_horn","label":"The low horn of a barge on the river, the clatter of the market, and the chime of the carillon carried on the wind."},{"type":"sensory","value":"river_air","label":"A mild air off the broad river, the smell of bread and coffee from the old lanes, and the cool of the cathedral shadow."}],
+  },
+  {
+    level_order: 310,
+    mapillary_id: '1618906658668810',
+    lat: '49.628999',
+    lng: '6.134627',
+    briefing: "Day 624: A cliff-top fortress city of deep ravines and stone ramparts, where the old town sits above a green gorge. Cipher was seen at the mouth of a narrow lane at dusk, moving with the slow crowd, then crossed the bridge and was gone.",
+    evidence: [{"type":"visual","value":"gorge_fortress","label":"A fortified old town perched on a sheer cliff above a deep green gorge, stone ramparts and viaducts spanning the chasm far below."},{"type":"auditory","value":"river_city","label":"The ripple of the river against the stone, the bells of the great church, the murmur of the arcade cafés, and the gulls over the water."},{"type":"sensory","value":"river_air","label":"A mild air off the broad river, the smell of bread and coffee from the old lanes, and the cool of the cathedral shadow."}],
+  },
+
+];
+
+for (const lv of LEVELS) {
+  const existing = await sql`SELECT id FROM images WHERE level_order = ${lv.level_order} LIMIT 1`;
+  if (existing.length > 0) {
+    console.log('Level ' + lv.level_order + ' already exists. Skipping.');
+    continue;
+  }
+  await sql`
+    INSERT INTO images (image_url, lat, lng, steps, clues, briefing, evidence, level_order, provider, mapillary_id, is_pano)
+    VALUES (NULL, ${lv.lat}, ${lv.lng}, NULL, NULL, ${lv.briefing}, ${JSON.stringify(lv.evidence)}::jsonb, ${lv.level_order}, 'mapillary', ${lv.mapillary_id}, true)
+  `;
+  console.log('Inserted level ' + lv.level_order + ' (' + lv.mapillary_id + ')');
+}
+
+console.log('Done.');

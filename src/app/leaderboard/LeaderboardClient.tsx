@@ -113,7 +113,7 @@ export function LeaderboardClient({ userId, currentNickname }: { userId: string;
             <input
               type="number"
               min={1}
-              max={279}
+              max={310}
               value={levelInput}
               onChange={(e) => setLevelInput(e.target.value)}
               className="w-20 px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-white text-sm text-center"

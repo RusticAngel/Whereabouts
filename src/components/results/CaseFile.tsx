@@ -62,6 +62,12 @@ const ARCS = [
   { label: 'The Old Compass', levels: '265–269', start: 265, end: 269 },
   { label: 'The Sand Line', levels: '270–274', start: 270, end: 274 },
   { label: 'The Last Thread', levels: '275–279', start: 275, end: 279 },
+  { label: 'The Quiet Shores', levels: '280–284', start: 280, end: 284 },
+  { label: 'The Island Way', levels: '285–289', start: 285, end: 289 },
+  { label: 'The Eastern Reach', levels: '290–294', start: 290, end: 294 },
+  { label: 'The Crossroads', levels: '295–299', start: 295, end: 299 },
+  { label: 'The Southern Gate', levels: '300–304', start: 300, end: 304 },
+  { label: 'The Last Signal', levels: '305–310', start: 305, end: 310 },
 ];
 
 export function CaseFile({ entries, currentLevel }: CaseFileProps) {
