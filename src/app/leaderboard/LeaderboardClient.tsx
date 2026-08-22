@@ -2,10 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { getDailyLeaderboard, getLeaderboardCampaign, getLeaderboardLevel, updateNickname } from '@/app/actions';
 import { Button } from '@/components/ui/Button';
+import { FilterTabs } from '@/components/leaderboard/FilterTabs';
+import { LeaderboardSearch } from '@/components/leaderboard/LeaderboardSearch';
 
 type Tab = 'daily' | 'campaign' | 'level';
+type Filter = 'global' | 'friends';
 
 interface Entry {
   rank: number;
@@ -17,6 +21,9 @@ interface Entry {
 export function LeaderboardClient({ userId, currentNickname }: { userId: string; currentNickname: string }) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>('daily');
+  const [filter, setFilter] = useState<Filter>('global');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
   const [levelInput, setLevelInput] = useState('1');
@@ -29,7 +36,7 @@ export function LeaderboardClient({ userId, currentNickname }: { userId: string;
     await updateNickname(userId, nickname);
     setEditing(false);
     setSaving(false);
-    setTab((t) => t); // trigger re-render
+    setTab((t) => t);
   }, [userId, nickname]);
 
   const today = new Date().toISOString().split('T')[0];
@@ -40,15 +47,14 @@ export function LeaderboardClient({ userId, currentNickname }: { userId: string;
       let data: { username: string; score: number; userId: string }[] = [];
 
       if (tab === 'daily') {
-        const today = new Date().toISOString().split('T')[0];
-        const dailyData = await getDailyLeaderboard(today);
+        const dailyData = await getDailyLeaderboard(today, filter, userId);
         data = dailyData.map((d) => ({
           username: d.username,
           score: d.score,
           userId: d.userId,
         }));
       } else if (tab === 'campaign') {
-        const campaignData = await getLeaderboardCampaign();
+        const campaignData = await getLeaderboardCampaign(filter, userId);
         data = campaignData.map((d) => ({
           username: d.username,
           score: d.totalScore,
@@ -56,7 +62,7 @@ export function LeaderboardClient({ userId, currentNickname }: { userId: string;
         }));
       } else {
         const level = parseInt(levelInput) || 1;
-        const levelData = await getLeaderboardLevel(level);
+        const levelData = await getLeaderboardLevel(level, filter, userId);
         data = levelData.map((d) => ({
           username: d.username,
           score: d.totalScore,
@@ -74,13 +80,27 @@ export function LeaderboardClient({ userId, currentNickname }: { userId: string;
       );
       setLoading(false);
     })();
-  }, [tab, levelInput, userId, today]);
+  }, [tab, filter, levelInput, userId, today]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
+
+  const filteredEntries = entries.filter((entry) =>
+    entry.username.toLowerCase().includes(debouncedQuery.toLowerCase())
+  );
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'daily', label: 'Daily' },
     { key: 'campaign', label: 'Campaign' },
     { key: 'level', label: 'Level' },
   ];
+
+  const isFriendsFilter = filter === 'friends';
+  const showEmptyFriends = isFriendsFilter && entries.length === 0 && !loading;
 
   return (
     <div className="flex flex-col min-h-dvh bg-black text-white">
@@ -107,6 +127,10 @@ export function LeaderboardClient({ userId, currentNickname }: { userId: string;
           ))}
         </div>
 
+        <FilterTabs active={filter} onSelect={setFilter} />
+
+        <LeaderboardSearch onSearch={setSearchQuery} />
+
         {tab === 'level' && (
           <div className="flex gap-2 items-center">
             <label className="text-sm text-gray-400">Level</label>
@@ -123,16 +147,35 @@ export function LeaderboardClient({ userId, currentNickname }: { userId: string;
 
         {loading ? (
           <div className="text-center py-8 text-gray-500">Loading...</div>
+        ) : showEmptyFriends ? (
+          <div className="text-center py-12 text-gray-400 space-y-4">
+            <p className="text-lg">No friends on the leaderboard yet.</p>
+            <p className="text-sm">Add friends to see their scores here.</p>
+            <Link
+              href="/friends"
+              className="inline-block px-4 py-2 text-sm font-medium text-yellow-400 hover:text-yellow-300 transition-colors"
+            >
+              Go to Friends
+            </Link>
+          </div>
         ) : (
           <div className="space-y-1">
-            {entries.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">No scores yet.</div>
+            {filteredEntries.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                {debouncedQuery
+                  ? `No users matching "${debouncedQuery}"`
+                  : 'No scores yet.'}
+              </div>
             ) : (
-              entries.map((entry) => (
+              filteredEntries.map((entry) => (
                 <div
                   key={`${entry.rank}-${entry.username}`}
                   className={`flex items-center justify-between px-4 py-3 rounded-lg ${
-                    entry.isCurrentUser ? 'bg-white/10 border border-white/20' : 'bg-gray-900'
+                    entry.isCurrentUser
+                      ? isFriendsFilter
+                        ? 'bg-green-400/10 border border-green-400/30'
+                        : 'bg-white/10 border border-white/20'
+                      : 'bg-gray-900'
                   }`}
                 >
                   <div className="flex items-center gap-3">

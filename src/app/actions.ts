@@ -3,7 +3,7 @@
 import { auth } from '@/lib/auth/server';
 import { db } from '@/db';
 import { images, rounds, dailyScores, profiles, challenges, challengeResults, badges, friends, friendRequests } from '@/db/schema';
-import { eq, sql, and, or, lte, ilike } from 'drizzle-orm';
+import { eq, sql, and, or, lte, ilike, inArray } from 'drizzle-orm';
 import { LocationData, EvidenceItem, CaseFileEntry, ChallengeData, ChallengeResultData } from '@/types';
 import { getMaxLevel } from '@/lib/game/progression';
 import { generateCaseSeed, getImageIndexFromSeed } from '@/lib/game/caseGenerator';
@@ -164,7 +164,32 @@ export async function advanceLevel(userId: string): Promise<number> {
   return result?.currentLevel ?? 2;
 }
 
-export async function getLeaderboardCampaign() {
+export async function getLeaderboardCampaign(
+  filter: 'global' | 'friends' = 'global',
+  userId?: string
+) {
+  let friendIds: string[] = [];
+  
+  if (filter === 'friends' && userId) {
+    const friendRows = await db
+      .select({ friendUserId: friends.friendUserId, userId: friends.userId })
+      .from(friends)
+      .where(or(eq(friends.userId, userId), eq(friends.friendUserId, userId)));
+    
+    friendIds = [...new Set(
+      friendRows.flatMap(f => [f.friendUserId, f.userId]).filter(id => id !== userId)
+    )];
+    
+    if (friendIds.length === 0) {
+      return [];
+    }
+  }
+
+  const whereConditions = [];
+  if (filter === 'friends' && friendIds.length > 0) {
+    whereConditions.push(inArray(rounds.userId, friendIds));
+  }
+
   const results = await db
     .select({
       username: profiles.username,
@@ -173,7 +198,8 @@ export async function getLeaderboardCampaign() {
       level: rounds.level,
     })
     .from(rounds)
-    .innerJoin(profiles, eq(rounds.userId, profiles.id));
+    .innerJoin(profiles, eq(rounds.userId, profiles.id))
+    .where(whereConditions.length > 0 ? and(...whereConditions) : undefined);
 
   const bestPerUserLevel = new Map<string, Map<number, number>>();
 
@@ -202,7 +228,33 @@ export async function getLeaderboardCampaign() {
   return campaignTotals.sort((a, b) => b.totalScore - a.totalScore);
 }
 
-export async function getLeaderboardLevel(level: number) {
+export async function getLeaderboardLevel(
+  level: number,
+  filter: 'global' | 'friends' = 'global',
+  userId?: string
+) {
+  let friendIds: string[] = [];
+  
+  if (filter === 'friends' && userId) {
+    const friendRows = await db
+      .select({ friendUserId: friends.friendUserId, userId: friends.userId })
+      .from(friends)
+      .where(or(eq(friends.userId, userId), eq(friends.friendUserId, userId)));
+    
+    friendIds = [...new Set(
+      friendRows.flatMap(f => [f.friendUserId, f.userId]).filter(id => id !== userId)
+    )];
+    
+    if (friendIds.length === 0) {
+      return [];
+    }
+  }
+
+  const whereConditions = [eq(rounds.level, level)];
+  if (filter === 'friends' && friendIds.length > 0) {
+    whereConditions.push(inArray(rounds.userId, friendIds));
+  }
+
   const results = await db
     .select({
       username: profiles.username,
@@ -211,7 +263,7 @@ export async function getLeaderboardLevel(level: number) {
     })
     .from(rounds)
     .innerJoin(profiles, eq(rounds.userId, profiles.id))
-    .where(eq(rounds.level, level))
+    .where(and(...whereConditions))
     .orderBy(sql`${rounds.totalScore} DESC`);
 
   const bestPerUser = new Map<string, { userId: string; username: string; totalScore: number }>();
@@ -226,7 +278,33 @@ export async function getLeaderboardLevel(level: number) {
   return Array.from(bestPerUser.values()).sort((a, b) => b.totalScore - a.totalScore);
 }
 
-export async function getDailyLeaderboard(date: string) {
+export async function getDailyLeaderboard(
+  date: string,
+  filter: 'global' | 'friends' = 'global',
+  userId?: string
+) {
+  let friendIds: string[] = [];
+  
+  if (filter === 'friends' && userId) {
+    const friendRows = await db
+      .select({ friendUserId: friends.friendUserId, userId: friends.userId })
+      .from(friends)
+      .where(or(eq(friends.userId, userId), eq(friends.friendUserId, userId)));
+    
+    friendIds = [...new Set(
+      friendRows.flatMap(f => [f.friendUserId, f.userId]).filter(id => id !== userId)
+    )];
+    
+    if (friendIds.length === 0) {
+      return [];
+    }
+  }
+
+  const whereConditions = [eq(dailyScores.date, date)];
+  if (filter === 'friends' && friendIds.length > 0) {
+    whereConditions.push(inArray(dailyScores.userId, friendIds));
+  }
+
   const results = await db
     .select({
       username: profiles.username,
@@ -235,10 +313,150 @@ export async function getDailyLeaderboard(date: string) {
     })
     .from(dailyScores)
     .innerJoin(profiles, eq(dailyScores.userId, profiles.id))
-    .where(eq(dailyScores.date, date))
+    .where(and(...whereConditions))
     .orderBy(sql`${dailyScores.totalScore} DESC`);
 
   return results as unknown as { username: string; score: number; userId: string }[];
+}
+
+export async function searchLeaderboard(
+  query: string,
+  type: 'daily' | 'campaign' | 'level' | 'challenge',
+  filter: 'global' | 'friends' = 'global',
+  userId?: string,
+  level?: number,
+  date?: string,
+  challengeId?: string
+) {
+  const q = query.trim();
+  if (q.length < 2) return [];
+
+  let friendIds: string[] = [];
+  
+  if (filter === 'friends' && userId) {
+    const friendRows = await db
+      .select({ friendUserId: friends.friendUserId, userId: friends.userId })
+      .from(friends)
+      .where(or(eq(friends.userId, userId), eq(friends.friendUserId, userId)));
+    
+    friendIds = [...new Set(
+      friendRows.flatMap(f => [f.friendUserId, f.userId]).filter(id => id !== userId)
+    )];
+    
+    if (friendIds.length === 0) {
+      return [];
+    }
+  }
+
+  const whereConditions: any[] = [ilike(profiles.username, `%${q}%`)];
+  if (filter === 'friends' && friendIds.length > 0) {
+    whereConditions.push(inArray(profiles.id, friendIds));
+  }
+
+  let results: { username: string; score: number; userId: string }[] = [];
+
+  if (type === 'daily') {
+    const d = date ?? new Date().toISOString().split('T')[0];
+    const dailyResults = await db
+      .select({
+        username: profiles.username,
+        userId: dailyScores.userId,
+        score: dailyScores.totalScore,
+      })
+      .from(dailyScores)
+      .innerJoin(profiles, eq(dailyScores.userId, profiles.id))
+      .where(and(eq(dailyScores.date, d), ...whereConditions))
+      .orderBy(sql`${dailyScores.totalScore} DESC`)
+      .limit(50);
+    results = dailyResults as unknown as { username: string; score: number; userId: string }[];
+  } else if (type === 'campaign') {
+    const campaignResults = await db
+      .select({
+        username: profiles.username,
+        userId: rounds.userId,
+        totalScore: rounds.totalScore,
+        level: rounds.level,
+      })
+      .from(rounds)
+      .innerJoin(profiles, eq(rounds.userId, profiles.id))
+      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined);
+
+    const bestPerUserLevel = new Map<string, Map<number, number>>();
+    for (const row of campaignResults) {
+      if (!bestPerUserLevel.has(row.userId)) {
+        bestPerUserLevel.set(row.userId, new Map());
+      }
+      const userLevels = bestPerUserLevel.get(row.userId)!;
+      const existing = userLevels.get(row.level ?? 0) ?? 0;
+      if (row.totalScore > existing) {
+        userLevels.set(row.level ?? 0, row.totalScore);
+      }
+    }
+
+    const campaignTotals: { userId: string; username: string; totalScore: number }[] = [];
+    for (const [uid, levels] of bestPerUserLevel) {
+      let total = 0;
+      for (const score of levels.values()) total += score;
+      const username = campaignResults.find((r) => r.userId === uid)?.username ?? 'Anonymous';
+      campaignTotals.push({ userId: uid, username, totalScore: total });
+    }
+
+    results = campaignTotals
+      .sort((a, b) => b.totalScore - a.totalScore)
+      .map(c => ({ username: c.username, score: c.totalScore, userId: c.userId }));
+  } else if (type === 'level') {
+    const lvl = level ?? 1;
+    const levelResults = await db
+      .select({
+        username: profiles.username,
+        userId: rounds.userId,
+        totalScore: rounds.totalScore,
+      })
+      .from(rounds)
+      .innerJoin(profiles, eq(rounds.userId, profiles.id))
+      .where(and(eq(rounds.level, lvl), ...whereConditions))
+      .orderBy(sql`${rounds.totalScore} DESC`)
+      .limit(50);
+
+    const bestPerUser = new Map<string, { userId: string; username: string; totalScore: number }>();
+    for (const row of levelResults) {
+      const existing = bestPerUser.get(row.userId);
+      if (!existing || row.totalScore > existing.totalScore) {
+        bestPerUser.set(row.userId, { userId: row.userId, username: row.username ?? 'Anonymous', totalScore: row.totalScore });
+      }
+    }
+
+    results = Array.from(bestPerUser.values())
+      .sort((a, b) => b.totalScore - a.totalScore)
+      .map(c => ({ username: c.username, score: c.totalScore, userId: c.userId }));
+  } else if (type === 'challenge') {
+    if (!challengeId) return [];
+    const challengeResultsData = await db
+      .select({
+        username: profiles.username,
+        userId: challengeResults.userId,
+        score: challengeResults.score,
+      })
+      .from(challengeResults)
+      .innerJoin(profiles, eq(challengeResults.userId, profiles.id))
+      .where(and(eq(challengeResults.challengeId, challengeId), ...whereConditions))
+      .orderBy(sql`${challengeResults.score} DESC`)
+      .limit(50);
+
+    const bestPerUser = new Map<string, { userId: string; username: string; score: number }>();
+    for (const row of challengeResultsData) {
+      const existing = bestPerUser.get(row.userId);
+      if (!existing || row.score > existing.score) {
+        bestPerUser.set(row.userId, { userId: row.userId, username: row.username ?? 'Anonymous', score: row.score });
+      }
+    }
+
+    results = Array.from(bestPerUser.values())
+      .sort((a, b) => b.score - a.score)
+      .map(c => ({ username: c.username, score: c.score, userId: c.userId }));
+  }
+
+  return results;
 }
 
 export async function getTodayDailyScore(userId: string, date: string): Promise<number | null> {

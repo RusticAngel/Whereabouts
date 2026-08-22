@@ -10,13 +10,19 @@ interface LeaderboardEntry {
   isCurrentUser: boolean;
 }
 
+type HighlightMode = 'global' | 'friends';
+
 interface LeaderboardTableProps {
   entries: LeaderboardEntry[];
   currentUserScore?: number;
+  highlightMode?: HighlightMode;
 }
 
-export function LeaderboardTable({ entries, currentUserScore }: LeaderboardTableProps) {
+export function LeaderboardTable({ entries, currentUserScore, highlightMode = 'global' }: LeaderboardTableProps) {
   const router = useRouter();
+
+  const isFriends = highlightMode === 'friends';
+  const currentUserBg = isFriends ? 'bg-green-400/10 border border-green-400/30' : 'bg-white/10 border border-white/20';
 
   return (
     <div className="space-y-3">
@@ -31,7 +37,7 @@ export function LeaderboardTable({ entries, currentUserScore }: LeaderboardTable
           <div
             key={entry.rank}
             className={`flex items-center justify-between px-4 py-3 rounded-lg ${
-              entry.isCurrentUser ? 'bg-white/10 border border-white/20' : 'bg-gray-900'
+              entry.isCurrentUser ? currentUserBg : 'bg-gray-900'
             }`}
           >
             <div className="flex items-center gap-3">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { LocationData, Confidence, ChallengeResultData } from '@/types';
@@ -13,9 +13,11 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ResultCard } from '@/components/results/ResultCard';
 import { ShareButton } from '@/components/results/ShareButton';
-import { saveChallengeResult, getChallenge, createChallenge, createRematchChallenge, getFocusedLeaderboard } from '@/app/actions';
+import { saveChallengeResult, getChallenge, createChallenge, createRematchChallenge, getFocusedLeaderboard, searchLeaderboard } from '@/app/actions';
 import { shareChallenge } from '@/lib/share';
 import { challengesEnabled, CHALLENGES_HINT } from '@/lib/challenges';
+import { FilterTabs } from '@/components/leaderboard/FilterTabs';
+import { LeaderboardSearch } from '@/components/leaderboard/LeaderboardSearch';
 
 const StreetView = dynamic(() => import('@/components/game/StreetView'), {
   ssr: false,
@@ -60,9 +62,85 @@ export function ChallengeScreen({ challengeId, location, userId }: ChallengeScre
   const [rematching, setRematching] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [leaderboardFilter, setLeaderboardFilter] = useState<'global' | 'friends'>('global');
+  const [leaderboardSearch, setLeaderboardSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [leaderboardEntries, setLeaderboardEntries] = useState<ChallengeResultData[]>([]);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
   const savingRef = useRef(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const hasCoords = location.lat && location.lng;
+
+  useEffect(() => {
+    if (debouncedSearch !== leaderboardSearch) {
+      const timeout = setTimeout(() => {
+        setDebouncedSearch(leaderboardSearch);
+      }, 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [leaderboardSearch]);
+
+  useEffect(() => {
+    if (debouncedSearch !== '' || leaderboardFilter !== 'global') {
+      (async () => {
+        setLeaderboardLoading(true);
+        const results = await searchLeaderboard(debouncedSearch, 'challenge', leaderboardFilter, userId, undefined, undefined, challengeId);
+        setLeaderboardEntries(
+          results.map((r, i) => ({
+            id: `search-${r.userId}-${i}`,
+            challengeId,
+            userId: r.userId,
+            username: r.username,
+            score: r.score,
+            distanceKm: 0,
+            evidenceRevealed: 0,
+            confidence: 'low' as Confidence,
+          }))
+        );
+        setLeaderboardLoading(false);
+      })();
+    } else {
+      setLeaderboardEntries(allResults);
+    }
+  }, [debouncedSearch, leaderboardFilter, userId, challengeId, allResults]);
+
+  const renderLeaderboard = () => {
+    if (leaderboardLoading) {
+      return <div className="text-center py-8 text-gray-500">Loading...</div>;
+    }
+    if (leaderboardFilter === 'friends' && leaderboardEntries.length === 0) {
+      return (
+        <div className="text-center py-12 text-gray-400 space-y-4">
+          <p className="text-lg">No friends on this challenge yet.</p>
+          <p className="text-sm">Challenge your friends to see them here.</p>
+        </div>
+      );
+    }
+    if (leaderboardEntries.length === 0) {
+      return (
+        <div className="text-center py-8 text-gray-500">
+          {debouncedSearch ? `No users matching "${debouncedSearch}"` : 'No scores yet.'}
+        </div>
+      );
+    }
+    return (
+      <div className="space-y-2 text-sm">
+        {leaderboardEntries.map((r, i) => (
+          <div
+            key={r.id}
+            className={`flex justify-between items-center ${r.userId === userId ? (leaderboardFilter === 'friends' ? 'text-green-400' : 'text-yellow-400') : 'text-gray-300'}`}
+          >
+            <span className="flex items-center gap-2">
+              <span className="text-gray-500 w-5 text-right">{i + 1}.</span>
+              {r.username}
+              {r.userId === userId && <span className="text-[10px] text-yellow-500">(you)</span>}
+            </span>
+            <span className="font-mono">{r.score.toLocaleString()} pts</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   const handleSubmit = useCallback(async () => {
     if (savingRef.current || pinLat === null || pinLng === null || !hasCoords) return;
@@ -236,50 +314,10 @@ export function ChallengeScreen({ challengeId, location, userId }: ChallengeScre
 
           {totalPlayers >= 2 && (
             <Card>
-              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                {showFocused && !showFullLeaderboard ? 'Challenge Standings' : 'Leaderboard'}
-              </h3>
-              <div className="space-y-2 text-sm">
-                {(showFocused && !showFullLeaderboard ? (
-                  <>
-                    {focusedAbove && (
-                      <div className="flex justify-between items-center text-gray-300">
-                        <span><span className="text-gray-500 mr-2">⬆️</span>{focusedAbove.username}</span>
-                        <span className="font-mono">{focusedAbove.score.toLocaleString()} pts</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between items-center text-yellow-400 border-y border-gray-700 py-1">
-                      <span><span className="text-yellow-500 mr-2">👉</span>You</span>
-                      <span className="font-mono">{result.totalScore.toLocaleString()} pts</span>
-                    </div>
-                    {focusedBelow && (
-                      <div className="flex justify-between items-center text-gray-300">
-                        <span><span className="text-gray-500 mr-2">⬇️</span>{focusedBelow.username}</span>
-                        <span className="font-mono">{focusedBelow.score.toLocaleString()} pts</span>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  allResults.map((r, i) => (
-                    <div key={r.id} className={`flex justify-between items-center ${r.userId === userId ? 'text-yellow-400' : 'text-gray-300'}`}>
-                      <span className="flex items-center gap-2">
-                        <span className="text-gray-500 w-5 text-right">{i + 1}.</span>
-                        {r.username}
-                        {r.userId === userId && <span className="text-[10px] text-yellow-500">(you)</span>}
-                      </span>
-                      <span className="font-mono">{r.score.toLocaleString()} pts</span>
-                    </div>
-                  ))
-                ))}
-              </div>
-              {showFocused && (
-                <button
-                  onClick={() => setShowFullLeaderboard(!showFullLeaderboard)}
-                  className="w-full text-xs text-gray-500 hover:text-gray-300 transition-colors mt-3"
-                >
-                  {showFullLeaderboard ? 'Show less' : 'View Full Leaderboard'}
-                </button>
-              )}
+              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Leaderboard</h3>
+              <FilterTabs active={leaderboardFilter} onSelect={setLeaderboardFilter} />
+              <LeaderboardSearch onSearch={setLeaderboardSearch} />
+              {renderLeaderboard()}
             </Card>
           )}
 
