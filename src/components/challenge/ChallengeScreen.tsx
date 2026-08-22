@@ -151,8 +151,10 @@ export function ChallengeScreen({ challengeId, location, userId }: ChallengeScre
       const actualLat = parseFloat(location.lat!);
       const actualLng = parseFloat(location.lng!);
       const distanceKm = Math.round(calculateDistance(pinLat, pinLng, actualLat, actualLng));
-      const totalScore = calculateFinalScore(distanceKm, evidenceRevealed, confidence);
-      const pinScore = calculateFinalScore(distanceKm, 0, 'low');
+      // World diagonal approximation for challenges
+      const mapDiagonalKm = 20000;
+      const totalScore = calculateFinalScore(distanceKm, evidenceRevealed, confidence, 'move', mapDiagonalKm);
+      const pinScore = calculateFinalScore(distanceKm, 0, 'low', 'move', mapDiagonalKm);
 
       await saveChallengeResult(challengeId, userId, {
         score: totalScore,

@@ -69,7 +69,9 @@ export function DemoGame({ location }: DemoGameProps) {
     const actualLat = parseFloat(location.lat!);
     const actualLng = parseFloat(location.lng!);
     const distanceKm = Math.round(calculateDistance(pinLat, pinLng, actualLat, actualLng));
-    const totalScore = calculateFinalScore(distanceKm, evidenceRevealed, confidence);
+    // World diagonal approximation for demo
+    const mapDiagonalKm = 20000;
+    const totalScore = calculateFinalScore(distanceKm, evidenceRevealed, confidence, 'move', mapDiagonalKm);
 
     resultRef.current = { distanceKm, pinScore: totalScore, totalScore };
     setPhase('results');

@@ -109,7 +109,9 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
     const actualLat = parseFloat(location.lat!);
     const actualLng = parseFloat(location.lng!);
     const distanceKm = Math.round(calculateDistance(pinLat, pinLng, actualLat, actualLng));
-    const pinScore = Math.round(calculateFinalScore(distanceKm, evidenceRevealed, confidence) * (isReplay ? 0.5 : 1));
+    // World diagonal approximation (~20000 km) for campaign levels
+    const mapDiagonalKm = 20000;
+    const pinScore = Math.round(calculateFinalScore(distanceKm, evidenceRevealed, confidence, 'move', mapDiagonalKm) * (isReplay ? 0.5 : 1));
 
     trackEvent('report_submitted', { level, distance: distanceKm, score: pinScore, confidence, evidenceUsed: evidenceRevealed, evidenceCount: evidenceRevealed });
 
@@ -219,7 +221,7 @@ export function InvestigationScreen({ location, userId, level, isReplay = false 
           )}
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 pb-24 space-y-3">
+        <div className="absolute bottom-0 left-0 right-0 p-4 pb-40 space-y-3">
           {!timeUp && <EvidencePanel evidence={location.evidence} onReveal={handleReveal} />}
           {timeUp && (
             <div className="text-xs text-yellow-400 text-center py-2 px-3 bg-yellow-400/10 rounded-lg border border-yellow-400/20 font-medium">

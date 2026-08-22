@@ -1,13 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Viewer } from 'mapillary-js';
+import { Viewer, ViewerOptions } from 'mapillary-js';
 import 'mapillary-js/dist/mapillary.css';
-
-interface StreetViewProps {
-  imageId: string;
-  className?: string;
-}
+import { Difficulty } from '@/lib/game/scoring';
 
 const LOAD_TIMEOUT_MS = 20000;
 const MAX_RETRIES = 2;
@@ -15,7 +11,49 @@ const RETRY_DELAY_MS = 5000;
 
 const accessToken = process.env.NEXT_PUBLIC_MAPILLARY_ACCESS_TOKEN;
 
-export default function StreetView({ imageId, className = '' }: StreetViewProps) {
+interface StreetViewProps {
+  imageId: string;
+  className?: string;
+  difficulty?: Difficulty;
+}
+
+const DIFFICULTY_CONFIG: Record<Difficulty, ViewerOptions['component']> = {
+  move: {
+    cover: false,
+    sequence: true,
+    direction: true,
+    keyboard: true,
+    cache: false,
+    bearing: false,
+    attribution: false,
+    zoom: true,
+    pointer: true,
+  },
+  'no-move': {
+    cover: false,
+    sequence: false,
+    direction: true,
+    keyboard: false,
+    cache: false,
+    bearing: false,
+    attribution: false,
+    zoom: true,
+    pointer: false,
+  },
+  nmpz: {
+    cover: false,
+    sequence: false,
+    direction: false,
+    keyboard: false,
+    cache: false,
+    bearing: false,
+    attribution: false,
+    zoom: false,
+    pointer: false,
+  },
+};
+
+export default function StreetView({ imageId, className = '', difficulty = 'move' }: StreetViewProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewerRef = useRef<Viewer | null>(null);
   const [failed, setFailed] = useState(false);
@@ -64,19 +102,9 @@ export default function StreetView({ imageId, className = '' }: StreetViewProps)
       try {
         const viewer = new Viewer({
           accessToken,
-          container,
+          container: containerRef.current!,
           imageId,
-          component: {
-            cover: false,
-            sequence: false,
-            direction: true,
-            keyboard: true,
-            cache: false,
-            bearing: false,
-            attribution: false,
-            zoom: true,
-            pointer: true,
-          },
+          component: DIFFICULTY_CONFIG[difficulty],
         });
 
         viewerRef.current = viewer;
@@ -105,7 +133,7 @@ export default function StreetView({ imageId, className = '' }: StreetViewProps)
         viewerRef.current = null;
       }
     };
-  }, [imageId, retryKey]);
+  }, [imageId, retryKey, difficulty]);
 
   const showFailed = failed || !accessToken;
 

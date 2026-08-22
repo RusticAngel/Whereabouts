@@ -80,9 +80,11 @@ export function DailyGame({ location, userId, date, existingScore }: DailyGamePr
     const actualLat = parseFloat(location.lat!);
     const actualLng = parseFloat(location.lng!);
     const distanceKm = Math.round(calculateDistance(pinLat, pinLng, actualLat, actualLng));
-    const baseScore = calculateFinalScore(distanceKm, evidenceRevealed, confidence);
+    // World diagonal approximation (~20000 km) for daily challenge
+    const mapDiagonalKm = 20000;
+    const baseScore = calculateFinalScore(distanceKm, evidenceRevealed, confidence, 'move', mapDiagonalKm);
     const totalScore = applyStreakMultiplier(baseScore, streak);
-    const pinScore = calculateFinalScore(distanceKm, 0, 'low');
+    const pinScore = calculateFinalScore(distanceKm, 0, 'low', 'move', mapDiagonalKm);
 
     const roundId = await saveRound(
       userId,
